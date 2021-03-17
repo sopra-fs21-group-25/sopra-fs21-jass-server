@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # SoPra RESTful Service Template FS21
 
 ## Getting started with Spring Boot
@@ -98,7 +97,3 @@ do the following:
 ## Testing
 
 Have a look here: https://www.baeldung.com/spring-boot-testing
-=======
-# sopra-fs21-jass-server
-Server side of the Jass  project
->>>>>>> b72660aa16642dfe019e054573dc451cc97d3e51
