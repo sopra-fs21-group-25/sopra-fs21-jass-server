@@ -69,13 +69,14 @@ public class UserControllerTest {
         // given
         User user = new RegisteredUser();
         user.setId(1L);
-        user.setUsername("testUsername");
+        user.setUsername("Test User");
         ((RegisteredUser) user).setToken("1");
-        ((RegisteredUser) user).setStatus(UserStatus.ONLINE);
+        user.setStatus(UserStatus.ONLINE);
 
         UserPostDTO userPostDTO = new UserPostDTO();
-        userPostDTO.setPassword("Test User");
-        userPostDTO.setUsername("testUsername");
+        userPostDTO.setUsername("Test User");
+        userPostDTO.setPassword("testUsername");
+        userPostDTO.setUserType("registered");
 
         given(userService.createRegisteredUser(Mockito.any())).willReturn((RegisteredUser) user);
 
