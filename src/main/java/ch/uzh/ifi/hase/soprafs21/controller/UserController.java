@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+
+import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
@@ -44,13 +46,32 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public UserGetDTO createUser(@RequestBody UserPostDTO userPostDTO) {
+        UserGetDTO returnedUser = null;
         // convert API user to internal representation
-        User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+        if (userPostDTO.getUserType().equals("registered")) {
+            RegisteredUser userInput = DTOMapper.INSTANCE.convertUserPostDTOtoRegisteredUser(userPostDTO);
+            User newUser = userService.createRegisteredUser(userInput);
 
-        // create user
-        User createdUser = userService.createUser(userInput);
+            returnedUser = DTOMapper.INSTANCE.convertEntityToUserGetDTO(newUser);
+            returnedUser.setUserType("registered");
+        }
 
-        // convert internal representation of user back to API
-        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
+        if (userPostDTO.getUserType().equals("facebook")) {
+            User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoFacebookUser(userPostDTO);
+            User newUser = userService.createFacebookUser(userInput);
+
+            returnedUser = DTOMapper.INSTANCE.convertEntityToUserGetDTO(newUser);
+            returnedUser.setUserType("facebook");
+        }
+
+        if (userPostDTO.getUserType().equals("guest")) {
+            User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoGuestUser(userPostDTO);
+            User newUser = userService.createGuestUser(userInput);
+
+            returnedUser = DTOMapper.INSTANCE.convertEntityToUserGetDTO(newUser);
+            returnedUser.setUserType("guest");
+        }
+
+        return returnedUser;
     }
 }

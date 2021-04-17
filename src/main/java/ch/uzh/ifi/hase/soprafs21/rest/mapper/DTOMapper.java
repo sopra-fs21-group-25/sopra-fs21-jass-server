@@ -1,5 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
+import ch.uzh.ifi.hase.soprafs21.entity.FacebookUser;
+import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
+import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
@@ -19,12 +22,17 @@ public interface DTOMapper {
 
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
-    @Mapping(source = "name", target = "name")
     @Mapping(source = "username", target = "username")
-    User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
+    @Mapping(source = "password", target = "password")
+    RegisteredUser convertUserPostDTOtoRegisteredUser(UserPostDTO userPostDTO);
+
+    @Mapping(source = "username", target = "username")
+    GuestUser convertUserPostDTOtoGuestUser(UserPostDTO userPostDTO);
+
+    @Mapping(source = "username", target = "username")
+    FacebookUser convertUserPostDTOtoFacebookUser(UserPostDTO userPostDTO);
 
     @Mapping(source = "id", target = "id")
-    @Mapping(source = "name", target = "name")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "status", target = "status")
     UserGetDTO convertEntityToUserGetDTO(User user);

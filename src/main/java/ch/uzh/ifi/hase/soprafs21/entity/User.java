@@ -4,6 +4,9 @@ import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import javax.persistence.DiscriminatorColumn;
+
+import java.util.List;
 
 /**
  * Internal User Representation
@@ -13,26 +16,22 @@ import java.io.Serializable;
  * - unique = true -> this value must be unqiue across the database -> composes the primary key
  */
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "USER_TYPE")
 @Table(name = "USER")
-public class User implements Serializable {
+public abstract class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue
-    private Long id;
-
-    @Column(nullable = false)
-    private String name;
+    protected Long id;
 
     @Column(nullable = false, unique = true)
-    private String username;
-
-    @Column(nullable = false, unique = true)
-    private String token;
+    protected String username;
 
     @Column(nullable = false)
-    private UserStatus status;
+    protected UserStatus status;
 
     public Long getId() {
         return id;
@@ -40,14 +39,6 @@ public class User implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getUsername() {
@@ -58,14 +49,6 @@ public class User implements Serializable {
         this.username = username;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     public UserStatus getStatus() {
         return status;
     }
@@ -73,4 +56,5 @@ public class User implements Serializable {
     public void setStatus(UserStatus status) {
         this.status = status;
     }
+
 }
