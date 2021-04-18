@@ -10,6 +10,7 @@ import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +71,10 @@ public class UserController {
 
             returnedUser = DTOMapper.INSTANCE.convertEntityToUserGetDTO(newGuest);
             returnedUser.setUserType("guest");
+        }
+
+        if (returnedUser == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to create guest user, due to wrong userType");
         }
 
         return returnedUser;

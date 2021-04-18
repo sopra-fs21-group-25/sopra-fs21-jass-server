@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
@@ -18,11 +19,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -46,10 +50,17 @@ public class UserControllerTest {
     @Test
     public void givenUsers_whenGetUsers_thenReturnJsonArray() throws Exception {
         // given
-        User user = new RegisteredUser();
-        ((RegisteredUser) user).setStatus(UserStatus.OFFLINE);
+        User user1 = new RegisteredUser();
+        user1.setUsername("Fishy fish");
+        user1.setStatus(UserStatus.OFFLINE);
 
-        List<User> allUsers = Collections.singletonList(user);
+        User user2 = new RegisteredUser();
+        user2.setUsername("Meret Pilar");
+        user2.setStatus(UserStatus.ONLINE);
+
+        List<User> allUsers = new ArrayList<>();
+        allUsers.add(user1);
+        allUsers.add(user2);
 
         // this mocks the UserService -> we define above what the userService should return when getUsers() is called
         given(userService.getUsers()).willReturn(allUsers);
@@ -59,18 +70,20 @@ public class UserControllerTest {
 
         // then
         mockMvc.perform(getRequest).andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].username", is(user.getUsername())))
-                .andExpect(jsonPath("$[0].status", is(((RegisteredUser) user).getStatus().toString())));
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].username", is(user1.getUsername())))
+                .andExpect(jsonPath("$[0].status", is((user1.getStatus().toString()))))
+                .andExpect(jsonPath("$[1].username", is(user2.getUsername())))
+                .andExpect(jsonPath("$[1].status", is((user2.getStatus().toString()))));
     }
 
     @Test
-    public void createUser_validInput_userCreated() throws Exception {
+    public void createRegisteredUser_validInput_userCreated() throws Exception {
         // given
-        User user = new RegisteredUser();
+        RegisteredUser user = new RegisteredUser();
         user.setId(1L);
         user.setUsername("Test User");
-        ((RegisteredUser) user).setToken("1");
+        user.setToken("1");
         user.setStatus(UserStatus.ONLINE);
 
         UserPostDTO userPostDTO = new UserPostDTO();
@@ -78,7 +91,7 @@ public class UserControllerTest {
         userPostDTO.setPassword("testUsername");
         userPostDTO.setUserType("registered");
 
-        given(userService.createRegisteredUser(Mockito.any())).willReturn((RegisteredUser) user);
+        given(userService.createRegisteredUser(Mockito.any())).willReturn(user);
 
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder postRequest = post("/users")
@@ -90,7 +103,60 @@ public class UserControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(user.getId().intValue())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
-                .andExpect(jsonPath("$.status", is(((RegisteredUser) user).getStatus().toString())));
+                .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
+    }
+
+    @Test
+    public void createUser_invalidInput_userCreated() throws Exception {
+        // given
+        RegisteredUser user = new RegisteredUser();
+        user.setId(1L);
+        user.setUsername("Test User");
+        user.setToken("1");
+        user.setStatus(UserStatus.ONLINE);
+
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setUsername("Test User");
+        userPostDTO.setPassword("testUsername");
+        userPostDTO.setUserType("miau");
+
+        given(userService.createRegisteredUser(Mockito.any())).willReturn(user);
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder postRequest = post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userPostDTO));
+
+        // then
+        mockMvc.perform(postRequest)
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    public void createGuestUser_validInput_userCreated() throws Exception {
+        // given
+        GuestUser user = new GuestUser();
+        user.setId(1L);
+        user.setUsername("Sharp Bat");
+        user.setStatus(UserStatus.ONLINE);
+
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setUserType("guest");
+
+        given(userService.createGuestUser()).willReturn(user);
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder postRequest = post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userPostDTO));
+
+        // then
+        mockMvc.perform(postRequest)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
+                .andExpect(jsonPath("$.username", is(user.getUsername())))
+                .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
     }
 
     /**

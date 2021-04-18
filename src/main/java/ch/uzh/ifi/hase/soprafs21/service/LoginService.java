@@ -33,10 +33,10 @@ public class LoginService {
         userToLogIn.setToken(UUID.randomUUID().toString());
         userToLogIn.setStatus(UserStatus.ONLINE);
 
-        registeredUserRepository.saveAndFlush(userToLogIn);
+        RegisteredUser loggedInUser = registeredUserRepository.saveAndFlush(userToLogIn);
 
-        log.debug("User logged in: {}", userToLogIn);
-        return userToLogIn;
+        log.debug("User logged in: {}", loggedInUser);
+        return loggedInUser;
     }
 
     private RegisteredUser checkIfUserExistsAndPasswordIsValid(RegisteredUser userToLogIn) throws ResponseStatusException {

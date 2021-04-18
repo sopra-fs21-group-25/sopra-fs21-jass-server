@@ -47,7 +47,7 @@ public class UserService {
         boolean userExists = checkIfUserExists(newUser);
 
         if (userExists) {
-            thorwUserConflict();
+            throwUserConflict();
         }
 
         // saves the given entity but data is only persisted in the database once flush() is called
@@ -85,7 +85,7 @@ public class UserService {
         boolean userExists = checkIfUserExists(newUser);
 
         if (userExists) {
-            thorwUserConflict();
+            throwUserConflict();
         }
 
         // saves the given entity but data is only persisted in the database once flush() is called
@@ -103,7 +103,7 @@ public class UserService {
      * @throws org.springframework.web.server.ResponseStatusException
      * @see User
      */
-    private void thorwUserConflict() {
+    private void throwUserConflict() {
         throw new ResponseStatusException(HttpStatus.CONFLICT, "create User failed because username already exists");
     }
 

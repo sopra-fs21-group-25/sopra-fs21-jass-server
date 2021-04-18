@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
@@ -21,44 +23,65 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-    private User testUser;
+    private RegisteredUser testRegisteredUser;
+    private GuestUser testGuestUser;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
 
         // given
-        testUser = new RegisteredUser();
-        testUser.setId(1L);
-        testUser.setUsername("testUsername");
+        testRegisteredUser = new RegisteredUser();
+        testRegisteredUser.setId(1L);
+        testRegisteredUser.setUsername("testUsername");
+        testRegisteredUser.setStatus(UserStatus.OFFLINE);
 
-        // when -> any object is being save in the userRepository -> return the dummy testUser
-        Mockito.when(userRepository.save(Mockito.any())).thenReturn(testUser);
+        testGuestUser = new GuestUser();
+        testGuestUser.setStatus(UserStatus.ONLINE);
+        testGuestUser.setUsername("Sharp Bat");
     }
 
     @Test
-    public void createUser_validInputs_success() {
+    public void createRegisteredUser_validInputs_success() {
         // when -> any object is being save in the userRepository -> return the dummy testUser
-        User createdUser = userService.createRegisteredUser((RegisteredUser) testUser);
+        Mockito.when(userRepository.save(Mockito.any())).thenReturn(testRegisteredUser);
+        testRegisteredUser.setPassword("SuperSafePassword");
+
+        RegisteredUser createdUser = userService.createRegisteredUser(testRegisteredUser);
 
         // then
         Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any());
 
-        assertEquals(testUser.getId(), createdUser.getId());
-        assertEquals(testUser.getUsername(), createdUser.getUsername());
-       // assertNotNull(createdUser.getToken());
+        assertEquals(testRegisteredUser.getId(), createdUser.getId());
+        assertEquals(testRegisteredUser.getUsername(), createdUser.getUsername());
+        assertEquals(testRegisteredUser.getPassword(), createdUser.getPassword());
+        assertEquals(UserStatus.ONLINE, createdUser.getStatus());
+        assertNotNull(createdUser.getToken());
     }
 
     @Test
-    public void createUser_duplicateInputs_throwsException() {
+    public void createRegisteredUser_duplicateInputs_throwsException() {
         // given -> a first user has already been created
-        userService.createRegisteredUser((RegisteredUser) testUser);
+        Mockito.when(userRepository.save(Mockito.any())).thenReturn(testRegisteredUser);
+        userService.createRegisteredUser(testRegisteredUser);
 
         // when -> setup additional mocks for UserRepository
-        Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
+        Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testRegisteredUser);
 
         // then -> attempt to create second user with same user -> check that an error is thrown
-        assertThrows(ResponseStatusException.class, () -> userService.createRegisteredUser((RegisteredUser) testUser));
+        assertThrows(ResponseStatusException.class, () -> userService.createRegisteredUser((RegisteredUser) testRegisteredUser));
+    }
+
+    @Test
+    public void createGuestUser_validInputs_success() {
+        // when -> any object is being save in the userRepository -> return the dummy testUser
+        Mockito.when(userRepository.save(Mockito.any())).thenReturn(testGuestUser);
+
+        GuestUser createdUser = userService.createGuestUser();
+
+        // then
+        assertEquals(UserStatus.ONLINE, createdUser.getStatus());
+        assertNotNull(createdUser.getUsername());
     }
 
 
