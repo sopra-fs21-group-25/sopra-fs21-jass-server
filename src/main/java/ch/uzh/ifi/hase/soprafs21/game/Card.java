@@ -17,13 +17,20 @@ public class Card {
         this.rank = r;
     }
 
+    public Card() {}
+
     public void setTrumpf() {
         this.isTrumpf = true;
     }
-
     public boolean isTrumpf() {
         return this.isTrumpf;
     }
+
+    public Suit getSuit() { return suit; }
+    public Rank getRank() { return rank; }
+
+    public void setSuit(Suit suit) { this.suit = suit; }
+    public void setRank(Rank rank) { this.rank = rank; }
 
     @Override
     public boolean equals(Object o) {
@@ -91,7 +98,7 @@ public class Card {
                     comparator = new ObenabeComparator();
                 }
             }
-            case MERRY -> {
+            case MARY -> {
                 /*
                 Analogous to GUSTI with reversed comparators
                  */
