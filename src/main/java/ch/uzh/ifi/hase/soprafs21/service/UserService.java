@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,7 +44,11 @@ public class UserService {
         newUser.setToken(UUID.randomUUID().toString());
         newUser.setStatus(UserStatus.ONLINE);
 
-        checkIfUserExists(newUser);
+        boolean userExists = checkIfUserExists(newUser);
+
+        if (userExists) {
+            thorwUserConflict();
+        }
 
         // saves the given entity but data is only persisted in the database once flush() is called
         newUser = userRepository.save(newUser);
@@ -52,19 +58,35 @@ public class UserService {
         return newUser;
     }
 
-    public User createGuestUser(User newUser) {
-        checkIfUserExists(newUser);
+    public GuestUser createGuestUser() {
+        GuestUser newGuest = new GuestUser();
+        boolean userExists = true;
+
+        try {
+            while (userExists) {
+                newGuest.setFunnyUsername();
+                newGuest.setStatus(UserStatus.ONLINE);
+
+                userExists = checkIfUserExists(newGuest);
+            }
+        } catch (IOException exception) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create guest user");
+        }
 
         // saves the given entity but data is only persisted in the database once flush() is called
-        newUser = userRepository.save(newUser);
+        newGuest = userRepository.save(newGuest);
         userRepository.flush();
 
-        log.debug("Created Information for User: {}", newUser);
-        return newUser;
+        log.debug("Created Information for User: {}", newGuest);
+        return newGuest;
     }
 
     public User createFacebookUser(User newUser) {
-        checkIfUserExists(newUser);
+        boolean userExists = checkIfUserExists(newUser);
+
+        if (userExists) {
+            thorwUserConflict();
+        }
 
         // saves the given entity but data is only persisted in the database once flush() is called
         newUser = userRepository.save(newUser);
@@ -78,15 +100,16 @@ public class UserService {
      * This is a helper method that will check the uniqueness criteria of the username and the name
      * defined in the User entity. The method will do nothing if the input is unique and throw an error otherwise.
      *
-     * @param userToBeCreated
      * @throws org.springframework.web.server.ResponseStatusException
      * @see User
      */
-    private void checkIfUserExists(User userToBeCreated) {
+    private void thorwUserConflict() {
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "create User failed because username already exists");
+    }
+
+    private boolean checkIfUserExists(User userToBeCreated) {
         User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
 
-        if (userByUsername != null ) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "create User failed because username already exists");
-        }
+        return userByUsername != null;
     }
 }

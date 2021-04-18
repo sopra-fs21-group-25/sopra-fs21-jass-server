@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 
+import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
@@ -65,10 +66,9 @@ public class UserController {
         }
 
         if (userPostDTO.getUserType().equals("guest")) {
-            User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoGuestUser(userPostDTO);
-            User newUser = userService.createGuestUser(userInput);
+            GuestUser newGuest = userService.createGuestUser();
 
-            returnedUser = DTOMapper.INSTANCE.convertEntityToUserGetDTO(newUser);
+            returnedUser = DTOMapper.INSTANCE.convertEntityToUserGetDTO(newGuest);
             returnedUser.setUserType("guest");
         }
 

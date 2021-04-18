@@ -27,9 +27,6 @@ public interface DTOMapper {
     RegisteredUser convertUserPostDTOtoRegisteredUser(UserPostDTO userPostDTO);
 
     @Mapping(source = "username", target = "username")
-    GuestUser convertUserPostDTOtoGuestUser(UserPostDTO userPostDTO);
-
-    @Mapping(source = "username", target = "username")
     FacebookUser convertUserPostDTOtoFacebookUser(UserPostDTO userPostDTO);
 
     @Mapping(source = "id", target = "id")
