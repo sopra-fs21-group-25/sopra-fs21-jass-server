@@ -27,11 +27,23 @@ public abstract class User implements Serializable {
     @GeneratedValue
     protected Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     protected String username;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     protected UserStatus status;
+
+    @Column(nullable = true, unique = true)
+    protected String token;
+
+    @Transient
+    public String getDiscriminatorValue(){
+        DiscriminatorValue val = this.getClass().getAnnotation( DiscriminatorValue.class );
+        return val == null ? null : val.value();
+    }
+
+    @Transient
+    protected String userType = getDiscriminatorValue();
 
     public Long getId() {
         return id;
@@ -57,4 +69,13 @@ public abstract class User implements Serializable {
         this.status = status;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getUserType() { return userType; }
 }

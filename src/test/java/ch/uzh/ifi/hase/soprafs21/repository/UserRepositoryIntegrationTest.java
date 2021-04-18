@@ -23,10 +23,11 @@ public class UserRepositoryIntegrationTest {
     @Test
     public void findByName_success() {
         // given
-        User user = new RegisteredUser();
+        RegisteredUser user = new RegisteredUser();
         user.setUsername("firstname@lastname");
-        ((RegisteredUser) user).setStatus(UserStatus.OFFLINE);
-        ((RegisteredUser) user).setToken("1");
+        user.setPassword("password");
+        user.setStatus(UserStatus.OFFLINE);
+        user.setToken("1");
 
         entityManager.persist(user);
         entityManager.flush();
