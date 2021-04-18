@@ -2,16 +2,26 @@ package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
 public class UserPostDTO {
 
-    private String name;
+    private String password;
 
     private String username;
 
-    public String getName() {
-        return name;
+    private String userType;
+
+    public String getUserType() {
+        return userType;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getUsername() {

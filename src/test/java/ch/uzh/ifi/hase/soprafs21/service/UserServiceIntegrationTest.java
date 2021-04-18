@@ -44,7 +44,7 @@ public class UserServiceIntegrationTest {
         testUser.setUsername("testUsername");
 
         // when
-        User createdUser = userService.createUser(testUser);
+        User createdUser = userService.createNormalUser(testUser);
 
         // then
         assertEquals(testUser.getId(), createdUser.getId());
@@ -61,7 +61,7 @@ public class UserServiceIntegrationTest {
         User testUser = new User();
         testUser.setName("testName");
         testUser.setUsername("testUsername");
-        User createdUser = userService.createUser(testUser);
+        User createdUser = userService.createNormalUser(testUser);
 
         // attempt to create second user with same username
         User testUser2 = new User();
@@ -71,6 +71,6 @@ public class UserServiceIntegrationTest {
         testUser2.setUsername("testUsername");
 
         // check that an error is thrown
-        assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser2));
+        assertThrows(ResponseStatusException.class, () -> userService.createNormalUser(testUser2));
     }*/
 }
