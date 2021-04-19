@@ -7,6 +7,8 @@ import java.io.Serializable;
 import javax.persistence.DiscriminatorColumn;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.ArrayList;
 
 /**
  * Internal User Representation
@@ -18,14 +20,14 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "USER_TYPE")
-@Table(name = "USER")
+@Table(name = "users")
 public abstract class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue
-    protected Long id;
+    protected UUID id;
 
     @Column(nullable = false, unique = true)
     protected String username;
@@ -33,11 +35,31 @@ public abstract class User implements Serializable {
     @Column(nullable = false)
     protected UserStatus status;
 
-    public Long getId() {
+    @ManyToMany
+    @JoinTable(name="friends",
+    joinColumns=@JoinColumn(name="userA_id"),
+    inverseJoinColumns=@JoinColumn(name="userB_id")
+    )
+    private List<User> friends;
+
+    @ManyToMany
+    @JoinTable(name="friends",  
+    joinColumns=@JoinColumn(name="userB_id"),
+    inverseJoinColumns=@JoinColumn(name="userA_id")
+    )
+    private List<User> friendOf;
+
+    @OneToMany(mappedBy="toUser")
+    private List<FriendRequest> pendingFriendRequests;
+
+    @OneToMany(mappedBy="fromUser")
+    private List<FriendRequest> sentFriendRequests;
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -57,4 +79,35 @@ public abstract class User implements Serializable {
         this.status = status;
     }
 
+    public List<User> getFriends(){
+        return friends;
+    }
+
+    public List<User> getfriendOf(){
+        return friendOf;
+    }
+
+    public void setFriends(List<User> friends){
+        this.friends = new ArrayList<>(friends); 
+    }
+
+    public void setfriendOf(List<User> friendOf){
+        this.friendOf = new ArrayList<>(friendOf);
+    }
+
+    public List<FriendRequest> getPendingFriendRequests(){
+        return this.pendingFriendRequests;
+    }
+
+    public List<FriendRequest> getSentFriendRequests(){
+        return this.sentFriendRequests;
+    }
+
+    public void setPendingFriendRequests(List <FriendRequest> pendingFriendRequests){
+        this.pendingFriendRequests = new ArrayList<>(pendingFriendRequests);
+    }
+
+    public void setSentFriendRequests(List <FriendRequest> sentFriendRequests){
+        this.sentFriendRequests = new ArrayList<>(sentFriendRequests);
+    }
 }

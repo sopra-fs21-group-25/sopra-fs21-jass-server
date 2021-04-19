@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * User Controller
@@ -78,5 +79,18 @@ public class UserController {
         }
 
         return returnedUser;
+    }
+
+    @GetMapping("/availableusers/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<UserGetDTO> getAvailableUsers(@PathVariable UUID id){
+        List<User> users = userService.getAvailableUsers(id);
+        List<UserGetDTO> userGetDTOs = new ArrayList<>();
+
+        for (User user : users) {
+            userGetDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
+        }
+        return userGetDTOs;
     }
 }

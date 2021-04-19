@@ -1,11 +1,14 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
 import ch.uzh.ifi.hase.soprafs21.entity.FacebookUser;
+import ch.uzh.ifi.hase.soprafs21.entity.FriendRequest;
 import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestPostDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -22,10 +25,12 @@ public interface DTOMapper {
 
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
     RegisteredUser convertUserPostDTOtoRegisteredUser(UserPostDTO userPostDTO);
 
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     FacebookUser convertUserPostDTOtoFacebookUser(UserPostDTO userPostDTO);
 
@@ -33,4 +38,13 @@ public interface DTOMapper {
     @Mapping(source = "username", target = "username")
     @Mapping(source = "status", target = "status")
     UserGetDTO convertEntityToUserGetDTO(User user);
+
+  /*  @Mapping(source = "id", target = "id")
+    @Mapping(source = "fromUser", target = "fromUser")
+    @Mapping(source = "toUser", target = "toUser")
+    FriendRequestGetDTO convertEntityToFriendRequestGetDTO(FriendRequest friendRequest); 
+
+    @Mapping(source = "fromUser", target = "fromUser")
+    @Mapping(source = "toUser", target = "toUser")
+    FriendRequest convertFriendRequestPostDTOtoFriendRequest(FriendRequestPostDTO friendRequest); */
 }
