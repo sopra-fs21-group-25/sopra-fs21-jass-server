@@ -10,6 +10,11 @@ public class UserGetDTO {
     private String username;
     private UserStatus status;
     private String userType;
+    private String token;
+
+    public String getToken() { return token; }
+
+    public void setToken(String token) { this.token = token; }
 
     public UUID getId() {
         return id;

@@ -29,10 +29,10 @@ public abstract class User implements Serializable {
     @GeneratedValue
     protected UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     protected String username;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     protected UserStatus status;
 
     @ManyToMany
@@ -58,6 +58,18 @@ public abstract class User implements Serializable {
     public UUID getId() {
         return id;
     }
+
+    @Column(nullable = true, unique = true)
+    protected String token;
+
+    @Transient
+    public String getDiscriminatorValue(){
+        DiscriminatorValue val = this.getClass().getAnnotation( DiscriminatorValue.class );
+        return val == null ? null : val.value();
+    }
+
+    @Transient
+    protected String userType = getDiscriminatorValue();
 
     public void setId(UUID id) {
         this.id = id;
@@ -110,4 +122,14 @@ public abstract class User implements Serializable {
     public void setSentFriendRequests(List <FriendRequest> sentFriendRequests){
         this.sentFriendRequests = new ArrayList<>(sentFriendRequests);
     }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getUserType() { return userType; }
 }

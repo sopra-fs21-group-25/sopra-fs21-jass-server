@@ -9,5 +9,5 @@ public enum IngameMode {
     UNDENUFE,
     SLALOM,
     GUSTI,
-    MERRY
+    MARY
 }
