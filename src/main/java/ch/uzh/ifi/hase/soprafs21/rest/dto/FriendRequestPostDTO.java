@@ -4,8 +4,18 @@ import java.util.UUID;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 
 public  class FriendRequestPostDTO {
+
+    private UUID id;
     private User fromUser;
     private User toUser;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
     public User getFromUser() {
         return fromUser;

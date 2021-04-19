@@ -21,13 +21,30 @@ public class FriendRequestService {
     private final Logger log = LoggerFactory.getLogger(FriendRequestService.class);
 
     private final FriendRequestRepository friendRequestRepository;
+    private final FriendService friendService;
 
     @Autowired
-    public FriendRequestService(@Qualifier("friendRequestRepository") FriendRequestRepository friendRequestRepository) {
+    public FriendRequestService(@Qualifier("friendRequestRepository") FriendRequestRepository friendRequestRepository, FriendService friendService) {
         this.friendRequestRepository = friendRequestRepository;
+        this.friendService = friendService;
     }
 
-    public void sendFriendRequest(User fromUser, User toUser){
-        this.friendRequestRepository.save(new FriendRequest(fromUser, toUser)); 
+    public FriendRequest sendFriendRequest(User fromUser, User toUser){
+        FriendRequest newRequest = new FriendRequest(fromUser, toUser);
+        this.friendRequestRepository.save(newRequest); 
+        return newRequest; 
+    }
+
+    public void declineRequest(UUID id){
+        friendRequestRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a friend request with this id."));
+        friendRequestRepository.deleteById(id);
+    }
+
+    public void acceptRequest(UUID id){
+        FriendRequest newRequest = friendRequestRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a friend request with this id."));
+        friendService.addFriends(newRequest.getFromUser(), newRequest.getToUser());
+        friendRequestRepository.deleteById(id);
     }
 }

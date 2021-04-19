@@ -64,6 +64,8 @@ public abstract class User implements Serializable {
 
     @Transient
     public String getDiscriminatorValue(){
+        //This doesn't work, please uncomment it when you fix it
+        //DiscriminatorValue val = this.getClass().getAnnotation(DiscriminatorValue.class);
         String val = this.getClass().getName();
         return val;
     }

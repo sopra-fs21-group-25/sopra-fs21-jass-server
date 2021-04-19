@@ -69,4 +69,14 @@ public interface DTOMapper {
     @Mapping(source = "weisAsk", target = "weisAsk")
     @Mapping(source = "creatorUsername", target = "creatorUsername")
     Lobby convertLobbyPostDTOtoLobby(LobbyPostDTO lobbyPostDTO);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "fromUser", target = "fromUser")
+    @Mapping(source = "toUser", target = "toUser")
+    FriendRequestGetDTO convertEntityToFriendRequestGetDTO(FriendRequest friendRequest);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "fromUser", target = "fromUser")
+    @Mapping(source = "toUser", target = "toUser")
+    FriendRequest convertFriendRequestPostDTOToFriendRequest(FriendRequestPostDTO friendRequestPostDTO);
 }
