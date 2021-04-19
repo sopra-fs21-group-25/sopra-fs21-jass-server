@@ -5,7 +5,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 
 public  class FriendRequestGetDTO {
 
-    protected UUID id;
+    private UUID id;
     private User fromUser;
     private User toUser;
 

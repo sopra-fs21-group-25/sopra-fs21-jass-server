@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 import java.util.List;
+import java.util.ArrayList;
 
 @Service
 @Transactional
@@ -33,4 +34,9 @@ public class FriendService {
         return  friends;
     }
 
+    public void addFriends(User a, User b){
+        List<User> friends = new ArrayList<>(a.getFriends());
+        friends.add(b);
+        a.setFriends(friends);
+    }
 }
