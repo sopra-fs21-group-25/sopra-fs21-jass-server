@@ -1,9 +1,16 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs21.entity.*;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
+import ch.uzh.ifi.hase.soprafs21.entity.FacebookUser;
+import ch.uzh.ifi.hase.soprafs21.entity.FriendRequest;
+import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
+import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestPostDTO;
+import ch.uzh.ifi.hase.soprafs21.entity.*;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
 import org.mapstruct.*;
@@ -22,10 +29,12 @@ public interface DTOMapper {
 
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
     RegisteredUser convertUserPostDTOtoRegisteredUser(UserPostDTO userPostDTO);
 
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     FacebookUser convertUserPostDTOtoFacebookUser(UserPostDTO userPostDTO);
 
@@ -48,7 +57,6 @@ public interface DTOMapper {
     @Mapping(source = "weisAsk", target = "weisAsk")
     @Mapping(source = "creatorUsername", target = "creatorUsername")
     LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
-
 
     @Mapping(source = "mode", target = "mode")
     @Mapping(source = "lobbyType", target = "lobbyType")

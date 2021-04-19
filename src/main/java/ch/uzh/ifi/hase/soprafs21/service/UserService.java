@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.io.IOException;
 import java.util.List;
@@ -96,6 +98,16 @@ public class UserService {
         return newUser;
     }
 
+    
+    public User getUserById(UUID id) {
+        User user = this.userRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a user with this id."));
+        return user;
+    }
+
+    public List<User> getAvailableUsers(UUID id){
+        return userRepository.availableUsersForUserWithId(id);
+    }
     /**
      * This is a helper method that will check the uniqueness criteria of the username and the name
      * defined in the User entity. The method will do nothing if the input is unique and throw an error otherwise.

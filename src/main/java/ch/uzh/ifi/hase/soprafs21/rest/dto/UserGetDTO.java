@@ -1,10 +1,12 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
+import java.util.UUID;
+
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 
 public class UserGetDTO {
 
-    private Long id;
+    private UUID id;
     private String username;
     private UserStatus status;
     private String userType;
@@ -14,11 +16,11 @@ public class UserGetDTO {
 
     public void setToken(String token) { this.token = token; }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
