@@ -102,11 +102,11 @@ public abstract class User implements Serializable {
     }
 
     public void setFriends(List<User> friends){
-        this.friends = new ArrayList<>(friends); 
+        this.friends = friends; 
     }
 
     public void setfriendOf(List<User> friendOf){
-        this.friendOf = new ArrayList<>(friendOf);
+        this.friendOf = friendOf;
     }
 
     public List<FriendRequest> getPendingFriendRequests(){
@@ -118,11 +118,11 @@ public abstract class User implements Serializable {
     }
 
     public void setPendingFriendRequests(List <FriendRequest> pendingFriendRequests){
-        this.pendingFriendRequests = new ArrayList<>(pendingFriendRequests);
+        this.pendingFriendRequests = pendingFriendRequests;
     }
 
     public void setSentFriendRequests(List <FriendRequest> sentFriendRequests){
-        this.sentFriendRequests = new ArrayList<>(sentFriendRequests);
+        this.sentFriendRequests = sentFriendRequests;
     }
 
     public String getToken() {

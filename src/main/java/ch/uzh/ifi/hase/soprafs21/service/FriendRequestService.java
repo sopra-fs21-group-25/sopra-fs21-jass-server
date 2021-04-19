@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
+import java.util.List;
+
 
 @Service
 @Transactional
@@ -47,4 +49,8 @@ public class FriendRequestService {
         friendService.addFriends(newRequest.getFromUser(), newRequest.getToUser());
         friendRequestRepository.deleteById(id);
     }
+
+    /*public List<String> getPendingRequests(UUID id){
+        return friendRequestRepository.pendingRequests(id);
+    }*/
 }

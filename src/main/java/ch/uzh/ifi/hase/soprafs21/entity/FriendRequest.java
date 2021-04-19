@@ -24,9 +24,19 @@ public class FriendRequest implements Serializable {
     @JoinColumn(name="toUser_id", nullable=false)
     private User toUser;
 
+    private UUID fromId; 
+    private UUID toId; 
+
+    public UUID getFromId() {
+        return fromId;
+    }
+
+    public UUID getToId() {
+        return toId;
+    }
     public FriendRequest(User fromUser, User toUser){
-        this.fromUser = fromUser; 
-        this.toUser = toUser; 
+        this.setFromUser(fromUser); 
+        this.setToUser(toUser);
     }
 
     public FriendRequest(){
@@ -46,6 +56,7 @@ public class FriendRequest implements Serializable {
 
     public void setFromUser(User fromUser) {
         this.fromUser = fromUser;
+        this.fromId = fromUser.getId();
     }
     public User getToUser() {
         return toUser;
@@ -53,5 +64,6 @@ public class FriendRequest implements Serializable {
 
     public void setToUser(User toUser) {
         this.toUser = toUser;
+        this.toId = toUser.getId();
     }
 }

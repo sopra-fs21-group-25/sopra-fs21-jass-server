@@ -42,4 +42,18 @@ public class FriendController {
         }
         return userGetDTOs;
     }
+    @DeleteMapping("/friends/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void removeFriends(@RequestBody UserPostDTO user, @PathVariable UUID id){
+        try{
+            User currentUser = userService.getUserById(id);
+            User removedUser = DTOMapper.INSTANCE.convertUserPostDTOtoRegisteredUser(user);
+            userService.getUserById(removedUser.getId());
+            friendService.removeFriend(currentUser, removedUser);
+        }
+        catch (Exception e){
+            throw e;
+        }
+    }
 }

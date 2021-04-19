@@ -71,8 +71,8 @@ public interface DTOMapper {
     Lobby convertLobbyPostDTOtoLobby(LobbyPostDTO lobbyPostDTO);
 
     @Mapping(source = "id", target = "id")
-    @Mapping(source = "fromUser", target = "fromUser")
-    @Mapping(source = "toUser", target = "toUser")
+    @Mapping(source = "fromId", target = "fromId")
+    @Mapping(source = "toId", target = "toId")
     FriendRequestGetDTO convertEntityToFriendRequestGetDTO(FriendRequest friendRequest);
 
     @Mapping(source = "id", target = "id")

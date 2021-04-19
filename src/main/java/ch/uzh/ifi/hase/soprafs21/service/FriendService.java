@@ -39,4 +39,21 @@ public class FriendService {
         friends.add(b);
         a.setFriends(friends);
     }
+
+    public void removeFriend(User a, User b){
+        List<User> friends_A = a.getFriends();
+        List<User> friends_B = b.getFriends();
+        if(friends_A != null){
+            if (friends_A.contains(b)){
+                friends_A.remove(b);
+            }
+        }
+        if(friends_B != null){
+            if (friends_B.contains(a)){
+                friends_B.remove(a);
+            }
+        }
+        a.setFriends(friends_A);
+        b.setFriends(friends_B);
+    }
 }

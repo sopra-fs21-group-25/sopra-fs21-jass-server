@@ -6,8 +6,8 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 public  class FriendRequestGetDTO {
 
     private UUID id;
-    private User fromUser;
-    private User toUser;
+    private UUID toId;
+    private UUID fromId;
 
     public UUID getId() {
         return id;
@@ -17,18 +17,19 @@ public  class FriendRequestGetDTO {
         this.id = id;
     }
 
-    public User getFromUser() {
-        return fromUser;
+    public UUID getFromId() {
+        return fromId;
     }
 
-    public void setFromUser(User fromUser) {
-        this.fromUser = fromUser;
-    }
-    public User getToUser() {
-        return toUser;
+    public void setFromId(UUID fromId) {
+        this.fromId = fromId;
     }
 
-    public void setToUser(User toUser) {
-        this.toUser = toUser;
+    public UUID getToId() {
+        return toId;
+    }
+
+    public void setToId(UUID toId) {
+        this.toId = toId;
     }
 }

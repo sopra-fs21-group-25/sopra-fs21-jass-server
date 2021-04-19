@@ -93,4 +93,13 @@ public class UserController {
         }
         return userGetDTOs;
     }
+
+    @GetMapping("/users/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public UserGetDTO getSingleUser(@PathVariable UUID id) {
+        // fetch particular user
+        User user = userService.getUserById(id);
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
+    }
 }
