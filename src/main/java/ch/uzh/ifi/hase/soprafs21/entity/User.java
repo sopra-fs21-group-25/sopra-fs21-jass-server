@@ -35,6 +35,24 @@ public abstract class User implements Serializable {
     @Column(nullable = true)
     protected UserStatus status;
 
+    @ManyToOne
+    @JoinTable(
+            name = "LOBBY_USERS",
+            joinColumns = @JoinColumn(
+                    name = "USER_ID",
+                    insertable = false,
+                    updatable = false,
+                    referencedColumnName = "id"
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "LOBBY_ID",
+                    insertable = false,
+                    updatable = false,
+                    referencedColumnName = "id"
+            )
+    )
+    private Lobby lobby;
+
     @ManyToMany
     @JoinTable(name="friends",
     joinColumns=@JoinColumn(name="userA_id"),
@@ -65,9 +83,8 @@ public abstract class User implements Serializable {
     @Transient
     public String getDiscriminatorValue(){
         //This doesn't work, please uncomment it when you fix it
-        //DiscriminatorValue val = this.getClass().getAnnotation(DiscriminatorValue.class);
-        String val = this.getClass().getName();
-        return val;
+        DiscriminatorValue val = this.getClass().getAnnotation(DiscriminatorValue.class);
+        return val == null ? null : val.value();
     }
 
     @Transient
@@ -134,4 +151,8 @@ public abstract class User implements Serializable {
     }
 
     public String getUserType() { return userType; }
+
+    public Lobby getLobby() { return lobby; }
+
+    public void setLobby(Lobby lobby) { this.lobby = lobby; }
 }

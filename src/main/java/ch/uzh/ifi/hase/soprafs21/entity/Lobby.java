@@ -4,9 +4,9 @@ import ch.uzh.ifi.hase.soprafs21.game.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 
 @Entity
@@ -17,15 +17,25 @@ public class Lobby implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     @Column(nullable = false, unique = true)
     private String creatorUsername;
 
-    @ElementCollection
-    @CollectionTable(name = "lobby_having_users", joinColumns = @JoinColumn(name = "lobby_id"))
-    @Column(name = "user_in_lobby")
-    private Set<String> usersInLobby = new HashSet<>();
+
+    @OneToMany
+    @JoinTable(
+            name="LOBBY_USERS",
+            joinColumns = @JoinColumn(
+                    name="LOBBY_ID",
+                    referencedColumnName = "id"
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name="USER_ID",
+                    referencedColumnName = "id"
+            )
+    )
+    private Set<User> usersInLobby = new HashSet<>();
 
     @Column(nullable = false)
     private GameMode mode;
@@ -61,11 +71,11 @@ public class Lobby implements Serializable {
 
 
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -77,11 +87,11 @@ public class Lobby implements Serializable {
         this.creatorUsername = creatorUsername;
     }
 
-    public Set<String> getUsersInLobby() {
+    public Set<User> getUsersInLobby() {
         return usersInLobby;
     }
 
-    public void setUsersInLobby(Set<String> usersInLobby) {
+    public void setUsersInLobby(Set<User> usersInLobby) {
         this.usersInLobby = usersInLobby;
     }
 

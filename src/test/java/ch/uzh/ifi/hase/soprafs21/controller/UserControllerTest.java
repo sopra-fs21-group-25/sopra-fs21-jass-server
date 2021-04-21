@@ -22,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -81,7 +82,7 @@ public class UserControllerTest {
     public void createRegisteredUser_validInput_userCreated() throws Exception {
         // given
         RegisteredUser user = new RegisteredUser();
-        user.setId(1L);
+        user.setId(new UUID(1,1));
         user.setUsername("Test User");
         user.setToken("1");
         user.setStatus(UserStatus.ONLINE);
@@ -101,7 +102,7 @@ public class UserControllerTest {
         // then
         mockMvc.perform(postRequest)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
+                .andExpect(jsonPath("$.id", is(user.getId().toString())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
                 .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
     }
@@ -110,7 +111,7 @@ public class UserControllerTest {
     public void createUser_invalidInput_userCreated() throws Exception {
         // given
         RegisteredUser user = new RegisteredUser();
-        user.setId(1L);
+        user.setId(new UUID(1,1));
         user.setUsername("Test User");
         user.setToken("1");
         user.setStatus(UserStatus.ONLINE);
@@ -137,7 +138,7 @@ public class UserControllerTest {
     public void createGuestUser_validInput_userCreated() throws Exception {
         // given
         GuestUser user = new GuestUser();
-        user.setId(1L);
+        user.setId(new UUID(1,1));
         user.setUsername("Sharp Bat");
         user.setStatus(UserStatus.ONLINE);
 
@@ -154,7 +155,7 @@ public class UserControllerTest {
         // then
         mockMvc.perform(postRequest)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
+                .andExpect(jsonPath("$.id", is(user.getId().toString())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
                 .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
     }

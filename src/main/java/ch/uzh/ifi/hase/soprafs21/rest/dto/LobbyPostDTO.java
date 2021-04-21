@@ -1,9 +1,12 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
+import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.game.Card;
 import ch.uzh.ifi.hase.soprafs21.game.GameMode;
 import ch.uzh.ifi.hase.soprafs21.game.IngameMode;
 import ch.uzh.ifi.hase.soprafs21.game.IngameModeMultiplicatorObject;
+
+import java.util.HashSet;
 
 public class LobbyPostDTO {
 
@@ -16,6 +19,7 @@ public class LobbyPostDTO {
     private Boolean crossWeis;
     private String weisAsk;
     private String creatorUsername;
+    private User[] usersInLobby;
 
     public GameMode getMode() { return mode; }
     public String getLobbyType() { return lobbyType; }
@@ -26,6 +30,7 @@ public class LobbyPostDTO {
     public Boolean getCrossWeis() { return crossWeis; }
     public String getWeisAsk() { return weisAsk; }
     public String getCreatorUsername() { return creatorUsername; }
+    public User[] getUsersInLobby() { return usersInLobby; }
 
     public void setMode(GameMode mode) { this.mode = mode; }
     public void setLobbyType(String lobbyType) { this.lobbyType = lobbyType; }
@@ -36,4 +41,5 @@ public class LobbyPostDTO {
     public void setCrossWeis(Boolean crossWeisAllowed) { this.crossWeis = crossWeisAllowed; }
     public void setWeisAsk(String weisAsk) { this.weisAsk = weisAsk; }
     public void setCreatorUsername(String creatorUsername) { this.creatorUsername = creatorUsername; }
+    public void setUsersInLobby(User[] usersInLobby) { this.usersInLobby = usersInLobby; }
 }

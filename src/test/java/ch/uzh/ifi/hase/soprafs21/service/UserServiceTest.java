@@ -13,6 +13,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
@@ -32,7 +34,7 @@ public class UserServiceTest {
 
         // given
         testRegisteredUser = new RegisteredUser();
-        testRegisteredUser.setId(1L);
+        testRegisteredUser.setId(new UUID(1,1));
         testRegisteredUser.setUsername("testUsername");
         testRegisteredUser.setStatus(UserStatus.OFFLINE);
 
