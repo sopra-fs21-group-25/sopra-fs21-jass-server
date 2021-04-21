@@ -46,7 +46,7 @@ public class LobbyService {
         return newLobby;
     }
 
-    public LobbyGetDTO addUserToLobby(LobbyPutUserWithIdDTO userIdDTO, UUID lobbyId) {
+    public Lobby addUserToLobby(LobbyPutUserWithIdDTO userIdDTO, UUID lobbyId) {
 
         Lobby lobby = this.lobbyRepository.findById(lobbyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a lobby with this id."));
@@ -55,8 +55,6 @@ public class LobbyService {
 
         lobby.getUsersInLobby().add(userToAdd);
 
-        LobbyGetDTO returnedLobbyGetDTO =  DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby);
-
-        return returnedLobbyGetDTO;
+        return lobby;
     }
 }

@@ -65,6 +65,7 @@ public class LobbyController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public LobbyGetDTO addUserToLobby(@PathVariable("lobbyId") UUID lobbyId, @RequestBody LobbyPutUserWithIdDTO userIdDTO) {
-        return lobbyService.addUserToLobby(userIdDTO, lobbyId);
+        Lobby updatedLobby = lobbyService.addUserToLobby(userIdDTO, lobbyId);
+        return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(updatedLobby);
     }
 }
