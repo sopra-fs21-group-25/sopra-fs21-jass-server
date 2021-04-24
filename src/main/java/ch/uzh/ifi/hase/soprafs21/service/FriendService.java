@@ -29,9 +29,12 @@ public class FriendService {
     }
 
     public List<User> getFriends(User a){
-        List<User> friends = a.getFriends();
-        friends.addAll(a.getfriendOf()); 
-        return  friends;
+        if(a.getFriends() != null){
+            List<User> friends = new ArrayList<>(a.getFriends());
+            friends.addAll(a.getfriendOf()); 
+            return  friends;
+        }
+        return new ArrayList<>();
     }
 
     public void addFriends(User a, User b){
