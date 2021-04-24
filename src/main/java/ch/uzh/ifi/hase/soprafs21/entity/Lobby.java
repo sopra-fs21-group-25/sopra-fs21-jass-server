@@ -4,28 +4,36 @@ import ch.uzh.ifi.hase.soprafs21.game.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 @Entity
-@Table(name = "LOBBY")
-public class Lobby implements Serializable {
+@Table(name = "LOBBIES")
+public class Lobby implements Serializable, Comparable<Lobby> {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     @Column(nullable = false, unique = true)
     private String creatorUsername;
 
-    @ElementCollection
-    @CollectionTable(name = "lobby_having_users", joinColumns = @JoinColumn(name = "lobby_id"))
-    @Column(name = "user_in_lobby")
-    private Set<String> usersInLobby = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name="LOBBY_USERS",
+            joinColumns = @JoinColumn(
+                    name="LOBBY_ID",
+                    referencedColumnName = "id"
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name="USER_ID",
+                    referencedColumnName = "id"
+            )
+    )
+    private Set<User> usersInLobby = new HashSet<>();
 
     @Column(nullable = false)
     private GameMode mode;
@@ -43,12 +51,23 @@ public class Lobby implements Serializable {
     private Integer pointsToWin;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "lobby_ingame_modes", joinColumns = @JoinColumn(name = "lobby_id"))
+    @CollectionTable(
+            name = "lobby_ingame_modes",
+            joinColumns = @JoinColumn(
+                    name = "lobby_id",
+                    referencedColumnName = "id",
+                    foreignKey = @ForeignKey(
+                            name = "INGAME_MODES_FK_CONSTRAINT",
+                            foreignKeyDefinition = "FOREIGN KEY (lobby_id) references public.lobbies (id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE"
+                    )
+            )
+    )
     @AttributeOverrides({
             @AttributeOverride(name = "ingameMode", column = @Column(name = "ingameModeName")),
             @AttributeOverride(name = "multiplicator", column = @Column(name = "multiplicator"))
     })
-    private Set<IngameModeMultiplicatorObject> ingameModes = new HashSet<>();
+    @OrderColumn
+    private List<IngameModeMultiplicatorObject> ingameModes = new ArrayList<>();
 
     @Column(nullable = false)
     private Boolean weisAllowed;
@@ -61,11 +80,11 @@ public class Lobby implements Serializable {
 
 
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -77,11 +96,11 @@ public class Lobby implements Serializable {
         this.creatorUsername = creatorUsername;
     }
 
-    public Set<String> getUsersInLobby() {
+    public Set<User> getUsersInLobby() {
         return usersInLobby;
     }
 
-    public void setUsersInLobby(Set<String> usersInLobby) {
+    public void setUsersInLobby(Set<User> usersInLobby) {
         this.usersInLobby = usersInLobby;
     }
 
@@ -125,11 +144,11 @@ public class Lobby implements Serializable {
         this.pointsToWin = pointsToWin;
     }
 
-    public Set<IngameModeMultiplicatorObject> getIngameModes() {
+    public List<IngameModeMultiplicatorObject> getIngameModes() {
         return ingameModes;
     }
 
-    public void setIngameModes(Set<IngameModeMultiplicatorObject> ingameModes) {
+    public void setIngameModes(List<IngameModeMultiplicatorObject> ingameModes) {
         this.ingameModes = ingameModes;
     }
 
@@ -155,5 +174,49 @@ public class Lobby implements Serializable {
 
     public void setWeisAsk(String weisAsk) {
         this.weisAsk = weisAsk;
+    }
+
+    /**
+     * Compares this object with the specified object for order.  Returns a
+     * negative integer, zero, or a positive integer as this object is less
+     * than, equal to, or greater than the specified object.
+     *
+     * <p>The implementor must ensure
+     * {@code sgn(x.compareTo(y)) == -sgn(y.compareTo(x))}
+     * for all {@code x} and {@code y}.  (This
+     * implies that {@code x.compareTo(y)} must throw an exception iff
+     * {@code y.compareTo(x)} throws an exception.)
+     *
+     * <p>The implementor must also ensure that the relation is transitive:
+     * {@code (x.compareTo(y) > 0 && y.compareTo(z) > 0)} implies
+     * {@code x.compareTo(z) > 0}.
+     *
+     * <p>Finally, the implementor must ensure that {@code x.compareTo(y)==0}
+     * implies that {@code sgn(x.compareTo(z)) == sgn(y.compareTo(z))}, for
+     * all {@code z}.
+     *
+     * <p>It is strongly recommended, but <i>not</i> strictly required that
+     * {@code (x.compareTo(y)==0) == (x.equals(y))}.  Generally speaking, any
+     * class that implements the {@code Comparable} interface and violates
+     * this condition should clearly indicate this fact.  The recommended
+     * language is "Note: this class has a natural ordering that is
+     * inconsistent with equals."
+     *
+     * <p>In the foregoing description, the notation
+     * {@code sgn(}<i>expression</i>{@code )} designates the mathematical
+     * <i>signum</i> function, which is defined to return one of {@code -1},
+     * {@code 0}, or {@code 1} according to whether the value of
+     * <i>expression</i> is negative, zero, or positive, respectively.
+     *
+     * @param o the object to be compared.
+     * @return a negative integer, zero, or a positive integer as this object
+     * is less than, equal to, or greater than the specified object.
+     * @throws NullPointerException if the specified object is null
+     * @throws ClassCastException   if the specified object's type prevents it
+     *                              from being compared to this object.
+     */
+    @Override
+    public int compareTo(Lobby o) {
+        return this.getId().compareTo(o.getId());
     }
 }

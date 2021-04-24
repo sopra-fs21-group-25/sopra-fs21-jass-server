@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPutUserWithIdDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 public class LobbyController {
@@ -32,6 +35,33 @@ public class LobbyController {
         return lobbyGetDTOs;
     }
 
+    @GetMapping("/lobbies/public_and_friends")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<LobbyGetDTO> getPublicAndFriendsLobbies() {
+        List<Lobby> lobbies = lobbyService.getPublicAndFriendsLobbies();
+
+        List<LobbyGetDTO> lobbyGetDTOs = lobbies
+                .stream()
+                .map(l -> DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(l))
+                .collect(Collectors.toList());
+
+        return lobbyGetDTOs;
+    }
+
+    @GetMapping("/lobbies/accessible/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<LobbyGetDTO> getLobbiesAccessibleByUserWithId(@PathVariable("userId") UUID userId) {
+        List<Lobby> accessibleLobbies = lobbyService.getAccessibleLobbies(userId);
+
+        List<LobbyGetDTO> result = accessibleLobbies.stream()
+                .map(lobby -> DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby))
+                .collect(Collectors.toList());
+
+        return result;
+    }
+
     @PostMapping("/lobbies")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
@@ -42,5 +72,13 @@ public class LobbyController {
         LobbyGetDTO returnedLobby = DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(newLobby);
 
         return returnedLobby;
+    }
+
+    @PutMapping("/lobbies/{lobbyId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public LobbyGetDTO addUserToLobby(@PathVariable("lobbyId") UUID lobbyId, @RequestBody LobbyPutUserWithIdDTO userIdDTO) {
+        Lobby updatedLobby = lobbyService.addUserToLobby(userIdDTO, lobbyId);
+        return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(updatedLobby);
     }
 }

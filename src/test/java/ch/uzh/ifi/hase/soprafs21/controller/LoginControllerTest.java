@@ -22,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -49,7 +50,7 @@ public class LoginControllerTest {
     public void loginRegisteredUser_validInput_userLoggedIn() throws Exception {
         // given
         RegisteredUser registeredUser = new RegisteredUser();
-        registeredUser.setId(1L);
+        registeredUser.setId(new UUID(1,1));
         registeredUser.setUsername("Test User");
         registeredUser.setToken("1");
         registeredUser.setStatus(UserStatus.ONLINE);
@@ -69,7 +70,7 @@ public class LoginControllerTest {
         // then
         mockMvc.perform(postRequest)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(registeredUser.getId().intValue())))
+                .andExpect(jsonPath("$.id", is(registeredUser.getId().toString())))
                 .andExpect(jsonPath("$.username", is(registeredUser.getUsername())))
                 .andExpect(jsonPath("$.status", is(registeredUser.getStatus().toString())));
     }
