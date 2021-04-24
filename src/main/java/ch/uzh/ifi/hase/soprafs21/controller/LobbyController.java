@@ -49,6 +49,19 @@ public class LobbyController {
         return lobbyGetDTOs;
     }
 
+    @GetMapping("/lobbies/accessible/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<LobbyGetDTO> getLobbiesAccessibleByUserWithId(@PathVariable("userId") UUID userId) {
+        List<Lobby> accessibleLobbies = lobbyService.getAccessibleLobbies(userId);
+
+        List<LobbyGetDTO> result = accessibleLobbies.stream()
+                .map(lobby -> DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby))
+                .collect(Collectors.toList());
+
+        return result;
+    }
+
     @PostMapping("/lobbies")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody

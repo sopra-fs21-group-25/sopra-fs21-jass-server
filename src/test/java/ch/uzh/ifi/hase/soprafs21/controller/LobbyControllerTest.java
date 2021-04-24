@@ -148,7 +148,7 @@ public class LobbyControllerTest {
                         new IngameModeMultiplicatorObject(IngameMode.UNDENUFE, 1),
                         new IngameModeMultiplicatorObject(IngameMode.OBENABE, 1)
                 };
-        Set<IngameModeMultiplicatorObject> ingameModes = new HashSet<>(6);
+        List<IngameModeMultiplicatorObject> ingameModes = new ArrayList<>(6);
         for(IngameModeMultiplicatorObject m : ingameModesArray) { ingameModes.add(m); }
 
         // given public Lobby

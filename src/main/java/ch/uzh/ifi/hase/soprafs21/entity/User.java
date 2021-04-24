@@ -35,7 +35,7 @@ public abstract class User implements Serializable {
     @Column(nullable = true)
     protected UserStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinTable(
             name = "LOBBY_USERS",
             joinColumns = @JoinColumn(

@@ -15,8 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
@@ -35,6 +34,18 @@ public class LobbyService {
 
     public List<Lobby> getPublicAndFriendsLobbies() {
         return lobbyRepository.getAllExcludePrivate();
+    }
+
+    public List<Lobby> getAccessibleLobbies(UUID userId) {
+        Set<Lobby> publicLobbies = lobbyRepository.getPublicLobbies();
+        Set<Lobby> friendsLobbies = lobbyRepository.getFriendsLobbiesOfUserWithId(userId);
+
+        publicLobbies.addAll(friendsLobbies);
+
+        List<Lobby> orderedLobbies = new ArrayList<>(publicLobbies);
+        Collections.sort(orderedLobbies);
+
+        return orderedLobbies;
     }
 
     public Lobby createLobby(Lobby newLobby) {
