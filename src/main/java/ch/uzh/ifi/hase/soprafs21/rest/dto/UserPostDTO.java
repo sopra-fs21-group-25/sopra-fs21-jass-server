@@ -3,12 +3,21 @@ import java.util.UUID;
 
 public class UserPostDTO {
 
+    private UUID id;
 
     private String password;
 
     private String username;
 
     private String userType;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
     public String getUserType() {
         return userType;
