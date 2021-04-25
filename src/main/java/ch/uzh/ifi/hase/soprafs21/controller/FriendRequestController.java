@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.FriendRequest;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
@@ -38,8 +39,8 @@ public class FriendRequestController {
     @PostMapping("/friend_requests/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public FriendRequestGetDTO sendFriendRequest(@RequestBody UserPostDTO user, @PathVariable UUID id){
-        User toUser = DTOMapper.INSTANCE.convertUserPostDTOtoRegisteredUser(user);
+    public FriendRequestGetDTO sendFriendRequest(@RequestBody UserPutDTO user, @PathVariable UUID id){
+        User toUser = DTOMapper.INSTANCE.convertUserPutDTOtoRegisteredUser(user);
         User fromUser = userService.getUserById(id);
         //throws exeption if user does not exist 
         userService.getUserById(toUser.getId());

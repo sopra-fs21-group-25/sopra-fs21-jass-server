@@ -4,6 +4,7 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.FriendRequestService;
 import ch.uzh.ifi.hase.soprafs21.service.FriendService;
@@ -45,10 +46,10 @@ public class FriendController {
     @DeleteMapping("/friends/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void removeFriends(@RequestBody UserPostDTO user, @PathVariable UUID id){
+    public void removeFriends(@RequestBody UserPutDTO user, @PathVariable UUID id){
         try{
             User currentUser = userService.getUserById(id);
-            User removedUser = DTOMapper.INSTANCE.convertUserPostDTOtoRegisteredUser(user);
+            User removedUser = DTOMapper.INSTANCE.convertUserPutDTOtoRegisteredUser(user);
             userService.getUserById(removedUser.getId());
             friendService.removeFriend(currentUser, removedUser);
         }

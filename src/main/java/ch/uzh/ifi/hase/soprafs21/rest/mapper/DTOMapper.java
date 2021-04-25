@@ -30,13 +30,18 @@ public interface DTOMapper {
 /*
     User related mappings
 */
-    @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
     RegisteredUser convertUserPostDTOtoRegisteredUser(UserPostDTO userPostDTO);
 
     @Mapping(source = "username", target = "username")
     FacebookUser convertUserPostDTOtoFacebookUser(UserPostDTO userPostDTO);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "username", target = "username")
+    @Mapping(source = "password", target = "password")
+    @Mapping(source = "status", target = "status")
+    RegisteredUser convertUserPutDTOtoRegisteredUser(UserPutDTO userPostDTO);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
