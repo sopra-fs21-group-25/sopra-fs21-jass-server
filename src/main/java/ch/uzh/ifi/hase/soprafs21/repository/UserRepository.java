@@ -16,6 +16,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     User findByUsername(String username);
     
-    @Query(value = "select * from Users u where (u.user_type = 'RegisteredUser') AND (u.status = 0) AND (u.id != :id) and NOT EXISTS(select * from Friends where ((userA_id = :id) and (userB_id = u.id)) or ((userA_id = u.id) and (userB_id = :id)))", nativeQuery = true)
+    @Query("select distinct u from User u \n" + 
+		   "where (type(u) = 'RegisteredUser') and (u.status = 0) and (u.id != :id) and \n" +
+		       "not exists(select f from u.friends f where f.id = :id) and \n" +
+		       "not exists(select f from u.friendOf f where f.id = :id)")
     List<User> availableUsersForUserWithId(@Param("id") UUID id);
 }
