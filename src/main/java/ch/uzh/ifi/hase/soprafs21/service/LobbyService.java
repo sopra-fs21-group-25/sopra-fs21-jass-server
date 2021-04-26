@@ -48,6 +48,8 @@ public class LobbyService {
         return orderedLobbies;
     }
 
+    public Lobby getLobbyWithId(UUID id) { return lobbyRepository.getOne(id); }
+
     public Lobby createLobby(Lobby newLobby) {
 
         newLobby = lobbyRepository.save(newLobby);
@@ -65,6 +67,17 @@ public class LobbyService {
         User userToAdd = this.lobbyRepository.findUserById(userIdDTO.getUserId());
 
         lobby.getUsersInLobby().add(userToAdd);
+
+        return lobby;
+    }
+
+    public Lobby removeUserFromLobby(LobbyPutUserWithIdDTO userIdDTO, UUID lobbyId) {
+        Lobby lobby = this.lobbyRepository.findById(lobbyId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a lobby with this id."));
+
+        User userToRemove = this.lobbyRepository.findUserById(userIdDTO.getUserId());
+
+        lobby.getUsersInLobby().remove(userToRemove);
 
         return lobby;
     }

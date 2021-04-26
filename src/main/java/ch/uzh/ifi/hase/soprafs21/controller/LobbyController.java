@@ -35,6 +35,15 @@ public class LobbyController {
         return lobbyGetDTOs;
     }
 
+    @GetMapping("/lobbies/{lobbyId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public LobbyGetDTO getLobbyWithId(@PathVariable("lobbyId") UUID id) {
+        Lobby lobby = lobbyService.getLobbyWithId(id);
+        return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby);
+    }
+
+/*    // No longer used. Maybe necessary for a later purpose
     @GetMapping("/lobbies/public_and_friends")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -47,7 +56,7 @@ public class LobbyController {
                 .collect(Collectors.toList());
 
         return lobbyGetDTOs;
-    }
+    }*/
 
     @GetMapping("/lobbies/accessible/{userId}")
     @ResponseStatus(HttpStatus.OK)
@@ -78,7 +87,12 @@ public class LobbyController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public LobbyGetDTO addUserToLobby(@PathVariable("lobbyId") UUID lobbyId, @RequestBody LobbyPutUserWithIdDTO userIdDTO) {
-        Lobby updatedLobby = lobbyService.addUserToLobby(userIdDTO, lobbyId);
+        Lobby updatedLobby = null;
+        if(userIdDTO.getAdd() && !userIdDTO.getRemove()) {
+            updatedLobby = lobbyService.addUserToLobby(userIdDTO, lobbyId);
+        } else if(!userIdDTO.getAdd() && userIdDTO.getRemove()) {
+            updatedLobby = lobbyService.removeUserFromLobby(userIdDTO, lobbyId);
+        }
         return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(updatedLobby);
     }
 }

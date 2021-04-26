@@ -35,6 +35,22 @@ public abstract class User implements Serializable {
     @Column(nullable = true)
     protected UserStatus status;
 
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "userTop")
+    @JoinColumn(name = "game_id")
+    private SchieberGameSession gameSittingTop;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "userBottom")
+    @JoinColumn(name = "game_id")
+    private SchieberGameSession gameSittingBottom;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "userLeft")
+    @JoinColumn(name = "game_id")
+    private SchieberGameSession gameSittingLeft;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "userRight")
+    @JoinColumn(name = "game_id")
+    private SchieberGameSession gameSittingRight;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinTable(
             name = "LOBBY_USERS",
