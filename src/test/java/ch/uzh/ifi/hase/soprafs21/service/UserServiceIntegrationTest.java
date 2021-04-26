@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -34,43 +36,63 @@ public class UserServiceIntegrationTest {
         userRepository.deleteAll();
     }
 
-/*    @Test
-    public void createUser_validInputs_success() {
+    @Test
+    public void createRegisteredUser_validInputs_success() {
         // given
         assertNull(userRepository.findByUsername("testUsername"));
 
-        User testUser = new User();
-        testUser.setName("testName");
+        RegisteredUser testUser = new RegisteredUser();
         testUser.setUsername("testUsername");
+        testUser.setPassword("SuperDuperPasswordo");
 
         // when
-        User createdUser = userService.createNormalUser(testUser);
+        RegisteredUser createdUser = userService.createRegisteredUser(testUser);
 
         // then
         assertEquals(testUser.getId(), createdUser.getId());
-        assertEquals(testUser.getName(), createdUser.getName());
+        assertEquals(testUser.getPassword(), createdUser.getPassword());
         assertEquals(testUser.getUsername(), createdUser.getUsername());
         assertNotNull(createdUser.getToken());
-        assertEquals(UserStatus.OFFLINE, createdUser.getStatus());
+        assertEquals(UserStatus.ONLINE, createdUser.getStatus());
     }
 
     @Test
-    public void createUser_duplicateUsername_throwsException() {
+    public void createGuestUser_validInputs_success() {
+        // given
         assertNull(userRepository.findByUsername("testUsername"));
 
-        User testUser = new User();
-        testUser.setName("testName");
+        RegisteredUser testUser = new RegisteredUser();
         testUser.setUsername("testUsername");
-        User createdUser = userService.createNormalUser(testUser);
+        testUser.setPassword("SuperDuperPasswordo");
+
+        // when
+        RegisteredUser createdUser = userService.createRegisteredUser(testUser);
+
+        // then
+        assertEquals(testUser.getId(), createdUser.getId());
+        assertEquals(testUser.getPassword(), createdUser.getPassword());
+        assertEquals(testUser.getUsername(), createdUser.getUsername());
+        assertNotNull(createdUser.getToken());
+        assertEquals(UserStatus.ONLINE, createdUser.getStatus());
+    }
+
+    @Test
+    public void createRegisteredUser_duplicateUsername_throwsException() {
+        assertNull(userRepository.findByUsername("testUsername"));
+
+        RegisteredUser testUser = new RegisteredUser();
+        testUser.setUsername("testUsername");
+        testUser.setPassword("SuperDuperPasswordo");
+        User createdUser = userService.createRegisteredUser(testUser);
 
         // attempt to create second user with same username
-        User testUser2 = new User();
+        RegisteredUser testUser2 = new RegisteredUser();
 
         // change the name but forget about the username
-        testUser2.setName("testName2");
         testUser2.setUsername("testUsername");
+        testUser.setPassword("SuperDuperPasswordo");
 
         // check that an error is thrown
-        assertThrows(ResponseStatusException.class, () -> userService.createNormalUser(testUser2));
-    }*/
+        assertThrows(ResponseStatusException.class, () -> userService.createRegisteredUser(testUser2));
+    }
 }
