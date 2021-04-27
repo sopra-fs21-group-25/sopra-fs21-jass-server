@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
+import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPutUserWithIdDTO;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -86,7 +88,7 @@ public class LobbyController {
     @PutMapping("/lobbies/{lobbyId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public LobbyGetDTO addUserToLobby(@PathVariable("lobbyId") UUID lobbyId, @RequestBody LobbyPutUserWithIdDTO userIdDTO) {
+    public LobbyGetDTO addOrRemoveUserToLobby(@PathVariable("lobbyId") UUID lobbyId, @RequestBody LobbyPutUserWithIdDTO userIdDTO) {
         Lobby updatedLobby = null;
         if(userIdDTO.getAdd() && !userIdDTO.getRemove()) {
             updatedLobby = lobbyService.addUserToLobby(userIdDTO, lobbyId);
@@ -94,5 +96,15 @@ public class LobbyController {
             updatedLobby = lobbyService.removeUserFromLobby(userIdDTO, lobbyId);
         }
         return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(updatedLobby);
+    }
+
+    @PutMapping("/lobbies/{lobbyId}/close")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void closeLobbyAndRemoveUsers(@PathVariable("lobbyId") UUID lobbyId) {
+        Lobby lobbyToClose = lobbyService.getLobbyWithId(lobbyId);
+        lobbyToClose = lobbyService.clearLobby(lobbyToClose);
+
+        lobbyService.deleteLobby(lobbyToClose);
     }
 }

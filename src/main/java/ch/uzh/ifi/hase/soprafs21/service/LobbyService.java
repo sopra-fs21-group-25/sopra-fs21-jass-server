@@ -81,4 +81,23 @@ public class LobbyService {
 
         return lobby;
     }
+
+    public Lobby clearLobby(Lobby lobby) {
+        for(User user : lobby.getUsersInLobby()) {
+            user.setLobby(null);
+        }
+        lobby.getUsersInLobby().clear();
+
+        return lobby;
+    }
+
+    public void deleteLobby(Lobby lobby) {
+        try {
+            lobbyRepository.delete(lobby);
+        } catch(Exception e) {
+            System.out.println("Could not delete lobby, needs to be cleared!");
+            throw e;
+        }
+    }
+
 }
