@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * User Controller
@@ -43,6 +44,14 @@ public class UserController {
             userGetDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
         }
         return userGetDTOs;
+    }
+
+    @GetMapping("/users/online")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<UserGetDTO> getAllOnlineUsers() {
+        List<User> onlineUsers = userService.getOnlineUsers();
+        return onlineUsers.stream().map(u -> DTOMapper.INSTANCE.convertEntityToUserGetDTO(u)).collect(Collectors.toList());
     }
 
     @PostMapping("/users")

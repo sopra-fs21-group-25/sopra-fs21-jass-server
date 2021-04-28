@@ -105,6 +105,7 @@ public class UserService {
         return user;
     }
 
+    public List<User> getOnlineUsers() { return userRepository.findAllOnlineUsers(); }
 
     public List<User> getAvailableUsers(UUID id){
         return userRepository.availableUsersForUserWithId(id);
