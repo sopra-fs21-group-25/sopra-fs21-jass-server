@@ -38,4 +38,10 @@ public class LobbyWSController {
     public String kickPlayerOutOfLobby() {
         return "kicked!";
     }
+
+    @MessageMapping("/lobbies/invite/{userId}")
+    @SendTo("/lobbies/invite/{userId}")
+    public String sendLobbyInvitationToUser(String msg) {
+        return msg;
+    }
 }

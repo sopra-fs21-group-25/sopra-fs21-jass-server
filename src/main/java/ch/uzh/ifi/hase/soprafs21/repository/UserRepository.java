@@ -21,4 +21,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 		       "not exists(select f from u.friends f where f.id = :id) and \n" +
 		       "not exists(select f from u.friendOf f where f.id = :id)")
     List<User> availableUsersForUserWithId(@Param("id") UUID id);
+
+    @Query(value = "SELECT u FROM User u WHERE u.status = 0")
+    List<User> findAllOnlineUsers();
 }
