@@ -116,6 +116,8 @@ public class LobbyControllerTest {
 
         LobbyPutUserWithIdDTO lobbyPutUserWithIdDTO = new LobbyPutUserWithIdDTO();
         lobbyPutUserWithIdDTO.setUserId(registeredUser.getId());
+        lobbyPutUserWithIdDTO.setAdd(Boolean.TRUE);
+        lobbyPutUserWithIdDTO.setRemove(Boolean.FALSE);
 
         given(lobbyService.addUserToLobby(Mockito.any(),Mockito.any())).willReturn(lobby);
 
