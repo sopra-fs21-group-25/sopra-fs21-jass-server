@@ -47,6 +47,6 @@ public class UndenufeComparator implements Comparator<Card> {
      */
     @Override
     public int compare(Card o1, Card o2) {
-        return -1 * o1.rank.compareTo(o2.rank);
+        return -1 * o1.getRank().compareTo(o2.getRank());
     }
 }

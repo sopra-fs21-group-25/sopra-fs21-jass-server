@@ -13,6 +13,7 @@ import java.util.Random;
 
 @Entity
 @DiscriminatorValue("GuestUser")
+@SuppressWarnings("unchecked")
 public class GuestUser extends User {
 
     public void setFunnyUsername() throws IOException {

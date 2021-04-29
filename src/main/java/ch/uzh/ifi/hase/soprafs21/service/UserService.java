@@ -5,16 +5,16 @@ import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import org.mapstruct.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,6 +26,7 @@ import java.util.UUID;
  * (e.g., it creates, modifies, deletes, finds). The result will be passed back to the caller.
  */
 @Service
+@Component
 @Transactional
 public class UserService {
 
@@ -36,6 +37,11 @@ public class UserService {
     @Autowired
     public UserService(@Qualifier("userRepository") UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @Named("userIdToUser")
+    public User userIdToUser(UUID userId) {
+        return userRepository.getUserWithId(userId);
     }
 
     public List<User> getUsers() {
@@ -98,7 +104,7 @@ public class UserService {
         return newUser;
     }
 
-    
+
     public User getUserById(UUID id) {
         User user = this.userRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a user with this id."));

@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -35,21 +37,17 @@ public abstract class User implements Serializable {
     @Column(nullable = true)
     protected UserStatus status;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "userTop")
-    @JoinColumn(name = "game_id")
-    private SchieberGameSession gameSittingTop;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user0")
+    private SchieberGameSession gameSitting0;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "userBottom")
-    @JoinColumn(name = "game_id")
-    private SchieberGameSession gameSittingBottom;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user1")
+    private SchieberGameSession gameSitting1;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "userLeft")
-    @JoinColumn(name = "game_id")
-    private SchieberGameSession gameSittingLeft;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user2")
+    private SchieberGameSession gameSitting2;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "userRight")
-    @JoinColumn(name = "game_id")
-    private SchieberGameSession gameSittingRight;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user3")
+    private SchieberGameSession gameSitting3;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinTable(

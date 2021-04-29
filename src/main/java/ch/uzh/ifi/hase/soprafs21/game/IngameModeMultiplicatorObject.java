@@ -1,15 +1,15 @@
 package ch.uzh.ifi.hase.soprafs21.game;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 @Embeddable
 public class IngameModeMultiplicatorObject {
 
-    @Column
+    @Enumerated(EnumType.STRING)
     private IngameMode ingameMode;
 
-    @Column
     private Integer multiplicator;
 
     public IngameModeMultiplicatorObject(IngameMode ingameMode, Integer multiplicator) {

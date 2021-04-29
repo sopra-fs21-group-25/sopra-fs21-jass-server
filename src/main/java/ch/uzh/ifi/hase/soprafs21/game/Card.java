@@ -5,16 +5,27 @@ import ch.uzh.ifi.hase.soprafs21.game.comparators.ObenabeComparator;
 import ch.uzh.ifi.hase.soprafs21.game.comparators.TrumpfComparator;
 import ch.uzh.ifi.hase.soprafs21.game.comparators.UndenufeComparator;
 
+import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.util.Comparator;
 
+@Embeddable
+@SuppressWarnings("unchecked")
 public class Card {
-    public Suit suit;
-    public Rank rank;
-    private boolean isTrumpf = false;
+
+    @Enumerated(EnumType.STRING)
+    private Suit suit;
+
+    @Enumerated(EnumType.STRING)
+    private Rank rank;
+
+    private Boolean isTrumpf;
 
     public Card(Suit s, Rank r) {
         this.suit = s;
         this.rank = r;
+        this.isTrumpf = false;
     }
 
     public Card() {}
@@ -48,23 +59,38 @@ public class Card {
      * @param start only relevant for slalom
      * @param trick current round's trick number, relevant for slalom,
      *              gusti and merry. NOTE: a round should start with
-     *              trick index 1, not 0 (!)
+     *              trick index 0
      * @param cards the cards to compare with each other
      * @return the highest card in the current trick according to the right precedence
      */
-    public static Card determineHighestCard(IngameMode mode, Roundstart start, Integer trick, Card ... cards) {
+    public static Card determineHighestCard(IngameMode mode, Roundstart start, Integer trick, Integer[] pointsCollector, Card ... cards) {
         Card result = cards[0];
         Comparator<Card> comparator;
 
         switch(mode) {
             case ACORN, ROSE, BELL, SHIELD -> {
                 comparator = new TrumpfComparator();
+                for(int i=0; i<cards.length; i++) {
+                    if(cards[i].isTrumpf && cards[i].getRank() == Rank.UNDER) {
+                        pointsCollector[0] += 20;
+                    } else if(cards[i].isTrumpf && cards[i].getRank() == Rank.NINE) {
+                        pointsCollector[0] += 14;
+                    } else {
+                        pointsCollector[0] += cards[i].calcObenabePoints();
+                    }
+                }
             }
             case OBENABE -> {
                 comparator = new ObenabeComparator();
+                for(int i=0; i<cards.length; i++) {
+                    pointsCollector[0] += cards[i].calcObenabePoints();
+                }
             }
             case UNDENUFE -> {
                 comparator = new UndenufeComparator();
+                for(int i=0; i<cards.length; i++) {
+                    pointsCollector[0] += cards[i].calcUndenufePoints();
+                }
             }
             case SLALOM -> {
                 /*
@@ -73,13 +99,21 @@ public class Card {
                 determine which comparator to use
                  */
                 if(start == Roundstart.OBE) {
-                    if(trick % 2 != 0) {
+                    for(int i=0; i<cards.length; i++) {
+                        pointsCollector[0] += cards[i].calcObenabePoints();
+                    }
+
+                    if(trick % 2 == 0) {
                         comparator = new ObenabeComparator();
                     } else {
                         comparator = new UndenufeComparator();
                     }
                 } else {
-                    if(trick % 2 == 0) {
+                    for(int i=0; i<cards.length; i++) {
+                        pointsCollector[0] += cards[i].calcUndenufePoints();
+                    }
+
+                    if(trick % 2 != 0) {
                         comparator = new ObenabeComparator();
                     } else {
                         comparator = new UndenufeComparator();
@@ -92,20 +126,28 @@ public class Card {
                 the comparator must be an ObenabeComparator, otherwise
                 it must be an UndenufeComparator
                  */
-                if(trick > 5) {
+                if(trick > 4) {
                     comparator = new UndenufeComparator();
                 } else {
                     comparator = new ObenabeComparator();
+                }
+
+                for(int i=0; i<cards.length; i++) {
+                    pointsCollector[0] += cards[i].calcObenabePoints();
                 }
             }
             case MARY -> {
                 /*
                 Analogous to GUSTI with reversed comparators
                  */
-                if(trick <= 5) {
+                if(trick <= 4) {
                     comparator = new UndenufeComparator();
                 } else {
                     comparator = new ObenabeComparator();
+                }
+
+                for(int i=0; i<cards.length; i++) {
+                    pointsCollector[0] += cards[i].calcUndenufePoints();
                 }
             }
             default -> throw new IllegalStateException("Unexpected value: " + mode);
@@ -121,5 +163,61 @@ public class Card {
         }
 
         return result;
+    }
+
+    private int calcObenabePoints() {
+        switch (rank) {
+            case SIX, SEVEN, NINE -> {
+                return 0;
+            }
+            case EIGHT -> {
+                return 8;
+            }
+            case TEN -> {
+                return 10;
+            }
+            case UNDER -> {
+                return 2;
+            }
+            case OBER -> {
+                return 3;
+            }
+            case KING -> {
+                return 4;
+            }
+            case ACE -> {
+                return 11;
+            }
+        }
+
+        return 0;
+    }
+
+    private int calcUndenufePoints() {
+        switch (rank) {
+            case ACE, SEVEN, NINE -> {
+                return 0;
+            }
+            case EIGHT -> {
+                return 8;
+            }
+            case TEN -> {
+                return 10;
+            }
+            case UNDER -> {
+                return 2;
+            }
+            case OBER -> {
+                return 3;
+            }
+            case KING -> {
+                return 4;
+            }
+            case SIX -> {
+                return 11;
+            }
+        }
+
+        return 0;
     }
 }

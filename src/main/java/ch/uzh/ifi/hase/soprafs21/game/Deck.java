@@ -1,5 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.game;
 
+import ch.uzh.ifi.hase.soprafs21.entity.SchieberGameSession;
+
+import javax.persistence.Embeddable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -8,32 +12,18 @@ import java.util.List;
 public class Deck {
     Card[] cards = new Card[36];
 
-    /**
-     *
-     * @param modes used to set trumpf-values of cards in case
-     *              the deck needs to be initialized for a trumpf
-     *              mode. Otherwise initialize is called without
-     *              arguments or the argument is ignored
-     */
-    public void initialize(IngameMode ... modes) {
+
+    private void initialize() {
         int i=0;
         for(Suit s : Suit.values()) {
             for(Rank r : Rank.values()) {
                 cards[i] = new Card(s,r);
-                /*
-                if the mode given as argument is a Trumpf mode of a
-                specific suit, set those cards's isTrumpf indicator
-                field to true
-                 */
-                if(modes.length > 0 && modes[0].name().equals(s.name())) {
-                    cards[i].setTrumpf();
-                }
                 i++;
             }
         }
     }
 
-    public void shuffle() {
+    private void shuffle() {
         List<Card> cardList = Arrays.asList(this.cards);
         Collections.shuffle(cardList);
         cardList.toArray(this.cards);
@@ -46,7 +36,7 @@ public class Deck {
      * @return an array containing arrays reflecting the handcards
      * to be individually received per player
      */
-    public Card[][] dealCards(GameMode mode) {
+    private Card[][] dealCards(GameMode mode) {
         /*
         NOTE: Works only for Schieber so far (!)
          */
@@ -57,4 +47,19 @@ public class Deck {
 
         return playersCards;
     }
+
+    public static void initializePlayerCards(SchieberGameSession schieberGameSession) {
+        Deck deck = new Deck();
+        deck.initialize();
+        deck.shuffle();
+
+        Card[][] cardsToDeal = deck.dealCards(GameMode.SCHIEBER);
+
+        schieberGameSession.setCardsHeldByPlayer0(Arrays.asList(cardsToDeal[0]));
+        schieberGameSession.setCardsHeldByPlayer1(Arrays.asList(cardsToDeal[1]));
+        schieberGameSession.setCardsHeldByPlayer2(Arrays.asList(cardsToDeal[2]));
+        schieberGameSession.setCardsHeldByPlayer3(Arrays.asList(cardsToDeal[3]));
+    }
+
+
 }

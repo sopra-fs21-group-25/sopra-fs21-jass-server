@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.repository;
 
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import org.mapstruct.Named;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -24,4 +25,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query(value = "SELECT u FROM User u WHERE u.status = 0")
     List<User> findAllOnlineUsers();
+
+
+
+
+    // For external user retrieval; useful for auto-generated mappings
+    @Named("getUserWithId")
+    @Query(value = "SELECT u FROM User u WHERE u.id = :id")
+    User getUserWithId(@Param("id") UUID id);
 }

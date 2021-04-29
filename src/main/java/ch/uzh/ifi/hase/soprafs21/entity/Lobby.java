@@ -36,15 +36,18 @@ public class Lobby implements Serializable, Comparable<Lobby> {
     private Set<User> usersInLobby = new HashSet<>();
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private GameMode mode;
 
     @Column(nullable = false)
     private String lobbyType;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Rank startingCardRank;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Suit startingCardSuit;
 
     @Column(nullable = false)

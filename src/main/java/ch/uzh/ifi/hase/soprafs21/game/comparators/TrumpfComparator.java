@@ -55,11 +55,11 @@ public class TrumpfComparator implements Comparator<Card> {
             UNDER, then if either is NINE (i.e. the second highest
             card) or else regular card precedence
              */
-            if(o1.rank == Rank.UNDER) return 1;
-            if(o2.rank == Rank.UNDER) return -1;
-            if(o1.rank == Rank.NINE) return 1;
-            if(o2.rank == Rank.NINE) return -1;
-            return o1.rank.compareTo(o2.rank);
+            if(o1.getRank() == Rank.UNDER) return 1;
+            if(o2.getRank() == Rank.UNDER) return -1;
+            if(o1.getRank() == Rank.NINE) return 1;
+            if(o2.getRank() == Rank.NINE) return -1;
+            return o1.getRank().compareTo(o2.getRank());
         } else if(o1.isTrumpf()) {
             /*
             Only o1 is Trumpf, thus the higher card
@@ -74,7 +74,7 @@ public class TrumpfComparator implements Comparator<Card> {
             /*
             None is Trumpf, thus regular precedence applies
              */
-            return o1.rank.compareTo(o2.rank);
+            return o1.getRank().compareTo(o2.getRank());
         }
     }
 }
