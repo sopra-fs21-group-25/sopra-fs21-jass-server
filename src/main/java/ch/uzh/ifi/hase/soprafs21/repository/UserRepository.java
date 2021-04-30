@@ -26,11 +26,4 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query(value = "SELECT u FROM User u WHERE u.status = 0")
     List<User> findAllOnlineUsers();
 
-
-
-
-    // For external user retrieval; useful for auto-generated mappings
-    @Named("getUserWithId")
-    @Query(value = "SELECT u FROM User u WHERE u.id = :id")
-    User getUserWithId(@Param("id") UUID id);
 }

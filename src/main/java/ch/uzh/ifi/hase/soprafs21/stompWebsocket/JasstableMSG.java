@@ -20,5 +20,4 @@ public class JasstableMSG {
     public String getPlayerBottom() { return playerBottom; }
     public String getPlayerLeft() { return playerLeft; }
     public String getPlayerRight() { return playerRight; }
-
 }

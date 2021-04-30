@@ -39,10 +39,6 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    @Named("userIdToUser")
-    public User userIdToUser(UUID userId) {
-        return userRepository.getUserWithId(userId);
-    }
 
     public List<User> getUsers() {
         return this.userRepository.findAll();

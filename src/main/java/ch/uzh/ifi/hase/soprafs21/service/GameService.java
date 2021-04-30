@@ -74,14 +74,7 @@ public class GameService {
         return gameInput;
     }
 
-    public SchieberGameSession assignUsers(UUID id0, UUID id1, UUID id2, UUID id3, SchieberGameSession game) {
-        game.setUser0(gameRepository.findByUserId(id0));
-        game.setUser1(gameRepository.findByUserId(id1));
-        game.setUser2(gameRepository.findByUserId(id2));
-        game.setUser3(gameRepository.findByUserId(id3));
 
-        return game;
-    }
 
     /**
      * Here happens the state update magic
