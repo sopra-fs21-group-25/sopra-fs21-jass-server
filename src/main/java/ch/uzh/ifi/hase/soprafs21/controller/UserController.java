@@ -8,8 +8,6 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
-import org.mapstruct.Named;
-import org.mapstruct.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -113,6 +111,4 @@ public class UserController {
         User user = userService.getUserById(id);
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
     }
-
-
 }

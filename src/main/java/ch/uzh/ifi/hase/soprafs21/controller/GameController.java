@@ -32,7 +32,7 @@ public class GameController {
      * @param gameId The UUID id of this game to be retrieved
      * @return A SchieberGameGetDTO having the cardsOfPlayer Card[] Array set to null
      */
-    @GetMapping("/game/{gameId}")
+    @GetMapping("/games/{gameId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public SchieberGameGetDTO getGameWithId(@PathVariable("gameId") UUID gameId) {
@@ -48,7 +48,7 @@ public class GameController {
      * @param userId The UUID id of the user whose cards in this game are to be included in the DTO response
      * @return A SchieberGameGetDTO having a non-null Card[] Array called cardsOfPlayer containing that users cards in this game
      */
-    @GetMapping("/game/{gameId}/{userId}")
+    @GetMapping("/games/{gameId}/{userId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public SchieberGameGetDTO getGameWithIdContainingCardsOfPlayer(@PathVariable("gameId") UUID gameId, @PathVariable("userId") UUID userId) {
@@ -70,7 +70,7 @@ public class GameController {
      * @param gameId The UUID id of the game in which the users cards are to be retrieved from
      * @return A CardsGetDTO encoding an Aay containing the specified user's cards
      */
-    @GetMapping("/game/{gameId}/cards/{userId}")
+    @GetMapping("/games/{gameId}/cards/{userId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public CardsGetDTO getCardsOfUserWithId(@PathVariable("userId") UUID userId, @PathVariable("gameId") UUID gameId) {
@@ -90,7 +90,7 @@ public class GameController {
                                           POST methods
     */
 
-    @PostMapping("/game")
+    @PostMapping("/games")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public SchieberGameGetDTO createGame(@RequestBody SchieberGamePostDTO postDTO) {
@@ -106,7 +106,7 @@ public class GameController {
                                           PUT methods
     */
 
-    @PutMapping("/game/{gameId}")
+    @PutMapping("/games/{gameId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public SchieberGameGetDTO updateGameState(@PathVariable("gameId") UUID gameId, @RequestBody SchieberGamePutDTO putDTO) {
@@ -121,7 +121,7 @@ public class GameController {
         return schieberGameGetDTO;
     }
 
-    @PutMapping("/game/{gameId}/close")
+    @PutMapping("/games/{gameId}/close")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
     public void closeGameSession(@PathVariable("gameId") UUID gameId) {

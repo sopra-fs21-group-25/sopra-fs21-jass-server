@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPutUserWithIdDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyUsersGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 import org.springframework.http.HttpStatus;
@@ -44,21 +45,6 @@ public class LobbyController {
         Lobby lobby = lobbyService.getLobbyWithId(id);
         return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(lobby);
     }
-
-/*    // No longer used. Maybe necessary for a later purpose
-    @GetMapping("/lobbies/public_and_friends")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public List<LobbyGetDTO> getPublicAndFriendsLobbies() {
-        List<Lobby> lobbies = lobbyService.getPublicAndFriendsLobbies();
-
-        List<LobbyGetDTO> lobbyGetDTOs = lobbies
-                .stream()
-                .map(l -> DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(l))
-                .collect(Collectors.toList());
-
-        return lobbyGetDTOs;
-    }*/
 
     @GetMapping("/lobbies/accessible/{userId}")
     @ResponseStatus(HttpStatus.OK)
@@ -106,5 +92,35 @@ public class LobbyController {
         lobbyToClose = lobbyService.clearLobby(lobbyToClose);
 
         lobbyService.deleteLobby(lobbyToClose);
+    }
+
+    /* Returns a DTO containing an array of users, whose fields are null except for
+    the username, userId, userToken and userStatus */
+    @GetMapping("/lobbies/{lobbyId}/users")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public LobbyUsersGetDTO getUsersInLobbyWithId(@PathVariable("lobbyId") UUID lobbyId) {
+        Lobby lobby = lobbyService.getLobbyWithId(lobbyId);
+
+        // is a copy of the actual list of users in the lobby. Necessary for reference detaching
+        List<User> usersInLobby = new ArrayList<>(lobby.getUsersInLobby());
+
+        User[] users = new User[lobby.getUsersInLobby().size()];
+
+        for(int i=0; i<lobby.getUsersInLobby().size(); i++) {
+            User u = usersInLobby.get(i);
+            u.setLobby(null);
+            u.setfriendOf(null);
+            u.setFriends(null);
+            u.setPendingFriendRequests(null);
+            u.setSentFriendRequests(null);
+
+            users[i] = u;
+        }
+
+        LobbyUsersGetDTO result = new LobbyUsersGetDTO();
+        result.setUsersInLobby(users);
+
+        return result;
     }
 }
