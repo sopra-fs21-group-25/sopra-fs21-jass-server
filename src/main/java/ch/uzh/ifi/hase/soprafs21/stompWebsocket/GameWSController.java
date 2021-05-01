@@ -8,6 +8,12 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class GameWSController {
 
+    @MessageMapping("/lobbies/{lobbyId}/initialSynchronization")
+    @SendTo("/lobbies/{lobbyId}/gameInitialization")
+    public GameInitializationMSG sendGameInitializationData(GameInitializationMSG msg) {
+        return msg;
+    }
+
     @MessageMapping("/games/{gameId}/fetch")
     @SendTo("/games/{gameId}/fetch")
     public String notifyToFetchNewGameState() {
@@ -20,9 +26,5 @@ public class GameWSController {
         return finalScore;
     }
 
-    @MessageMapping("/games/{gameId}/currentMode")
-    @SendTo("/games/{gameId}/currentMode")
-    public String sendCurrentMode(@Payload String currentMode){
-            return currentMode;
-    }
+
 }
