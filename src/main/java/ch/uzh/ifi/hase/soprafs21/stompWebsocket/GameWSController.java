@@ -19,4 +19,10 @@ public class GameWSController {
     public FinalScoreMSG sendFinalScoreMessage(@Payload FinalScoreMSG finalScore) {
         return finalScore;
     }
+
+    @MessageMapping("/games/{gameId}/currentMode")
+    @SendTo("/games/{gameId}/currentMode")
+    public String sendCurrentMode(@Payload String currentMode){
+            return currentMode;
+    }
 }
