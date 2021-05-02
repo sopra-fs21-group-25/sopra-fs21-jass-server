@@ -4,19 +4,21 @@ import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.game.GameMode;
-import ch.uzh.ifi.hase.soprafs21.game.IngameModeMultiplicatorObject;
-import ch.uzh.ifi.hase.soprafs21.game.Rank;
-import ch.uzh.ifi.hase.soprafs21.game.Suit;
+import ch.uzh.ifi.hase.soprafs21.game.*;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
+import ch.uzh.ifi.hase.soprafs21.repository.RegisteredUserRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPutUserWithIdDTO;
+import org.junit.After;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
@@ -28,6 +30,7 @@ public class LobbyServiceIntegrationTest {
     @Qualifier("lobbyRepository")
     @Autowired
     private LobbyRepository lobbyRepository;
+
 
     @Autowired
     private UserRepository userRepository;
@@ -44,8 +47,9 @@ public class LobbyServiceIntegrationTest {
     @BeforeEach
     public void createLobby(){
         lobbyRepository.deleteAll();
+        lobbyRepository.flush();
         userRepository.deleteAll();
-
+        userRepository.flush();
         susi = new RegisteredUser();
         susi.setUsername("Susi");
         susi.setPassword("password4");
@@ -63,6 +67,10 @@ public class LobbyServiceIntegrationTest {
         userRepository.saveAndFlush(susi);
 
         List<IngameModeMultiplicatorObject> ingameModeMultiplicators = new ArrayList<>();
+        IngameModeMultiplicatorObject oneObject = new IngameModeMultiplicatorObject();
+        oneObject.setIngameMode(IngameMode.ACORN);
+        oneObject.setMultiplicator(20);
+        ingameModeMultiplicators.add(oneObject);
         lobby = new Lobby();
         lobby.setCreatorUsername(susi.getUsername());
         lobby.setUsersInLobby(users);
@@ -72,16 +80,20 @@ public class LobbyServiceIntegrationTest {
         lobby.setStartingCardRank(Rank.TEN);
         lobby.setPointsToWin(2500);
         lobby.setWeisAllowed(false);
-        lobby.setCrossWeisAllowed(false);
+        lobby.setCrossWeisAllowed(Boolean.FALSE);
         lobby.setWeisAsk("never");
         lobby.setIngameModes(ingameModeMultiplicators);
         susi.setLobby(lobby);
         lobbyRepository.saveAndFlush(lobby);
-
     }
+
+
 
     @Test
     public void getAccessibleLobbies_success()  {
+
+
+
         // given
         assertNotNull(lobbyRepository.findById(lobby.getId()));
 
@@ -92,6 +104,7 @@ public class LobbyServiceIntegrationTest {
         assertNotNull(returnedLobbies.size());
         assertEquals(returnedLobbies.get(0).getCreatorUsername(), "Susi");
         assertEquals(returnedLobbies.get(0).getLobbyType(), "public");
+        userRepository.deleteAll();
     }
 
     @Test
@@ -186,4 +199,10 @@ public class LobbyServiceIntegrationTest {
         //then
         assertEquals(0, returnedLobby.getUsersInLobby().size());
     }
+
+    @After
+    public void cleanDatabase(){
+        userRepository.deleteAll();
+    }
+
 }

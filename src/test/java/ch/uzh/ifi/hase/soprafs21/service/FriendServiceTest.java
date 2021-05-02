@@ -61,17 +61,18 @@ public class FriendServiceTest {
         friendList.add(rebekka);
         friendList.add(louise);
 
-        List<User> friendList2 = new ArrayList<>();
-        friendList.add(rebekka);
-        friendList.add(willi);
-
-        List<User> friendList3 = new ArrayList<>();
-        friendList.add(willi);
-        friendList.add(louise);
+//        List<User> friendList2 = new ArrayList<>();
+//        friendList.add(rebekka);
+//        friendList.add(willi);
+//
+//        List<User> friendList3 = new ArrayList<>();
+//        friendList.add(willi);
+//        friendList.add(louise);
 
         willi.setFriends(friendList);
-        louise.setFriends(friendList2);
-        rebekka.setFriends(friendList3);
+        willi.setfriendOf(friendList);
+//        louise.setFriends(friendList2);
+//        rebekka.setFriends(friendList3);
 
         Mockito.when(friendService.getFriends(Mockito.any())).thenReturn(friendList);
     }
@@ -87,7 +88,7 @@ public class FriendServiceTest {
         // then
         assertEquals( rebekka, willisFriends.get(0));
         assertEquals( louise, willisFriends.get(1));
-        assertEquals(6, willisFriends.size());
+        assertEquals(2, willisFriends.size());
     }
 
 
