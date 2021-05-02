@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.game.Card;
+import ch.uzh.ifi.hase.soprafs21.game.IngameMode;
 import ch.uzh.ifi.hase.soprafs21.game.IngameModeMultiplicatorObject;
 
 import java.util.UUID;
@@ -25,6 +26,7 @@ public class SchieberGameGetDTO {
     private Card[] cardsPlayed;
     private Boolean hasTrickStarted;
     private UUID idOfRoundStartingPlayer;
+    private IngameMode currentIngameMode;
 
     /*
     This array contains the cards of a specific user;
@@ -174,5 +176,13 @@ public class SchieberGameGetDTO {
 
     public void setIdOfRoundStartingPlayer(UUID idOfRoundStartingPlayer) {
         this.idOfRoundStartingPlayer = idOfRoundStartingPlayer;
+    }
+
+    public IngameMode getCurrentIngameMode() {
+        return currentIngameMode;
+    }
+
+    public void setCurrentIngameMode(IngameMode currentIngameMode) {
+        this.currentIngameMode = currentIngameMode;
     }
 }

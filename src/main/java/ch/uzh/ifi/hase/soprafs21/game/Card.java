@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs21.game.comparators.ObenabeComparator;
 import ch.uzh.ifi.hase.soprafs21.game.comparators.TrumpfComparator;
 import ch.uzh.ifi.hase.soprafs21.game.comparators.UndenufeComparator;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -14,12 +15,15 @@ import java.util.Comparator;
 @SuppressWarnings("unchecked")
 public class Card {
 
+    @Column
     @Enumerated(EnumType.STRING)
     private Suit suit;
 
+    @Column
     @Enumerated(EnumType.STRING)
     private Rank rank;
 
+    @Column
     private Boolean isTrumpf;
 
     public Card(Suit s, Rank r) {
@@ -30,12 +34,11 @@ public class Card {
 
     public Card() {}
 
-    public void setTrumpf() {
-        this.isTrumpf = true;
+    public void setIsTrumpf(Boolean isTrumpf) {
+        this.isTrumpf = isTrumpf;
     }
-    public boolean isTrumpf() {
-        return this.isTrumpf;
-    }
+    public boolean getIsTrumpf() { return isTrumpf; }
+
 
     public Suit getSuit() { return suit; }
     public Rank getRank() { return rank; }
@@ -71,9 +74,9 @@ public class Card {
             case ACORN, ROSE, BELL, SHIELD -> {
                 comparator = new TrumpfComparator();
                 for(int i=0; i<cards.length; i++) {
-                    if(cards[i].isTrumpf && cards[i].getRank() == Rank.UNDER) {
+                    if(cards[i].getIsTrumpf() && cards[i].getRank() == Rank.UNDER) {
                         pointsCollector[0] += 20;
-                    } else if(cards[i].isTrumpf && cards[i].getRank() == Rank.NINE) {
+                    } else if(cards[i].getIsTrumpf() && cards[i].getRank() == Rank.NINE) {
                         pointsCollector[0] += 14;
                     } else {
                         pointsCollector[0] += cards[i].calcObenabePoints();

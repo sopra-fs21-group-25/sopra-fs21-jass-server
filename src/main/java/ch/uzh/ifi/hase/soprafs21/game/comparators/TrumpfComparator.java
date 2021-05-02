@@ -48,7 +48,7 @@ public class TrumpfComparator implements Comparator<Card> {
      */
     @Override
     public int compare(Card o1, Card o2) {
-        if(o1.isTrumpf() && o2.isTrumpf()) {
+        if(o1.getIsTrumpf() && o2.getIsTrumpf()) {
             /*
             Both are Trumpf, hence we have to determine first if
             either is UNDER (i.e. the highest card) or else none is
@@ -60,12 +60,12 @@ public class TrumpfComparator implements Comparator<Card> {
             if(o1.getRank() == Rank.NINE) return 1;
             if(o2.getRank() == Rank.NINE) return -1;
             return o1.getRank().compareTo(o2.getRank());
-        } else if(o1.isTrumpf()) {
+        } else if(o1.getIsTrumpf()) {
             /*
             Only o1 is Trumpf, thus the higher card
              */
             return 1;
-        } else if(o2.isTrumpf()) {
+        } else if(o2.getIsTrumpf()) {
             /*
             Only o2 is Trumpf, thus the higher card
              */

@@ -83,7 +83,7 @@ public class FriendRequestController {
                       .id(id.toString())
                       .name("message");
                     emitter.send(event);
-                    Thread.sleep(1000);
+                    Thread.sleep(100000);
                 }
             } catch (Exception ex) {
                 emitter.completeWithError(ex);

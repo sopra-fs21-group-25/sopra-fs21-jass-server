@@ -231,28 +231,28 @@ public class SchieberGameSession implements Serializable {
 */
     public void setTrumpFlags(IngameMode choice) {
         if(choice == IngameMode.ACORN) {
-            for(Card card : cardsHeldByPlayer0) if(card.getSuit() == Suit.ACORN) card.setTrumpf();
-            for(Card card : cardsHeldByPlayer1) if(card.getSuit() == Suit.ACORN) card.setTrumpf();
-            for(Card card : cardsHeldByPlayer2) if(card.getSuit() == Suit.ACORN) card.setTrumpf();
-            for(Card card : cardsHeldByPlayer3) if(card.getSuit() == Suit.ACORN) card.setTrumpf();
+            for(Card card : cardsHeldByPlayer0) if(card.getSuit() == Suit.ACORN) card.setIsTrumpf(true);
+            for(Card card : cardsHeldByPlayer1) if(card.getSuit() == Suit.ACORN) card.setIsTrumpf(true);
+            for(Card card : cardsHeldByPlayer2) if(card.getSuit() == Suit.ACORN) card.setIsTrumpf(true);
+            for(Card card : cardsHeldByPlayer3) if(card.getSuit() == Suit.ACORN) card.setIsTrumpf(true);
 
         } else if(choice == IngameMode.ROSE) {
-            for(Card card : cardsHeldByPlayer0) if(card.getSuit() == Suit.ROSE) card.setTrumpf();
-            for(Card card : cardsHeldByPlayer1) if(card.getSuit() == Suit.ROSE) card.setTrumpf();
-            for(Card card : cardsHeldByPlayer2) if(card.getSuit() == Suit.ROSE) card.setTrumpf();
-            for(Card card : cardsHeldByPlayer3) if(card.getSuit() == Suit.ROSE) card.setTrumpf();
+            for(Card card : cardsHeldByPlayer0) if(card.getSuit() == Suit.ROSE) card.setIsTrumpf(true);
+            for(Card card : cardsHeldByPlayer1) if(card.getSuit() == Suit.ROSE) card.setIsTrumpf(true);
+            for(Card card : cardsHeldByPlayer2) if(card.getSuit() == Suit.ROSE) card.setIsTrumpf(true);
+            for(Card card : cardsHeldByPlayer3) if(card.getSuit() == Suit.ROSE) card.setIsTrumpf(true);
 
         } else if(choice == IngameMode.BELL) {
-            for(Card card : cardsHeldByPlayer0) if(card.getSuit() == Suit.BELL) card.setTrumpf();
-            for(Card card : cardsHeldByPlayer1) if(card.getSuit() == Suit.BELL) card.setTrumpf();
-            for(Card card : cardsHeldByPlayer2) if(card.getSuit() == Suit.BELL) card.setTrumpf();
-            for(Card card : cardsHeldByPlayer3) if(card.getSuit() == Suit.BELL) card.setTrumpf();
+            for(Card card : cardsHeldByPlayer0) if(card.getSuit() == Suit.BELL) card.setIsTrumpf(true);
+            for(Card card : cardsHeldByPlayer1) if(card.getSuit() == Suit.BELL) card.setIsTrumpf(true);
+            for(Card card : cardsHeldByPlayer2) if(card.getSuit() == Suit.BELL) card.setIsTrumpf(true);
+            for(Card card : cardsHeldByPlayer3) if(card.getSuit() == Suit.BELL) card.setIsTrumpf(true);
 
         } else if(choice == IngameMode.SHIELD) {
-            for(Card card : cardsHeldByPlayer0) if(card.getSuit() == Suit.SHIELD) card.setTrumpf();
-            for(Card card : cardsHeldByPlayer1) if(card.getSuit() == Suit.SHIELD) card.setTrumpf();
-            for(Card card : cardsHeldByPlayer2) if(card.getSuit() == Suit.SHIELD) card.setTrumpf();
-            for(Card card : cardsHeldByPlayer3) if(card.getSuit() == Suit.SHIELD) card.setTrumpf();
+            for(Card card : cardsHeldByPlayer0) if(card.getSuit() == Suit.SHIELD) card.setIsTrumpf(true);
+            for(Card card : cardsHeldByPlayer1) if(card.getSuit() == Suit.SHIELD) card.setIsTrumpf(true);
+            for(Card card : cardsHeldByPlayer2) if(card.getSuit() == Suit.SHIELD) card.setIsTrumpf(true);
+            for(Card card : cardsHeldByPlayer3) if(card.getSuit() == Suit.SHIELD) card.setIsTrumpf(true);
         }
 
         return;
@@ -337,6 +337,7 @@ public class SchieberGameSession implements Serializable {
 
         // this will hold the amount of points after calling the Card.determineHighestCard method
         Integer[] pointsCollector = new Integer[1];
+        pointsCollector[0] = 0;
 
         Card highestCardPlayed = Card.determineHighestCard(
                 currentIngameMode,

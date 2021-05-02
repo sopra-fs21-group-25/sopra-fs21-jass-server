@@ -179,6 +179,7 @@ public interface DTOMapper {
     @Mapping(target = "cardsPlayed", expression = "java(schieberGameSession.composeCardsPlayedArray())")
     @Mapping(source = "hasTrickStarted", target = "hasTrickStarted")
     @Mapping(source = "idOfRoundStartingPlayer", target = "idOfRoundStartingPlayer")
+    @Mapping(source = "currentIngameMode", target = "currentIngameMode")
     SchieberGameGetDTO convertEntityToSchieberGameGetDTO(SchieberGameSession schieberGameSession);
 
 
