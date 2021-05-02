@@ -134,11 +134,6 @@ public class GameService {
 
                 schieberGameSession.setHasTrickStarted(false);
 
-                schieberGameSession.setCardPlayedByPlayer0(null);
-                schieberGameSession.setCardPlayedByPlayer1(null);
-                schieberGameSession.setCardPlayedByPlayer2(null);
-                schieberGameSession.setCardPlayedByPlayer3(null);
-
                 schieberGameSession.setTrickToPlay((schieberGameSession.getTrickToPlay() + 1) % 9);
 
 
@@ -182,9 +177,15 @@ public class GameService {
 
         } else {
             /*
-            In this case something went totally wrong. Throw an exception.
+            In this case the frontend just removed the four cards from the table and
+            is requesting to determine the starting player of the next trick
              */
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            schieberGameSession.setCardPlayedByPlayer0(null);
+            schieberGameSession.setCardPlayedByPlayer1(null);
+            schieberGameSession.setCardPlayedByPlayer2(null);
+            schieberGameSession.setCardPlayedByPlayer3(null);
+
+
         }
 
         return schieberGameSession;
