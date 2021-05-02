@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @see UserService
  */
-@WebAppConfiguration
 @SpringBootTest
 public class UserServiceIntegrationTest {
 

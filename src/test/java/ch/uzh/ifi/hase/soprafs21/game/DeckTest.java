@@ -63,7 +63,7 @@ class DeckTest {
         ingameModeMultiplicators.add(oneObject);
 
 
-        //setup of the schhieber Game Session
+        //setup of the schieber Game Session
         schieberGameSession = new SchieberGameSession();
         UUID gameID = UUID.randomUUID();
         schieberGameSession.setId(gameID);

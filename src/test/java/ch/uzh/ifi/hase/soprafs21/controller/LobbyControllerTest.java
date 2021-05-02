@@ -127,8 +127,10 @@ public class LobbyControllerTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(lobby.getId().toString())))
                 .andExpect(jsonPath("$.usersInLobby[0]", is(lobby.getCreatorUsername())));
     }
+
 
     @Test
     public void createLobbyTest() throws Exception {

@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Types;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,6 +71,7 @@ public class LobbyServiceIntegrationTest {
         IngameModeMultiplicatorObject oneObject = new IngameModeMultiplicatorObject();
         oneObject.setIngameMode(IngameMode.ACORN);
         oneObject.setMultiplicator(20);
+
         ingameModeMultiplicators.add(oneObject);
         lobby = new Lobby();
         lobby.setCreatorUsername(susi.getUsername());
@@ -91,9 +93,6 @@ public class LobbyServiceIntegrationTest {
 
     @Test
     public void getAccessibleLobbies_success()  {
-
-
-
         // given
         assertNotNull(lobbyRepository.findById(lobby.getId()));
 

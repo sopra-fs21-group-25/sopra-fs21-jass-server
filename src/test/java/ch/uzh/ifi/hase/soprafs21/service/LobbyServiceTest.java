@@ -56,7 +56,6 @@ public class LobbyServiceTest {
     public LobbyServiceTest() {
     }
 
-
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
@@ -193,19 +192,21 @@ public class LobbyServiceTest {
     @Test
     public void addUserSusitoLobby_success() {
 
-        // when
+        // setup
         LobbyPutUserWithIdDTO usernotinLobbyyet = new LobbyPutUserWithIdDTO();
         usernotinLobbyyet.setAdd(Boolean.TRUE);
         usernotinLobbyyet.setUserId(susi.getId());
         usernotinLobbyyet.setRemove(Boolean.FALSE);
+
+        // when
         Mockito.when(lobbyRepository.findById(lobby.getId())).thenReturn(Optional.of(lobby));
         Lobby newLobby = lobbyService.addUserToLobby(usernotinLobbyyet, lobby.getId());
 
         // then
-        assertEquals(newLobby.getId(), lobby.getId());
-        assertEquals(newLobby.getUsersInLobby(), lobby.getUsersInLobby());
-        assertEquals(newLobby.getCreatorUsername(), lobby.getCreatorUsername());
-        assertEquals(newLobby.getLobbyType(), lobby.getLobbyType());
+        assertEquals(lobby.getId(), newLobby.getId());
+        assertEquals(lobby.getUsersInLobby(), newLobby.getUsersInLobby());
+        assertEquals(lobby.getCreatorUsername(), newLobby.getCreatorUsername());
+        assertEquals(lobby.getLobbyType(), newLobby.getLobbyType());
     }
 
     @Test
