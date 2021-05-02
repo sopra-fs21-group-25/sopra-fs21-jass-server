@@ -337,6 +337,7 @@ public class SchieberGameSession implements Serializable {
 
         // this will hold the amount of points after calling the Card.determineHighestCard method
         Integer[] pointsCollector = new Integer[1];
+        pointsCollector[0] = 0;
 
         Card highestCardPlayed = Card.determineHighestCard(
                 currentIngameMode,
