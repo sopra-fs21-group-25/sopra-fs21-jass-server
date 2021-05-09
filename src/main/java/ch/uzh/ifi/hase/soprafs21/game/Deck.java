@@ -45,6 +45,11 @@ public class Deck {
             playersCards[i%4][i%9] = this.cards[i];
         }
 
+        playersCards[0] = Card.sortCardArray(playersCards[0]);
+        playersCards[1] = Card.sortCardArray(playersCards[1]);
+        playersCards[2] = Card.sortCardArray(playersCards[2]);
+        playersCards[3] = Card.sortCardArray(playersCards[3]);
+
         return playersCards;
     }
 

@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.entity;
 
 
 import ch.uzh.ifi.hase.soprafs21.game.*;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.SchieberGamePutDTO;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -333,17 +334,30 @@ public class SchieberGameSession implements Serializable {
     }
 
     // ATTENTION: only call this method after the ones above have been invoked!
-    public void assignPointsAndDetermineNextTrickStartingPlayerAccordingToCardsPlayedThisTrick() {
+    public void assignPointsAndDetermineNextTrickStartingPlayerAccordingToCardsPlayedThisTrick(SchieberGamePutDTO putDTO) {
 
         // this will hold the amount of points after calling the Card.determineHighestCard method
         Integer[] pointsCollector = new Integer[1];
         pointsCollector[0] = 0;
+
+        // determines the first card played this trick
+        Card trickStartingCard = null;
+        if(putDTO.getUserId().equals(user0.getId())) {
+            trickStartingCard = cardPlayedByPlayer1;
+        } else if(putDTO.getUserId().equals(user1.getId())) {
+            trickStartingCard = cardPlayedByPlayer2;
+        } else if(putDTO.getUserId().equals(user2.getId())) {
+            trickStartingCard = cardPlayedByPlayer3;
+        } else if(putDTO.getUserId().equals(user3.getId())) {
+            trickStartingCard = cardPlayedByPlayer0;
+        }
 
         Card highestCardPlayed = Card.determineHighestCard(
                 currentIngameMode,
                 startedLowOrHigh,
                 trickToPlay,
                 pointsCollector,
+                trickStartingCard,
                 cardPlayedByPlayer0,
                 cardPlayedByPlayer1,
                 cardPlayedByPlayer2,

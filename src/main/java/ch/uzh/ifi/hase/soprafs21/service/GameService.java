@@ -130,7 +130,7 @@ public class GameService {
             - cardPlayedByPlayerANY: oldVal -> null
             */
             if(schieberGameSession.allCardsPlayedThisTrick()) {
-                schieberGameSession.assignPointsAndDetermineNextTrickStartingPlayerAccordingToCardsPlayedThisTrick();
+                schieberGameSession.assignPointsAndDetermineNextTrickStartingPlayerAccordingToCardsPlayedThisTrick(putDTO);
 
                 schieberGameSession.setHasTrickStarted(false);
 

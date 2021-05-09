@@ -9,7 +9,10 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 @Embeddable
 @SuppressWarnings("unchecked")
@@ -55,6 +58,44 @@ public class Card {
         return this.suit == other.suit && this.rank == other.rank;
     }
 
+    public static Card[] sortCardArray(Card ... cards) {
+        ObenabeComparator comparator = new ObenabeComparator();
+
+        List<Card> acorns = new ArrayList<>();
+        List<Card> roses = new ArrayList<>();
+        List<Card> bells = new ArrayList<>();
+        List<Card> shields = new ArrayList<>();
+
+        for(int i=0; i<cards.length; i++) {
+            if(cards[i].getSuit() == Suit.ACORN) {
+                acorns.add(cards[i]);
+            }
+            if(cards[i].getSuit() == Suit.ROSE) {
+                roses.add(cards[i]);
+            }
+            if(cards[i].getSuit() == Suit.BELL) {
+                bells.add(cards[i]);
+            }
+            if(cards[i].getSuit() == Suit.SHIELD) {
+                shields.add(cards[i]);
+            }
+        }
+
+        acorns.sort(comparator);
+        roses.sort(comparator);
+        bells.sort(comparator);
+        shields.sort(comparator);
+
+        List<Card> cardsSuitSorted = new ArrayList<>();
+
+        cardsSuitSorted.addAll(acorns);
+        cardsSuitSorted.addAll(roses);
+        cardsSuitSorted.addAll(bells);
+        cardsSuitSorted.addAll(shields);
+
+        return cardsSuitSorted.toArray(new Card[0]);
+    }
+
     /**
      *
      * @param mode the ingame mode played in the current round where
@@ -66,8 +107,8 @@ public class Card {
      * @param cards the cards to compare with each other
      * @return the highest card in the current trick according to the right precedence
      */
-    public static Card determineHighestCard(IngameMode mode, Roundstart start, Integer trick, Integer[] pointsCollector, Card ... cards) {
-        Card result = cards[0];
+    public static Card determineHighestCard(IngameMode mode, Roundstart start, Integer trick, Integer[] pointsCollector, Card trickStartingCard, Card ... cards) {
+        Card result = trickStartingCard;
         Comparator<Card> comparator;
 
         switch(mode) {
@@ -159,11 +200,26 @@ public class Card {
         /*
         finally use the chosen comparator to determine the highest card
          */
-        for (int i=1; i<cards.length; i++) {
-            if(comparator.compare(result, cards[i]) < 0) {
-                result = cards[i];
+        if(trickStartingCard.getIsTrumpf()) {
+            for (int i=0; i<cards.length; i++) {
+                if(comparator.compare(result, cards[i]) < 0) {
+                    result = cards[i];
+                }
+            }
+        } else {
+            for (int i=0; i<cards.length; i++) {
+                if(cards[i].getIsTrumpf()) {
+                    if(comparator.compare(result, cards[i]) < 0) {
+                        result = cards[i];
+                    }
+                } else {
+                    if(cards[i].getSuit() == trickStartingCard.getSuit() && comparator.compare(result, cards[i]) < 0) {
+                        result = cards[i];
+                    }
+                }
             }
         }
+
 
         return result;
     }
