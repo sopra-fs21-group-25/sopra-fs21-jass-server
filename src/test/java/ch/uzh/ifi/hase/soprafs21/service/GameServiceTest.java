@@ -1,55 +1,47 @@
-package ch.uzh.ifi.hase.soprafs21.controller;
+package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.SchieberGameSession;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.game.*;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.SchieberGameGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
-import ch.uzh.ifi.hase.soprafs21.service.GameService;
-import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
+import ch.uzh.ifi.hase.soprafs21.repository.RegisteredUserRepository;
+import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyListOf;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(GameController.class)
-class GameControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
+class GameServiceTest {
 
-    @MockBean
+    @Mock
+    private GameRepository gameRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @InjectMocks
     private GameService gameService;
 
+    @InjectMocks
+    private UserService userService;
+
     private SchieberGameSession schieberGameSession;
-    private SchieberGameGetDTO schieberGameGetDTO;
-    private SchieberGameGetDTO schieber;
 
     @BeforeEach
-    public void setupGameSession(){
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+        // given
         Card card1 = new Card();
         card1.setRank(Rank.ACE);
         card1.setSuit(Suit.BELL);
@@ -66,25 +58,29 @@ class GameControllerTest {
         card4.setRank(Rank.SEVEN);
         card4.setSuit(Suit.BELL);
 
-        User peter = new RegisteredUser();
+        RegisteredUser peter = new RegisteredUser();
         peter.setUsername("Peter");
         UUID peterID = UUID.randomUUID();
         peter.setId(peterID);
+        userService.createRegisteredUser(peter);
 
-        User marie = new RegisteredUser();
+        RegisteredUser marie = new RegisteredUser();
         marie.setUsername("Marie");
         UUID marieID = UUID.randomUUID();
         marie.setId(marieID);
+        userService.createRegisteredUser(marie);
 
-        User ursine = new RegisteredUser();
+        RegisteredUser ursine = new RegisteredUser();
         ursine.setUsername("Ursine");
         UUID ursineID = UUID.randomUUID();
         ursine.setId(ursineID);
+        userService.createRegisteredUser(ursine);
 
-        User kai = new RegisteredUser();
+        RegisteredUser kai = new RegisteredUser();
         kai.setUsername("Kai");
         UUID kaiID = UUID.randomUUID();
         kai.setId(kaiID);
+        userService.createRegisteredUser(kai);
 
         Card[] listofCard = new Card[4];
         listofCard[0]= card1;
@@ -138,54 +134,51 @@ class GameControllerTest {
         schieberGameSession.setHasTrickStarted(false);
 
 
-        //setup of the DTO
+        Mockito.when(gameRepository.saveAndFlush(Mockito.any())).thenReturn(schieberGameSession);
 
 
 
-//        schieberGameGetDTO = new SchieberGameGetDTO();
-//        schieberGameGetDTO.setTrickToPlay(1);
-//        schieberGameGetDTO.setId(gameID);
-//        schieberGameGetDTO.setPointsToWin(2000);
-//        schieberGameGetDTO.setPlayer0id(peterID);
-//        schieberGameGetDTO.setPlayer1id(marieID);
-//        schieberGameGetDTO.setPlayer2id(kaiID);
-//        schieberGameGetDTO.setPlayer3id(ursineID);
-//        schieberGameGetDTO.setWeisAsk("true");
-//        schieberGameGetDTO.setCrossWeisAllowed(Boolean.TRUE);
-//        schieberGameGetDTO.setWeisAllowed(Boolean.FALSE);
-//        schieberGameGetDTO.setCardsOfPlayer(listofCard);
-//        schieberGameGetDTO.setIngameModes(myObjectforDTO);
-//        schieberGameGetDTO.setHasTrickStarted(Boolean.FALSE);
-//        schieberGameGetDTO.setTrickToPlay(1);
-//        schieberGameGetDTO.setCardsPlayed(listofCard);
-//        schieberGameGetDTO.setIdOfRoundStartingPlayer(peter.getId());
-//        schieberGameGetDTO.setPointsTeam0_2(200);
 
-
-
-        schieber = DTOMapper.INSTANCE.convertEntityToSchieberGameGetDTO(schieberGameSession);
-
-        given(gameService.getGameWithId(Mockito.any())).willReturn(schieberGameSession);
     }
 
     @Test
-    public void getGamewithID_test()throws Exception{
+    void getGameWithId_success() {
+        Mockito.when(gameRepository.findById(Mockito.any())).thenReturn(java.util.Optional.ofNullable(schieberGameSession));
+       SchieberGameSession foundSession = gameService.getGameWithId(schieberGameSession.getId());
 
-        MockHttpServletRequestBuilder getRequest = get("/games/" + schieberGameSession.getId().toString())
-                .contentType(asJsonString(MediaType.APPLICATION_JSON));
-
-        mockMvc.perform(getRequest)
-                .andExpect(jsonPath("$.id", is(schieber.getId().toString())));
-               // .andExpect(status().isOk());
+       assertEquals(foundSession.getId(), schieberGameSession.getId());
+       assertEquals(foundSession.getUser0(), schieberGameSession.getUser0());
+       assertEquals(foundSession.getUser1(), schieberGameSession.getUser1());
+       assertEquals(foundSession.getUser2(), schieberGameSession.getUser2());
+       assertEquals(foundSession.getUser3(), schieberGameSession.getUser3());
+       assertEquals(foundSession.getIngameModes(), schieberGameSession.getIngameModes());
+       assertEquals(foundSession.getHasTrickStarted(), schieberGameSession.getHasTrickStarted());
     }
 
-    private String asJsonString(final Object object) {
-        try {
-            return new ObjectMapper().writeValueAsString(object);
-        }
-        catch (JsonProcessingException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("The request body could not be created.%s", e.toString()));
-        }
+    @Test
+    void getGameWithId_wrongID_fails() {
+       // Mockito.when(gameRepository.findById(schieberGameSession.getId())).thenReturn(java.util.Optional.ofNullable(schieberGameSession));
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> gameService.getGameWithId(UUID.randomUUID()));
+        var status = thrown.getStatus();
+        var reason = thrown.getReason();
+
+        assertEquals(HttpStatus.NOT_FOUND, status);
+        assertEquals("Could not find game with that id", reason);
     }
 
+    @Test
+    void getPlayerCards() {
+    }
+
+    @Test
+    void createNewGame() {
+    }
+
+    @Test
+    void updateStateOfGameWithId() {
+    }
+
+    @Test
+    void deleteGameSession() {
+    }
 }

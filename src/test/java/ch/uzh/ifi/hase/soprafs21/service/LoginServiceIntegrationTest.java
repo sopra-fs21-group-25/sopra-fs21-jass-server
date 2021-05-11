@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
+import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.RegisteredUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,9 @@ public class LoginServiceIntegrationTest {
     private RegisteredUserRepository registeredUserRepository;
 
     @Autowired
+    private GameRepository gameRepository;
+
+    @Autowired
     private LoginService loginService;
 
 //    @Autowired
@@ -31,7 +35,10 @@ public class LoginServiceIntegrationTest {
 
     @BeforeEach
     public void register(){
+        gameRepository.deleteAll();
         registeredUserRepository.deleteAll();
+
+
 
         RegisteredUser user = new RegisteredUser();
         user.setUsername("coolName");
