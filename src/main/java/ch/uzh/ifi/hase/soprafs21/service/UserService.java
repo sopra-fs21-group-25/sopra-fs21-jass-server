@@ -63,13 +63,12 @@ public class UserService {
     }
 
     public GuestUser createGuestUser() {
-        GuestUser newGuest = new GuestUser();
         boolean userExists = true;
+        GuestUser newGuest = new GuestUser();
 
         try {
             while (userExists) {
                 newGuest.setFunnyUsername();
-                newGuest.setStatus(UserStatus.ONLINE);
 
                 userExists = checkIfUserExists(newGuest);
             }
@@ -77,10 +76,12 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create guest user");
         }
 
+        newGuest.setStatus(UserStatus.ONLINE);
+        newGuest.setToken(UUID.randomUUID().toString());
+
         // saves the given entity but data is only persisted in the database once flush() is called
         newGuest = userRepository.save(newGuest);
         userRepository.flush();
-
         log.debug("Created Information for User: {}", newGuest);
         return newGuest;
     }
@@ -110,6 +111,7 @@ public class UserService {
     public List<User> getOnlineUsers() { return userRepository.findAllOnlineUsers(); }
 
     public List<User> getAvailableUsers(UUID id){
+        List<User> test = userRepository.availableUsersForUserWithId(id);
         return userRepository.availableUsersForUserWithId(id);
     }
     /**
