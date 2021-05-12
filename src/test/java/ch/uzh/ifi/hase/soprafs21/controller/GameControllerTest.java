@@ -44,6 +44,10 @@ class GameControllerTest {
     @MockBean
     private GameService gameService;
 
+    private RegisteredUser peter;
+    private List<Card> listCard;
+    private Card[] listofCard;
+
     private SchieberGameSession schieberGameSession;
     private SchieberGameGetDTO schieberGameGetDTO;
     private SchieberGameGetDTO schieber;
@@ -53,20 +57,25 @@ class GameControllerTest {
         Card card1 = new Card();
         card1.setRank(Rank.ACE);
         card1.setSuit(Suit.BELL);
+        card1.setIsTrumpf(false);
+
 
         Card card2 = new Card();
         card2.setRank(Rank.KING);
         card2.setSuit(Suit.BELL);
+        card2.setIsTrumpf(false);
 
         Card card3 = new Card();
         card3.setRank(Rank.UNDER);
         card3.setSuit(Suit.BELL);
+        card3.setIsTrumpf(false);
 
         Card card4 = new Card();
         card4.setRank(Rank.SEVEN);
         card4.setSuit(Suit.BELL);
+        card4.setIsTrumpf(false);
 
-        User peter = new RegisteredUser();
+        peter = new RegisteredUser();
         peter.setUsername("Peter");
         UUID peterID = UUID.randomUUID();
         peter.setId(peterID);
@@ -86,13 +95,13 @@ class GameControllerTest {
         UUID kaiID = UUID.randomUUID();
         kai.setId(kaiID);
 
-        Card[] listofCard = new Card[4];
+        listofCard = new Card[4];
         listofCard[0]= card1;
         listofCard[1]= card2;
         listofCard[2]= card3;
         listofCard[3]= card4;
 
-        List<Card> listCard = new ArrayList<>();
+        listCard = new ArrayList<>();
         listCard.add(card1);
         listCard.add(card2);
         listCard.add(card3);
@@ -165,19 +174,68 @@ class GameControllerTest {
 
         schieber = DTOMapper.INSTANCE.convertEntityToSchieberGameGetDTO(schieberGameSession);
 
-        given(gameService.getGameWithId(Mockito.any())).willReturn(schieberGameSession);
     }
 
     @Test
     public void getGamewithID_test()throws Exception{
+        //given
+        given(gameService.getGameWithId(Mockito.any())).willReturn(schieberGameSession);
 
+        //make request
         MockHttpServletRequestBuilder getRequest = get("/games/" + schieberGameSession.getId().toString())
                 .contentType(asJsonString(MediaType.APPLICATION_JSON));
 
         mockMvc.perform(getRequest)
-                .andExpect(jsonPath("$.id", is(schieber.getId().toString())));
-               // .andExpect(status().isOk());
+                .andExpect(jsonPath("$.id", is(schieber.getId().toString())))
+                .andExpect(jsonPath("$.player0id", is(schieber.getPlayer0id().toString())))
+                .andExpect(jsonPath("$.player1id", is(schieber.getPlayer1id().toString())))
+                .andExpect(jsonPath("$.player2id", is(schieber.getPlayer2id().toString())))
+                .andExpect(jsonPath("$.player3id", is(schieber.getPlayer3id().toString())))
+                .andExpect(jsonPath("$.weisAllowed", is(schieber.getWeisAllowed())))
+                .andExpect(jsonPath("$.crossWeisAllowed", is(schieber.getCrossWeisAllowed())))
+                .andExpect(status().isOk());
     }
+
+//    @Test
+//    public void getGamewithID_noID_test()throws Exception{
+//        //when
+//        Mockito.doThrow(ResponseStatusException.class).when(gameService).getGameWithId(schieberGameSession.getId());
+//        //make request
+//        MockHttpServletRequestBuilder getRequest = get("/games/" + schieberGameSession.getId().toString())
+//                .contentType(asJsonString(MediaType.APPLICATION_JSON));
+//
+//        mockMvc.perform(getRequest)
+//                .andExpect(status().isNotFound());
+//    }
+
+    @Test
+    public void getGamewithID_ContainingCardsofPlayer_test()throws Exception{
+        given(gameService.getGameWithId(Mockito.any())).willReturn(schieberGameSession);
+        given(gameService.getPlayerCards(peter.getId(), schieberGameSession)).willReturn(java.util.Optional.ofNullable(listofCard));
+
+        MockHttpServletRequestBuilder getRequest = get("/games/" + schieberGameSession.getId().toString()+"/"+ peter.getId())
+                .contentType(asJsonString(MediaType.APPLICATION_JSON));
+
+        mockMvc.perform(getRequest)
+                .andExpect(jsonPath("$.id", is(schieber.getId().toString())))
+                .andExpect(jsonPath("$.pointsToWin", is(schieber.getPointsToWin())))
+                .andExpect(status().isOk());
+    }
+
+//    @Test
+//    public void getGamewithID_ContainingCardsofPlayer_DoNotExist_test()throws Exception{
+//        given(gameService.getGameWithId(Mockito.any())).willReturn(schieberGameSession);
+//        //given(gameService.getPlayerCards(peter.getId(), schieberGameSession)).willReturn(java.util.Optional.ofNullable(listofCard));
+//
+//        MockHttpServletRequestBuilder getRequest = get("/games/" + schieberGameSession.getId().toString()+"/"+ peter.getId())
+//                .contentType(asJsonString(MediaType.APPLICATION_JSON));
+//
+//        mockMvc.perform(getRequest)
+//                .andExpect(jsonPath("$.id", is(schieber.getId().toString())))
+//                .andExpect(jsonPath("$.pointsToWin", is(schieber.getPointsToWin())))
+//                .andExpect(status().isOk());
+//    }
+
 
     private String asJsonString(final Object object) {
         try {

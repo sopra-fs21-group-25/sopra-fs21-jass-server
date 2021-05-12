@@ -89,11 +89,11 @@ public class FriendServiceIntegrationTest {
 
         //when
         List<User> willisFriends = friendService.getFriends(willi);
-
+        Set<User> willisFriendsHash = new HashSet<User>(willisFriends);
         // then
         assertEquals( rebekka, willisFriends.get(0));
         assertEquals( louise, willisFriends.get(1));
-        assertEquals(2, willisFriends.size());
+        assertEquals(2, willisFriendsHash.size());
     }
 
     @Test
