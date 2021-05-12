@@ -111,4 +111,9 @@ public class UserController {
         User user = userService.getUserById(id);
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
     }
+
+    @PutMapping("/users/logout/{token}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void logoutUserWithToken(@PathVariable String token) { userService.logout(token); }
 }

@@ -16,6 +16,8 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, UUID> {
 
     User findByUsername(String username);
+
+    User findByToken(String token);
     
     @Query("select distinct u from User u \n" + 
 		   "where (type(u) = 'RegisteredUser') and (u.status = 0) and (u.id != :id) and \n" +

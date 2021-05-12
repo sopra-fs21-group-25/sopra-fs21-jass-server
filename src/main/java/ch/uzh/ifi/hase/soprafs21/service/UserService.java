@@ -128,4 +128,9 @@ public class UserService {
 
         return userByUsername != null;
     }
+
+    public void logout(String token) {
+        User userToBeLoggedOut = userRepository.findByToken(token);
+        userToBeLoggedOut.setStatus(UserStatus.OFFLINE);
+    }
 }

@@ -58,6 +58,16 @@ public class Card {
         return this.suit == other.suit && this.rank == other.rank;
     }
 
+    @Override
+    public int hashCode() {
+        int leastSigDecDigit = getRank().ordinal();
+        int mostSigDecDigit = getSuit().ordinal() * 10;
+
+        // calc hashcode e.g. for the card BELL TEN as:
+        // BELL ordinal is 2, times 10 is 20, then + TEN ordinal which is 4 => yields 20+4 == 24
+        return mostSigDecDigit + leastSigDecDigit;
+    }
+
     public static Card[] sortCardArray(Card ... cards) {
         ObenabeComparator comparator = new ObenabeComparator();
 
