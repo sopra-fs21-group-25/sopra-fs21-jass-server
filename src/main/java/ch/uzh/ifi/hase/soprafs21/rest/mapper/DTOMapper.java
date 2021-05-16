@@ -183,5 +183,7 @@ public interface DTOMapper {
     @Mapping(source = "currentIngameMode", target = "currentIngameMode")
     SchieberGameGetDTO convertEntityToSchieberGameGetDTO(SchieberGameSession schieberGameSession);
 
-
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "username", target = "username")
+    RegisteredUser convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 }

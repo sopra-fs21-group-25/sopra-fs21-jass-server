@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -110,6 +111,14 @@ public class UserController {
         // fetch particular user
         User user = userService.getUserById(id);
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
+    }
+
+    @PutMapping("/users/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void updateUser(@PathVariable UUID id, @RequestBody UserPutDTO userPutDTO) {
+        RegisteredUser userInput = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+        userService.updateUserProfile(id, userInput);
     }
 
     @PutMapping("/users/logout/{token}")

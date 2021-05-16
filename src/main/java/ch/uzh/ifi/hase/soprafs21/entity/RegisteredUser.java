@@ -2,9 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.entity;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import javax.persistence.*;
 
 @Entity
 @DiscriminatorValue("RegisteredUser")
@@ -18,4 +16,8 @@ public class RegisteredUser extends User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @OneToOne
+    @PrimaryKeyJoinColumn(name = "id")
+    ProfileImage profileImage;
 }

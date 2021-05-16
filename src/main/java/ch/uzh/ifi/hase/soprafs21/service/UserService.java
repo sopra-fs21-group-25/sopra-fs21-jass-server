@@ -114,6 +114,32 @@ public class UserService {
         List<User> test = userRepository.availableUsersForUserWithId(id);
         return userRepository.availableUsersForUserWithId(id);
     }
+
+//    public RegisteredUser updateUser(RegisteredUser user, String newUsername) {
+//            String oldname = user.getUsername();
+//            user.setUsername(newUsername);
+//            if (!checkIfUserExists(user)){
+//                userRepository.saveAndFlush(user);
+//            }
+//            else{
+//               user.setUsername(oldname);
+//               throwUserConflict();
+//            }
+//        return user;
+//    }
+    public void updateUserProfile(UUID userId, RegisteredUser userInput) throws ResponseStatusException {
+        User userToUpdate = getUserById(userId);
+
+        if (userRepository.findByUsername(userInput.getUsername()) != null){
+            String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "username", "is"));
+        }
+        if (userInput.getUsername() != null){
+            userToUpdate.setUsername(userInput.getUsername());}
+        userRepository.saveAndFlush(userToUpdate);
+    }
+
+
     /**
      * This is a helper method that will check the uniqueness criteria of the username and the name
      * defined in the User entity. The method will do nothing if the input is unique and throw an error otherwise.
