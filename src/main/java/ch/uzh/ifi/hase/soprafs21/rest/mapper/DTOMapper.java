@@ -125,6 +125,13 @@ public interface DTOMapper {
     @Mapping(source = "toUser", target = "toUser")
     FriendRequest convertFriendRequestPostDTOToFriendRequest(FriendRequestPostDTO friendRequestPostDTO);
 
+    @Mapping(source = "id", target = "id")
+    @Mapping(target = "fromId", expression = "java(friendRequest.getFromUser().getId())")
+    @Mapping(target = "toId", expression = "java(friendRequest.getToUser().getId())")
+    @Mapping(target = "fromUsername", expression = "java(friendRequest.getFromUser().getUsername())")
+    FriendRequestWithUsernameGetDTO convertEntityToFriendRequestWithUsernameGetDTO(FriendRequest friendRequest);
+
+
 /*
     Game related mappings
 */

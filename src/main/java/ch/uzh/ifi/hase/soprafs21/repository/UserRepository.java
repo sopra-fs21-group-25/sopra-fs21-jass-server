@@ -28,4 +28,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query(value = "SELECT u FROM User u WHERE u.status = 0")
     List<User> findAllOnlineUsers();
 
+    // -------------------------------
+
+    @Query("SELECT DISTINCT u FROM User u WHERE NOT (u.id = :id) AND NOT EXISTS (SELECT f FROM u.friends f WHERE f.id = :id) AND NOT EXISTS (SELECT f FROM u.friendOf f WHERE f.id = :id)")
+    List<User> usersNotBefriendedWith(@Param("id") UUID id);
 }

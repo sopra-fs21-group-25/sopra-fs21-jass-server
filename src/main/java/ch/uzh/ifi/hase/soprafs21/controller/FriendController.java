@@ -57,4 +57,13 @@ public class FriendController {
             throw e;
         }
     }
+
+    @DeleteMapping("/friends/{fromId}/{removeId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void removeFriend(@PathVariable("fromId") UUID fromId, @PathVariable("removeId") UUID removeId) {
+        User removingUser = userService.getUserById(fromId);
+        User toBeRemovedUser = userService.getUserById(removeId);
+        friendService.removeFriend(removingUser, toBeRemovedUser);
+    }
 }

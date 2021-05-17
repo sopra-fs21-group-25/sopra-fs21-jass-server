@@ -133,4 +133,10 @@ public class UserService {
         User userToBeLoggedOut = userRepository.findByToken(token);
         userToBeLoggedOut.setStatus(UserStatus.OFFLINE);
     }
+
+    // ---------------------------------------------------------
+
+    public List<User> getRemainingUsersForUserWithId(UUID userId) {
+        return userRepository.usersNotBefriendedWith(userId);
+    }
 }
