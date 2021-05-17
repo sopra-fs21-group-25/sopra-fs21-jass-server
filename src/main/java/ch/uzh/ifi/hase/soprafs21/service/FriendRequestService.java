@@ -53,4 +53,15 @@ public class FriendRequestService {
     /*public List<String> getPendingRequests(UUID id){
         return friendRequestRepository.pendingRequests(id);
     }*/
+
+    // -------------------------------------------------------------------------------------------
+
+    public FriendRequest createAndStoreNewFriendRequest(User fromUser, User toUser) {
+        FriendRequest newRequest = new FriendRequest(fromUser, toUser);
+        newRequest = friendRequestRepository.save(newRequest);
+        friendRequestRepository.flush();
+
+        log.debug("Created new friend request from user {} to user {}", fromUser, toUser);
+        return newRequest;
+    }
 }

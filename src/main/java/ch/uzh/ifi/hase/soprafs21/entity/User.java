@@ -128,7 +128,7 @@ public abstract class User implements Serializable {
         return friends;
     }
 
-    public List<User> getfriendOf(){
+    public List<User> getFriendOf(){
         return friendOf;
     }
 

@@ -116,4 +116,20 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
     public void logoutUserWithToken(@PathVariable String token) { userService.logout(token); }
+
+    // ---------------------------------------------------------
+
+    @GetMapping("/users/not_friends/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<UserGetDTO> getUsersThatAreNotFriendOfUserWithId(@PathVariable("userId") UUID userId) {
+        List<User> remainingUsers = userService.getRemainingUsersForUserWithId(userId);
+        List<UserGetDTO> getDTOs = new ArrayList<>();
+
+        for(User u : remainingUsers) {
+            getDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(u));
+        }
+
+        return getDTOs;
+    }
 }

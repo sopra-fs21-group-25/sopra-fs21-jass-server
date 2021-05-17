@@ -3,11 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.entity.FriendRequest;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPutDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestGetDTO;
-import ch.uzh.ifi.hase.soprafs21.rest.dto.FriendRequestPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.FriendRequestService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
@@ -105,5 +101,32 @@ public class FriendRequestController {
     @ResponseBody
     public void acceptRequest(@PathVariable UUID id){
         friendRequestService.acceptRequest(id);
+    }
+
+
+    // ----------------------------------------------------------------------------------------
+
+    @PostMapping("/friend_requests/{fromUserId}/{toUserId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void createFriendRequest(@PathVariable("fromUserId") UUID fromUserId, @PathVariable("toUserId") UUID toUserId) {
+        User fromUser = userService.getUserById(fromUserId);
+        User toUser = userService.getUserById(toUserId);
+        friendRequestService.createAndStoreNewFriendRequest(fromUser, toUser);
+    }
+
+    @GetMapping("/friend_requests/with_username/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<FriendRequestWithUsernameGetDTO> getPendingFriendRequestsWithUsername(@PathVariable("userId") UUID userId) {
+        User requestingUser = userService.getUserById(userId);
+        List<FriendRequest> pendingRequests = requestingUser.getPendingFriendRequests();
+        List<FriendRequestWithUsernameGetDTO> getDTOs = new ArrayList<>();
+
+        for(FriendRequest req : pendingRequests) {
+            getDTOs.add(DTOMapper.INSTANCE.convertEntityToFriendRequestWithUsernameGetDTO(req));
+        }
+
+        return getDTOs;
     }
 }
