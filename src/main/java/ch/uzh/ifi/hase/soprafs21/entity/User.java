@@ -104,6 +104,30 @@ public abstract class User implements Serializable {
     @Transient
     protected String userType = getDiscriminatorValue();
 
+    @Override
+    public boolean equals(Object other) {
+        if(this == other) {
+            return true;
+        }
+
+        if(other == null) {
+            return false;
+        }
+
+        if(!(other instanceof User)) {
+            return false;
+        }
+
+        User user = (User) other;
+
+        return this.getId().equals(user.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getId().hashCode();
+    }
+
     public void setId(UUID id) {
         this.id = id;
     }

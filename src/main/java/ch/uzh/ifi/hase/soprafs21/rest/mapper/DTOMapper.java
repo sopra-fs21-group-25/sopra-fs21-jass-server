@@ -78,7 +78,11 @@ public interface DTOMapper {
     @Mapping(source = "crossWeisAllowed", target = "crossWeis")
     @Mapping(source = "weisAsk", target = "weisAsk")
     @Mapping(source = "creatorUsername", target = "creatorUsername")
-    @Mapping(source = "usersInLobby", target = "usersInLobby", qualifiedByName = "userSetToUsernames")
+    @Mapping(source = "usersInLobby", target = "usersInLobby", qualifiedByName = "convertUsersToUserGetDTOs")
+    @Mapping(target = "userTop", expression = "java(this.convertEntityToUserGetDTO(lobby.getUserTop()))")
+    @Mapping(target = "userRight", expression = "java(this.convertEntityToUserGetDTO(lobby.getUserRight()))")
+    @Mapping(target = "userBottom", expression = "java(this.convertEntityToUserGetDTO(lobby.getUserBottom()))")
+    @Mapping(target = "userLeft", expression = "java(this.convertEntityToUserGetDTO(lobby.getUserLeft()))")
     LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
 
     @Mapping(source = "mode", target = "mode")
@@ -94,19 +98,14 @@ public interface DTOMapper {
     @Mapping(source = "usersInLobby", target = "usersInLobby")
     Lobby convertLobbyPostDTOtoLobby(LobbyPostDTO lobbyPostDTO);
 
-    @Named("userSetToUsernames")
-    static String[] userSetToUsernames(Set<User> users) {
-        int length = users.size();
-
-        String[] usernames = new String[length];
+    @Named("convertUsersToUserGetDTOs")
+    static UserGetDTO[] convertUsersToUserGetDTOs(Set<User> users) {
+        UserGetDTO[] userGetDTOs = new UserGetDTO[users.size()];
 
         int i = 0;
-        for(User user : users) {
-            usernames[i] = user.getUsername();
-            i++;
-        }
+        for(User user : users) { userGetDTOs[i++] = DTOMapper.INSTANCE.convertEntityToUserGetDTO(user); }
 
-        return usernames;
+        return userGetDTOs;
     }
 
 
