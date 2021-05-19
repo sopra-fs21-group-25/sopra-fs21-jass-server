@@ -10,6 +10,19 @@ public class RegisteredUser extends User {
     @Column
     protected String password;
 
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] profilePicture;
+
+    public byte[] getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(byte[] profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -17,7 +30,4 @@ public class RegisteredUser extends User {
         this.password = password;
     }
 
-    @OneToOne
-    @PrimaryKeyJoinColumn(name = "id")
-    ProfileImage profileImage;
 }

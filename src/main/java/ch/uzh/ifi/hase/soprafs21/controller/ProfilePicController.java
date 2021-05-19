@@ -1,25 +1,29 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 
-import ch.uzh.ifi.hase.soprafs21.entity.ProfileImage;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.exceptions.ResponseMessage;
-import ch.uzh.ifi.hase.soprafs21.repository.ImageRepository;
-import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
+import ch.uzh.ifi.hase.soprafs21.repository.RegisteredUserRepository;
 //import org.apache.tomcat.jni.FileInfo;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
-import io.github.classgraph.Resource;
+import nonapi.io.github.classgraph.utils.FileUtils;
+import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
+import javax.imageio.ImageIO;
+import javax.tools.FileObject;
 import java.awt.*;
-import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.util.Base64;
 import java.util.UUID;
 
 @RestController
@@ -30,29 +34,48 @@ public class ProfilePicController {
 
 
     @Autowired
-    ImageRepository imageRepository;
+    RegisteredUserRepository registeredUserRepository;
 
-    @PostMapping("/files/{id}")
+    @PostMapping(value = "/files/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public UUID uploadFile(@PathVariable UUID id, @RequestParam("file") MultipartFile file) throws IOException {
-        ProfileImage dbImage = new ProfileImage();
-        dbImage.setUserId(id);
-        dbImage.setContent(file.getBytes());
+    public ResponseEntity uploadFile(@PathVariable UUID id, @RequestParam MultipartFile file) throws IOException {
+        RegisteredUser user = (RegisteredUser) userService.getUserById(id);
 
-        return imageRepository.save(dbImage)
-                .getPicId();
+        user.setProfilePicture(file.getBytes());
+
+        registeredUserRepository.save(user);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(StringUtils.newStringUtf8(Base64.getEncoder().encode(file.getBytes())));
+        sb.toString();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"")
+                .body(sb);
     }
+
 
     @GetMapping("/files/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ByteArrayResource getFile(@PathVariable UUID id) {
-        //User user = userService.getUserById(id);
-        byte[] image = imageRepository.findByUserIdIs(id)
-                //.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
-                .getContent();
+    public ResponseEntity getFile(@PathVariable UUID id) throws IOException {
+        RegisteredUser user = (RegisteredUser) userService.getUserById(id);
+        byte[] picture = user.getProfilePicture();
 
-        return new ByteArrayResource(image);
+        if (picture == null){
+            BufferedImage bImage = ImageIO.read(new File("src/main/java/ch/uzh/ifi/hase/soprafs21/assets/acorn.png"));
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ImageIO.write(bImage, "png", bos );
+            picture = bos.toByteArray();
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(StringUtils.newStringUtf8(Base64.getEncoder().encode(picture)));
+        sb.toString();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"")
+                .body(sb);
     }
 }
