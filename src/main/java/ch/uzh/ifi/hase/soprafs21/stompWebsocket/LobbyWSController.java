@@ -23,8 +23,8 @@ public class LobbyWSController {
 
     @MessageMapping("/lobbies/{lobbyId}/fetch")
     @SendTo("/lobbies/{lobbyId}/fetch")
-    public String notifyAboutUsersInLobbyUpdate(@Payload String msg) {
-        return msg;
+    public String notifyAboutUsersInLobbyUpdate() {
+        return "fetch";
     }
 
     @MessageMapping("/lobbies/{lobbyId}/notifyShutdown")
@@ -33,10 +33,10 @@ public class LobbyWSController {
         return "shutdown";
     }
 
-    @MessageMapping("/lobbies/{lobbyId}/kicked/{username}")
-    @SendTo("/lobbies/{lobbyId}/kicked/{username}")
+    @MessageMapping("/lobbies/{lobbyId}/kicked/{userId}")
+    @SendTo("/lobbies/{lobbyId}/kicked/{userId}")
     public String kickPlayerOutOfLobby() {
-        return "kicked!";
+        return "kicked";
     }
 
     @MessageMapping("/lobbies/invite/{userId}")

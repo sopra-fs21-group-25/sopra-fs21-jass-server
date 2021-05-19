@@ -1,17 +1,12 @@
 package ch.uzh.ifi.hase.soprafs21.rest.dto;
 
 import java.util.UUID;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
 
-public  class FriendRequestPostDTO {
-
-    private UUID fromId;
+public class FriendRequestWithUsernameGetDTO {
     private UUID toId;
+    private UUID fromId;
+    private String fromUsername;
 
-    public FriendRequestPostDTO(UUID fromId, UUID toId) {
-        this.fromId = fromId;
-        this.toId = toId;
-    }
 
     public UUID getFromId() {
         return fromId;
@@ -25,7 +20,11 @@ public  class FriendRequestPostDTO {
         return toId;
     }
 
-    public void setToId(UUID toUser) {
+    public void setToId(UUID toId) {
         this.toId = toId;
     }
+
+    public String getFromUsername() { return fromUsername; }
+
+    public void setFromUsername(String fromUsername) { this.fromUsername = fromUsername; }
 }

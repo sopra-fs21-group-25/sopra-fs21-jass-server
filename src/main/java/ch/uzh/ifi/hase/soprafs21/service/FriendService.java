@@ -31,8 +31,7 @@ public class FriendService {
     public List<User> getFriends(User a){
         if(a.getFriends() != null){
             List<User> friends = new ArrayList<>(a.getFriends());
-            // I think this is unnecessary, as it adds all friends twice
-            friends.addAll(a.getfriendOf());
+            friends.addAll(a.getFriendOf());
             return  friends;
         }
         return new ArrayList<>();

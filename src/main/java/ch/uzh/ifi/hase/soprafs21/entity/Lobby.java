@@ -35,6 +35,27 @@ public class Lobby implements Serializable, Comparable<Lobby> {
     )
     private Set<User> usersInLobby = new HashSet<>();
 
+
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_top_id")
+    private User userTop;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_right_id")
+    private User userRight;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_bottom_id")
+    private User userBottom;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_left_id")
+    private User userLeft;
+
+
+
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private GameMode mode;
@@ -178,6 +199,23 @@ public class Lobby implements Serializable, Comparable<Lobby> {
     public void setWeisAsk(String weisAsk) {
         this.weisAsk = weisAsk;
     }
+
+    public User getUserTop() { return userTop; }
+
+    public void setUserTop(User userTop) { this.userTop = userTop; }
+
+    public User getUserRight() { return userRight; }
+
+    public void setUserRight(User userRight) { this.userRight = userRight; }
+
+    public User getUserBottom() { return userBottom; }
+
+    public void setUserBottom(User userBottom) { this.userBottom = userBottom; }
+
+    public User getUserLeft() { return userLeft; }
+
+    public void setUserLeft(User userLeft) { this.userLeft = userLeft; }
+
 
     /**
      * Compares this object with the specified object for order.  Returns a

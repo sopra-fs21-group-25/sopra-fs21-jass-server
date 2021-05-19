@@ -31,6 +31,9 @@ public class FriendRequestService {
         this.friendService = friendService;
     }
 
+    /*
+    Not in use any longer. Will be soonish
+
     public FriendRequest sendFriendRequest(User fromUser, User toUser){
         FriendRequest newRequest = new FriendRequest(fromUser, toUser);
         this.friendRequestRepository.save(newRequest); 
@@ -48,9 +51,34 @@ public class FriendRequestService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a friend request with this id."));
         friendService.addFriends(newRequest.getFromUser(), newRequest.getToUser());
         friendRequestRepository.deleteById(id);
+    }*/
+
+
+    public FriendRequest createAndStoreNewFriendRequest(FriendRequest newRequest) throws ResponseStatusException {
+        if(friendService.getFriends(newRequest.getFromUser()).contains(newRequest.getToUser())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot send friend request to user who is already a friend");
+        }
+
+        newRequest = friendRequestRepository.save(newRequest);
+        friendRequestRepository.flush();
+
+        log.debug("Created new friend request {}", newRequest);
+        return newRequest;
     }
 
-    /*public List<String> getPendingRequests(UUID id){
-        return friendRequestRepository.pendingRequests(id);
-    }*/
+    public void acceptFriendRequest(User fromUser, User toUser) {
+        // Note: this is not the request that's actually being accepted, it's the inverse request in case the accepting user
+        // has sent a request himself. In this case we must delete both requests
+        FriendRequest optionalInverseRequest = friendRequestRepository.getFriendRequestByFromUserAndToUser(toUser, fromUser);
+        if(optionalInverseRequest != null) {
+            friendRequestRepository.deleteFriendRequestByFromUserAndToUser(toUser, fromUser);
+        }
+
+        friendService.addFriends(fromUser, toUser);
+        friendRequestRepository.deleteFriendRequestByFromUserAndToUser(fromUser, toUser);
+    }
+
+    public void declineFriendRequest(User fromUser, User toUser) {
+        friendRequestRepository.deleteFriendRequestByFromUserAndToUser(fromUser, toUser);
+    }
 }

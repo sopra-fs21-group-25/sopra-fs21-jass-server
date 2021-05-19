@@ -30,7 +30,7 @@ import java.util.UUID;
  * Always created one mapper for getting information (GET) and one mapper for creating information (POST).
  */
 @Mapper(
-        uses = {GameService.class},
+        uses = {GameService.class, UserService.class},
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         componentModel = "spring"
 )
@@ -78,7 +78,11 @@ public interface DTOMapper {
     @Mapping(source = "crossWeisAllowed", target = "crossWeis")
     @Mapping(source = "weisAsk", target = "weisAsk")
     @Mapping(source = "creatorUsername", target = "creatorUsername")
-    @Mapping(source = "usersInLobby", target = "usersInLobby", qualifiedByName = "userSetToUsernames")
+    @Mapping(source = "usersInLobby", target = "usersInLobby", qualifiedByName = "convertUsersToUserGetDTOs")
+    @Mapping(target = "userTop", expression = "java(this.convertEntityToUserGetDTO(lobby.getUserTop()))")
+    @Mapping(target = "userRight", expression = "java(this.convertEntityToUserGetDTO(lobby.getUserRight()))")
+    @Mapping(target = "userBottom", expression = "java(this.convertEntityToUserGetDTO(lobby.getUserBottom()))")
+    @Mapping(target = "userLeft", expression = "java(this.convertEntityToUserGetDTO(lobby.getUserLeft()))")
     LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
 
     @Mapping(source = "mode", target = "mode")
@@ -94,19 +98,14 @@ public interface DTOMapper {
     @Mapping(source = "usersInLobby", target = "usersInLobby")
     Lobby convertLobbyPostDTOtoLobby(LobbyPostDTO lobbyPostDTO);
 
-    @Named("userSetToUsernames")
-    static String[] userSetToUsernames(Set<User> users) {
-        int length = users.size();
-
-        String[] usernames = new String[length];
+    @Named("convertUsersToUserGetDTOs")
+    static UserGetDTO[] convertUsersToUserGetDTOs(Set<User> users) {
+        UserGetDTO[] userGetDTOs = new UserGetDTO[users.size()];
 
         int i = 0;
-        for(User user : users) {
-            usernames[i] = user.getUsername();
-            i++;
-        }
+        for(User user : users) { userGetDTOs[i++] = DTOMapper.INSTANCE.convertEntityToUserGetDTO(user); }
 
-        return usernames;
+        return userGetDTOs;
     }
 
 
@@ -115,15 +114,23 @@ public interface DTOMapper {
     FriendRequest related mappings
 */
 
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "fromId", target = "fromId")
-    @Mapping(source = "toId", target = "toId")
-    FriendRequestGetDTO convertEntityToFriendRequestGetDTO(FriendRequest friendRequest);
 
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "fromUser", target = "fromUser")
-    @Mapping(source = "toUser", target = "toUser")
-    FriendRequest convertFriendRequestPostDTOToFriendRequest(FriendRequestPostDTO friendRequestPostDTO);
+/*  No longer in use. Will be removed soonish
+    @Mapping(source = "fromId", target = "fromUser.id")
+    @Mapping(source = "toId", target = "toUser.id")
+    FriendRequestGetDTO convertEntityToFriendRequestGetDTO(FriendRequest friendRequest);*/
+
+
+    @Mapping(target = "fromUser", expression = "java(userService.getUserById(friendRequestPostDTO.getFromId()))")
+    @Mapping(target = "toUser", expression = "java(userService.getUserById(friendRequestPostDTO.getToId()))")
+    FriendRequest convertFriendRequestPostDTOToFriendRequest(FriendRequestPostDTO friendRequestPostDTO, @Context UserService userService);
+
+
+    @Mapping(target = "fromId", expression = "java(friendRequest.getFromUser().getId())")
+    @Mapping(target = "toId", expression = "java(friendRequest.getToUser().getId())")
+    @Mapping(target = "fromUsername", expression = "java(friendRequest.getFromUser().getUsername())")
+    FriendRequestWithUsernameGetDTO convertEntityToFriendRequestWithUsernameGetDTO(FriendRequest friendRequest);
+
 
 /*
     Game related mappings
