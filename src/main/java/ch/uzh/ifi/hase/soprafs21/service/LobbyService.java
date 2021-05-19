@@ -67,7 +67,9 @@ public class LobbyService {
 
         User userToAdd = this.lobbyRepository.findUserById(userIdDTO.getUserId());
 
-        lobby.getUsersInLobby().add(userToAdd);
+        Set<User> lobbyUsers = lobby.getUsersInLobby();
+        lobbyUsers.add(userToAdd);
+        lobby.setUsersInLobby(lobbyUsers);
 
         return lobby;
     }

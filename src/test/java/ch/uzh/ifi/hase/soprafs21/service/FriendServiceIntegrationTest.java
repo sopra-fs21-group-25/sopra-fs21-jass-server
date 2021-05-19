@@ -17,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -69,13 +66,14 @@ public class FriendServiceIntegrationTest {
             rebekka.setUsername("Rebekka");
             userService.createRegisteredUser(rebekka);
 
-            List<User> friendList = new ArrayList<>();
-            friendList.add(rebekka);
-            friendList.add(louise);
+            List<User> friendListFrom = new ArrayList<>();
+            List<User> friendListTo = new ArrayList<>();
+            friendListFrom.add(rebekka);
+            friendListTo.add(louise);
 
             // make mutual friends
-            willi.setFriends(friendList);
-            willi.setfriendOf(friendList);
+            willi.setFriends(friendListTo);
+            willi.setfriendOf(friendListFrom);
 
             userRepository.saveAndFlush(rebekka);
             userRepository.saveAndFlush(willi);
@@ -91,9 +89,11 @@ public class FriendServiceIntegrationTest {
         List<User> willisFriends = friendService.getFriends(willi);
 
         // then
-        assertEquals( rebekka, willisFriends.get(0));
-        assertEquals( louise, willisFriends.get(1));
-        assertEquals(2, willisFriends.size());
+        assert(!rebekka.equals(louise));
+        assert(willisFriends.remove(rebekka));
+        assert(willisFriends.remove(louise));
+        assert(!willisFriends.contains(rebekka));
+        assert(!willisFriends.contains(louise));
     }
 
     @Test

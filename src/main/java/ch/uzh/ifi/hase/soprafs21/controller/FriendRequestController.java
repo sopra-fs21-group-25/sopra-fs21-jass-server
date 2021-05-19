@@ -23,8 +23,6 @@ import java.util.UUID;
 @RestController
 public class FriendRequestController {
 
-    private SseEmitter emitte; 
-
     private final FriendRequestService friendRequestService;
     private final UserService userService;
     FriendRequestController(FriendRequestService friendRequestService, UserService userService){
@@ -32,6 +30,8 @@ public class FriendRequestController {
         this.userService = userService; 
     }
 
+/*
+    No longer in use. Will be removed soonish
     @PostMapping("/friend_requests/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -101,18 +101,17 @@ public class FriendRequestController {
     @ResponseBody
     public void acceptRequest(@PathVariable UUID id){
         friendRequestService.acceptRequest(id);
-    }
+    }*/
 
-
-    // ----------------------------------------------------------------------------------------
 
     @PostMapping("/friend_requests/{fromUserId}/{toUserId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public void createFriendRequest(@PathVariable("fromUserId") UUID fromUserId, @PathVariable("toUserId") UUID toUserId) {
-        User fromUser = userService.getUserById(fromUserId);
-        User toUser = userService.getUserById(toUserId);
-        friendRequestService.createAndStoreNewFriendRequest(fromUser, toUser);
+    public FriendRequestWithUsernameGetDTO createFriendRequest(@PathVariable("fromUserId") UUID fromUserId, @PathVariable("toUserId") UUID toUserId) {
+        FriendRequest newRequest = DTOMapper.INSTANCE.convertFriendRequestPostDTOToFriendRequest(new FriendRequestPostDTO(fromUserId, toUserId), userService);
+        friendRequestService.createAndStoreNewFriendRequest(newRequest);
+
+        return DTOMapper.INSTANCE.convertEntityToFriendRequestWithUsernameGetDTO(newRequest);
     }
 
     @GetMapping("/friend_requests/with_username/{userId}")
@@ -128,5 +127,23 @@ public class FriendRequestController {
         }
 
         return getDTOs;
+    }
+
+    @PostMapping("/friend_requests/accept/{fromUserId}/{toUserId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    private void acceptFriendRequest(@PathVariable("fromUserId") UUID fromId, @PathVariable("toUserId") UUID toId) {
+        User fromUser = userService.getUserById(fromId);
+        User toUser = userService.getUserById(toId);
+        friendRequestService.acceptFriendRequest(fromUser, toUser);
+    }
+
+    @DeleteMapping("/friend_requests/decline/{fromUserId}/{toUserId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    private void declineFriendRequest(@PathVariable("fromUserId") UUID fromId, @PathVariable("toUserId") UUID toId) {
+        User fromUser = userService.getUserById(fromId);
+        User toUser = userService.getUserById(toId);
+        friendRequestService.declineFriendRequest(fromUser, toUser);
     }
 }

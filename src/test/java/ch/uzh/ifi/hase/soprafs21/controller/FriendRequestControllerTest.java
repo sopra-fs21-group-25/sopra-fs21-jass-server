@@ -66,7 +66,6 @@ public class FriendRequestControllerTest {
         User toUser = DTOMapper.INSTANCE.convertUserPutDTOtoRegisteredUser(testUser2);
 
         FriendRequest request = new FriendRequest();
-        request.setId(UUID.randomUUID());
         request.setFromUser(testUser1);
         request.setToUser(toUser);
 
@@ -74,17 +73,17 @@ public class FriendRequestControllerTest {
 
         given(userService.getUserById(toUser.getId())).willReturn(toUser);
 
-        given(friendRequestService.sendFriendRequest(Mockito.any(), Mockito.any())).willReturn(request);
+        given(friendRequestService.createAndStoreNewFriendRequest(Mockito.any())).willReturn(request);
 
-        MockHttpServletRequestBuilder postRequest = post("/friend_requests/" + testUser1.getId())
+        MockHttpServletRequestBuilder postRequest = post("/friend_requests/" + testUser1.getId() + "/" + toUser.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(testUser2));
 
         mockMvc.perform(postRequest)
                 .andExpect(status().is(200))
-                .andExpect(jsonPath("$.id", is(request.getId().toString())))
-                .andExpect(jsonPath("$.toId", is(request.getToId().toString())))
-                .andExpect(jsonPath("$.fromId", is(request.getFromId().toString())));
+                .andExpect(jsonPath("$.fromUsername", is(request.getFromUser().getUsername())))
+                .andExpect(jsonPath("$.toId", is(request.getToUser().getId().toString())))
+                .andExpect(jsonPath("$.fromId", is(request.getFromUser().getId().toString())));
                 
     }
 
@@ -101,7 +100,6 @@ public class FriendRequestControllerTest {
         User toUser = DTOMapper.INSTANCE.convertUserPutDTOtoRegisteredUser(testUser2);
 
         FriendRequest request = new FriendRequest();
-        request.setId(UUID.randomUUID());
         request.setFromUser(testUser1);
         request.setToUser(toUser);
 
@@ -110,9 +108,9 @@ public class FriendRequestControllerTest {
 
         given(userService.getUserById(toUser.getId())).willReturn(toUser);
 
-        given(friendRequestService.sendFriendRequest(Mockito.any(), Mockito.any())).willReturn(request);
+        given(friendRequestService.createAndStoreNewFriendRequest(Mockito.any())).willReturn(request);
         
-        MockHttpServletRequestBuilder postRequest = post("/friend_requests/" + testUser1.getId())
+        MockHttpServletRequestBuilder postRequest = post("/friend_requests/" + testUser1.getId() + "/" + toUser.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(testUser2));
 
@@ -134,7 +132,6 @@ public class FriendRequestControllerTest {
         User toUser = DTOMapper.INSTANCE.convertUserPutDTOtoRegisteredUser(testUser2);
 
         FriendRequest request = new FriendRequest();
-        request.setId(UUID.randomUUID());
         request.setFromUser(testUser1);
         request.setToUser(toUser);
 
@@ -143,9 +140,9 @@ public class FriendRequestControllerTest {
 
         given(userService.getUserById(testUser1.getId())).willReturn(testUser1);
 
-        given(friendRequestService.sendFriendRequest(Mockito.any(), Mockito.any())).willReturn(request);
-        
-        MockHttpServletRequestBuilder postRequest = post("/friend_requests/" + testUser1.getId())
+        given(friendRequestService.createAndStoreNewFriendRequest(Mockito.any())).willReturn(request);
+
+        MockHttpServletRequestBuilder postRequest = post("/friend_requests/" + testUser1.getId() + "/" + toUser.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(testUser2));
 
@@ -165,7 +162,6 @@ public class FriendRequestControllerTest {
         testUser2.setUsername("Test2"); 
 
         FriendRequest request = new FriendRequest();
-        request.setId(UUID.randomUUID());
         request.setFromUser(testUser2);
         request.setToUser(testUser1);
 
@@ -176,14 +172,14 @@ public class FriendRequestControllerTest {
 
         given(userService.getUserById(testUser1.getId())).willReturn(testUser1);
 
-        MockHttpServletRequestBuilder getRequest = get("/friend_requests/" + testUser1.getId())
+        MockHttpServletRequestBuilder getRequest = get("/friend_requests/with_username/" + testUser1.getId())
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(getRequest)
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$[0].id", is(request.getId().toString())))
-            .andExpect(jsonPath("$[0].toId", is(request.getToId().toString())))
-            .andExpect(jsonPath("$[0].fromId", is(request.getFromId().toString())));
+            .andExpect(jsonPath("$[0].fromUsername", is(request.getFromUser().getUsername())))
+            .andExpect(jsonPath("$[0].toId", is(request.getToUser().getId().toString())))
+            .andExpect(jsonPath("$[0].fromId", is(request.getFromUser().getId().toString())));
     }
 
     @Test
@@ -197,7 +193,6 @@ public class FriendRequestControllerTest {
         testUser2.setUsername("Test2"); 
 
         FriendRequest request = new FriendRequest();
-        request.setId(UUID.randomUUID());
         request.setFromUser(testUser2);
         request.setToUser(testUser1);
 
@@ -209,7 +204,7 @@ public class FriendRequestControllerTest {
         given(userService.getUserById(testUser1.getId()))
             .willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a user with this id."));
 
-        MockHttpServletRequestBuilder getRequest = get("/friend_requests/" + testUser1.getId())
+        MockHttpServletRequestBuilder getRequest = get("/friend_requests/with_username/" + testUser1.getId())
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(getRequest)
@@ -228,11 +223,10 @@ public class FriendRequestControllerTest {
         testUser2.setUsername("Test2"); 
 
         FriendRequest request = new FriendRequest();
-        request.setId(UUID.randomUUID());
         request.setFromUser(testUser2);
         request.setToUser(testUser1);
 
-        MockHttpServletRequestBuilder deleteRequest = delete("/friend_requests/decline/" + request.getId())
+        MockHttpServletRequestBuilder deleteRequest = delete("/friend_requests/decline/" + testUser2.getId() + "/" + testUser1.getId())
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(deleteRequest)
@@ -250,15 +244,14 @@ public class FriendRequestControllerTest {
         testUser2.setUsername("Test2"); 
 
         FriendRequest request = new FriendRequest();
-        request.setId(UUID.randomUUID());
         request.setFromUser(testUser2);
         request.setToUser(testUser1);
 
 
         doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a friend request with this id."))
-            .when(friendRequestService).declineRequest(Mockito.any());
+            .when(friendRequestService).declineFriendRequest(Mockito.any(), Mockito.any());
 
-        MockHttpServletRequestBuilder deleteRequest = delete("/friend_requests/decline/" + request.getId())
+        MockHttpServletRequestBuilder deleteRequest = delete("/friend_requests/decline/" + testUser2.getId() + "/" + testUser1.getId())
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(deleteRequest)
@@ -277,11 +270,10 @@ public class FriendRequestControllerTest {
         testUser2.setUsername("Test2"); 
 
         FriendRequest request = new FriendRequest();
-        request.setId(UUID.randomUUID());
         request.setFromUser(testUser2);
         request.setToUser(testUser1);
 
-        MockHttpServletRequestBuilder postRequest = post("/friend_requests/accept/" + request.getId())
+        MockHttpServletRequestBuilder postRequest = post("/friend_requests/accept/" + testUser2.getId() + "/" + testUser1.getId())
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(postRequest)
@@ -299,14 +291,13 @@ public class FriendRequestControllerTest {
         testUser2.setUsername("Test2"); 
 
         FriendRequest request = new FriendRequest();
-        request.setId(UUID.randomUUID());
         request.setFromUser(testUser2);
         request.setToUser(testUser1);
 
         doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a friend request with this id."))
-            .when(friendRequestService).acceptRequest(Mockito.any());
+            .when(friendRequestService).acceptFriendRequest(Mockito.any(), Mockito.any());
 
-        MockHttpServletRequestBuilder postRequest = post("/friend_requests/accept/" + request.getId())
+        MockHttpServletRequestBuilder postRequest = post("/friend_requests/accept/" + testUser2.getId() + "/" + testUser1.getId())
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(postRequest)

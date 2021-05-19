@@ -65,32 +65,38 @@ public class LobbyServiceTest {
         hans.setUsername("Hans");
         hans.setPassword("password1");
         hans.setStatus(UserStatus.OFFLINE);
+        hans.setId(UUID.randomUUID());
 
         wanda= new RegisteredUser();
         wanda.setUsername("Wanda");
         wanda.setPassword("password2");
         wanda.setStatus(UserStatus.ONLINE);
+        wanda.setId(UUID.randomUUID());
 
         nicole= new RegisteredUser();
         nicole.setUsername("Nicole");
         nicole.setPassword("password3");
         nicole.setStatus(UserStatus.ONLINE);
+        nicole.setId(UUID.randomUUID());
 
         susi = new RegisteredUser();
         susi.setUsername("Susi");
         susi.setPassword("password4");
         susi.setStatus(UserStatus.ONLINE);
         susi.setId(UUID.randomUUID());
+        susi.setId(UUID.randomUUID());
 
         timon = new RegisteredUser();
         timon.setUsername("Timon");
         timon.setPassword("TimonAndPumba");
         timon.setStatus(UserStatus.ONLINE);
+        timon.setId(UUID.randomUUID());
 
         fred = new RegisteredUser();
         fred.setUsername("Fred");
         fred.setPassword("Freddy");
         fred.setStatus(UserStatus.ONLINE);
+        fred.setId(UUID.randomUUID());
 
         users = new HashSet<>();
         users.add(hans);

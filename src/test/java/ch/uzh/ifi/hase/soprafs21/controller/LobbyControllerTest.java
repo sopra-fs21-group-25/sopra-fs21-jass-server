@@ -6,6 +6,8 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.game.*;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPutUserWithIdDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -104,6 +106,8 @@ public class LobbyControllerTest {
         registeredUser.setId(new UUID(0,0));
         registeredUser.setUsername("creator");
 
+        UserGetDTO registUserDTO = DTOMapper.INSTANCE.convertEntityToUserGetDTO(registeredUser);
+
         // Set containing the registeredUser
         Set<User> users = new HashSet<>();
         users.add(registeredUser);
@@ -128,7 +132,10 @@ public class LobbyControllerTest {
         mockMvc.perform(putRequest)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(lobby.getId().toString())))
-                .andExpect(jsonPath("$.usersInLobby[0]", is(lobby.getCreatorUsername())));
+                .andExpect(jsonPath("$.usersInLobby[0].id", is(registUserDTO.getId().toString())))
+                .andExpect(jsonPath("$.usersInLobby[0].username", is(registUserDTO.getUsername())))
+                .andExpect(jsonPath("$.usersInLobby[0].userType", is(registUserDTO.getUserType())));
+
     }
 
 
@@ -137,6 +144,7 @@ public class LobbyControllerTest {
 
         // given user as Lobby creator
         User registeredUser = new RegisteredUser();
+        registeredUser.setId(new UUID(2L, 2L));
 
         // Set containing the registeredUser
         Set<User> users = new HashSet<>();
