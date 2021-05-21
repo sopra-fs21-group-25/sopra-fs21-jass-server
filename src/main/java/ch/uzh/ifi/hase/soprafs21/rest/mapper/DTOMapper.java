@@ -51,7 +51,7 @@ public interface DTOMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "status", target = "status")
-    @Mapping(source = "userType", target = "userType")
+    @Mapping(source = "userType.type", target = "userType")
     @Mapping(source = "token", target = "token")
     // @Mapping(source = "friends", target = "friends")
     @Mapping(source = "lobby.id", target = "lobbyId")
@@ -123,13 +123,7 @@ public interface DTOMapper {
 */
 
     /**
-     * Here we are leveraging the getUserById method from the UserService.class to
-     * convert a UUID userId to its corresponding user counterpart in the database;
-     * For this purpose we extended the Mapper (see annotation of this interface)
-     * to use UserService.class and specified the qualifier, i.e. the getUserById
-     * method, by annotating the method in UserService.class with @Named(..).
-     *
-     * Additionally, since the player to start the first round of the game is only
+     * Since the player to start the first round of the game is only
      * known after the starting-card has been mapped already and the cards have been
      * distributed to the players, the BeanMapping ensures to set the starting-player
      * flag via calling an AfterMapping method defined in the SchieberGameSession.class.
