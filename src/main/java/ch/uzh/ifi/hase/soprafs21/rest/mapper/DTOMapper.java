@@ -1,14 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs21.controller.UserController;
-import ch.uzh.ifi.hase.soprafs21.entity.FacebookUser;
+import ch.uzh.ifi.hase.soprafs21.entity.GoogleUser;
 import ch.uzh.ifi.hase.soprafs21.entity.FriendRequest;
-import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.game.Card;
-import ch.uzh.ifi.hase.soprafs21.game.Suit;
-import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
@@ -16,10 +11,8 @@ import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * DTOMapper
@@ -47,7 +40,7 @@ public interface DTOMapper {
     RegisteredUser convertUserPostDTOtoRegisteredUser(UserPostDTO userPostDTO);
 
     @Mapping(source = "username", target = "username")
-    FacebookUser convertUserPostDTOtoFacebookUser(UserPostDTO userPostDTO);
+    GoogleUser convertUserPostDTOtoGoogleUser(UserPostDTO userPostDTO);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
@@ -114,13 +107,6 @@ public interface DTOMapper {
     FriendRequest related mappings
 */
 
-
-/*  No longer in use. Will be removed soonish
-    @Mapping(source = "fromId", target = "fromUser.id")
-    @Mapping(source = "toId", target = "toUser.id")
-    FriendRequestGetDTO convertEntityToFriendRequestGetDTO(FriendRequest friendRequest);*/
-
-
     @Mapping(target = "fromUser", expression = "java(userService.getUserById(friendRequestPostDTO.getFromId()))")
     @Mapping(target = "toUser", expression = "java(userService.getUserById(friendRequestPostDTO.getToId()))")
     FriendRequest convertFriendRequestPostDTOToFriendRequest(FriendRequestPostDTO friendRequestPostDTO, @Context UserService userService);
@@ -129,7 +115,7 @@ public interface DTOMapper {
     @Mapping(target = "fromId", expression = "java(friendRequest.getFromUser().getId())")
     @Mapping(target = "toId", expression = "java(friendRequest.getToUser().getId())")
     @Mapping(target = "fromUsername", expression = "java(friendRequest.getFromUser().getUsername())")
-    FriendRequestWithUsernameGetDTO convertEntityToFriendRequestWithUsernameGetDTO(FriendRequest friendRequest);
+    FriendRequestGetDTO convertEntityToFriendRequestGetDTO(FriendRequest friendRequest);
 
 
 /*

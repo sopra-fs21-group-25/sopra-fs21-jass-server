@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.stompWebsocket;
 
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 public class GameInitializationMSG {
 
     private UUID id;

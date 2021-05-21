@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 
+import ch.uzh.ifi.hase.soprafs21.constant.UserType;
 import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
@@ -61,31 +62,28 @@ public class UserController {
     public UserGetDTO createUser(@RequestBody UserPostDTO userPostDTO) {
         UserGetDTO returnedUser = null;
         // convert API user to internal representation
-        if (userPostDTO.getUserType().equals("registered")) {
+        if (userPostDTO.getUserType().equals(UserType.REGISTERED.getType())) {
             RegisteredUser userInput = DTOMapper.INSTANCE.convertUserPostDTOtoRegisteredUser(userPostDTO);
             User newUser = userService.createRegisteredUser(userInput);
 
             returnedUser = DTOMapper.INSTANCE.convertEntityToUserGetDTO(newUser);
-            returnedUser.setUserType("registered");
         }
 
-        if (userPostDTO.getUserType().equals("facebook")) {
-            User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoFacebookUser(userPostDTO);
-            User newUser = userService.createFacebookUser(userInput);
+        if (userPostDTO.getUserType().equals(UserType.GOOGLE.getType())) {
+            User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoGoogleUser(userPostDTO);
+            User newUser = userService.createGoogleUser(userInput);
 
             returnedUser = DTOMapper.INSTANCE.convertEntityToUserGetDTO(newUser);
-            returnedUser.setUserType("facebook");
         }
 
-        if (userPostDTO.getUserType().equals("guest")) {
+        if (userPostDTO.getUserType().equals(UserType.GUEST.getType())) {
             GuestUser newGuest = userService.createGuestUser();
 
             returnedUser = DTOMapper.INSTANCE.convertEntityToUserGetDTO(newGuest);
-            returnedUser.setUserType("guest");
         }
 
         if (returnedUser == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to create guest user, due to wrong userType");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to create user, due to invalid userType");
         }
 
         return returnedUser;

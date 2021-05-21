@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 //@AutoConfigureMockMvc
@@ -43,6 +45,7 @@ public class LoginServiceIntegrationTest {
         RegisteredUser user = new RegisteredUser();
         user.setUsername("coolName");
         user.setPassword("password");
+        user.setToken(UUID.randomUUID().toString());
         user.setStatus(UserStatus.ONLINE);
 
         registeredUserRepository.saveAndFlush(user);

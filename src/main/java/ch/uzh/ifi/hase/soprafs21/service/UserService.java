@@ -86,7 +86,7 @@ public class UserService {
         return newGuest;
     }
 
-    public User createFacebookUser(User newUser) {
+    public User createGoogleUser(User newUser) {
         boolean userExists = checkIfUserExists(newUser);
 
         if (userExists) {
@@ -108,7 +108,7 @@ public class UserService {
         return user;
     }
 
-    public List<User> getOnlineUsers() { return userRepository.findAllOnlineUsers(); }
+    public List<User> getOnlineUsers() { return userRepository.findAllByStatus(UserStatus.ONLINE); }
 
     public List<User> getAvailableUsers(UUID id){
         List<User> test = userRepository.availableUsersForUserWithId(id);

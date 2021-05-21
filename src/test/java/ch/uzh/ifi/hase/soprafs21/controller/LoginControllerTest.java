@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.constant.UserType;
 import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
@@ -58,7 +59,7 @@ public class LoginControllerTest {
         UserPostDTO userPostDTO = new UserPostDTO();
         userPostDTO.setUsername("Test User");
         userPostDTO.setPassword("testUsername");
-        userPostDTO.setUserType("registered");
+        userPostDTO.setUserType("RegisteredUser");
 
         given(loginService.login(Mockito.any())).willReturn(registeredUser);
 

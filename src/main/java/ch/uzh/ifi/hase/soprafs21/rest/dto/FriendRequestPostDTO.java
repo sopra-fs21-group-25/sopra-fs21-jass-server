@@ -25,7 +25,7 @@ public  class FriendRequestPostDTO {
         return toId;
     }
 
-    public void setToId(UUID toUser) {
+    public void setToId(UUID toId) {
         this.toId = toId;
     }
 }

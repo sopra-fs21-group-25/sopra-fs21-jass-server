@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.constant.UserType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -12,16 +13,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.ArrayList;
 
-/**
- * Internal User Representation
- * This class composes the internal representation of the user and defines how the user is stored in the database.
- * Every variable will be mapped into a database field with the @Column annotation
- * - nullable = false -> this cannot be left empty
- * - unique = true -> this value must be unqiue across the database -> composes the primary key
- */
+
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "USER_TYPE")
+@DiscriminatorColumn(name = "USER_DISCRIMINATOR_TYPE")
 @Table(name = "users")
 public abstract class User implements Serializable {
 
@@ -31,10 +26,10 @@ public abstract class User implements Serializable {
     @GeneratedValue
     protected UUID id;
 
-    @Column(nullable = true, unique = true)
+    @Column(unique = true)
     protected String username;
 
-    @Column(nullable = true)
+    @Column
     protected UserStatus status;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user0")
@@ -87,22 +82,11 @@ public abstract class User implements Serializable {
     @OneToMany(mappedBy="fromUser")
     private List<FriendRequest> sentFriendRequests;
 
-    public UUID getId() {
-        return id;
-    }
-
     @Column(nullable = true, unique = true)
     protected String token;
 
-    @Transient
-    public String getDiscriminatorValue(){
-        //This doesn't work, please uncomment it when you fix it
-        DiscriminatorValue val = this.getClass().getAnnotation(DiscriminatorValue.class);
-        return val == null ? null : val.value();
-    }
-
-    @Transient
-    protected String userType = getDiscriminatorValue();
+    @Column
+    protected UserType userType;
 
     @Override
     public boolean equals(Object other) {
@@ -126,6 +110,10 @@ public abstract class User implements Serializable {
     @Override
     public int hashCode() {
         return this.getId().hashCode();
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public void setId(UUID id) {
@@ -188,9 +176,41 @@ public abstract class User implements Serializable {
         this.token = token;
     }
 
-    public String getUserType() { return userType; }
+    public UserType getUserType() { return userType; }
 
     public Lobby getLobby() { return lobby; }
 
     public void setLobby(Lobby lobby) { this.lobby = lobby; }
+
+    public SchieberGameSession getGameSitting0() {
+        return gameSitting0;
+    }
+
+    public void setGameSitting0(SchieberGameSession gameSitting0) {
+        this.gameSitting0 = gameSitting0;
+    }
+
+    public SchieberGameSession getGameSitting1() {
+        return gameSitting1;
+    }
+
+    public void setGameSitting1(SchieberGameSession gameSitting1) {
+        this.gameSitting1 = gameSitting1;
+    }
+
+    public SchieberGameSession getGameSitting2() {
+        return gameSitting2;
+    }
+
+    public void setGameSitting2(SchieberGameSession gameSitting2) {
+        this.gameSitting2 = gameSitting2;
+    }
+
+    public SchieberGameSession getGameSitting3() {
+        return gameSitting3;
+    }
+
+    public void setGameSitting3(SchieberGameSession gameSitting3) {
+        this.gameSitting3 = gameSitting3;
+    }
 }

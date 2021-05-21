@@ -20,11 +20,4 @@ public class GameWSController {
         return "";
     }
 
-    @MessageMapping("/games/{gameId}/shutdown")
-    @SendTo("/games/{gameId}/shutdown")
-    public FinalScoreMSG sendFinalScoreMessage(@Payload FinalScoreMSG finalScore) {
-        return finalScore;
-    }
-
-
 }

@@ -9,18 +9,18 @@ import java.io.Serializable;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @IdClass(CompositeIdKey.class)
-@Table(name = "FriendRequests")
+@Table(name = "FRIEND_REQUESTS")
 public class FriendRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @ManyToOne
-    @JoinColumn(name="fromUser_id", nullable=false)
+    @JoinColumn(name="FROM_USER_ID", nullable=false)
     private User fromUser;
 
     @Id
     @ManyToOne
-    @JoinColumn(name="toUser_id", nullable=false)
+    @JoinColumn(name="TO_USER_ID", nullable=false)
     private User toUser;
 
 

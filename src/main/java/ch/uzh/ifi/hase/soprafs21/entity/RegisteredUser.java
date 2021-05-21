@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.constant.UserType;
 
 import javax.persistence.*;
 
@@ -10,6 +11,9 @@ public class RegisteredUser extends User {
     @Column
     protected String password;
 
+    public RegisteredUser() {
+        this.userType = UserType.REGISTERED;
+    }
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
