@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.constant.UserType;
 import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
@@ -90,7 +91,7 @@ public class UserControllerTest {
         UserPostDTO userPostDTO = new UserPostDTO();
         userPostDTO.setUsername("Test User");
         userPostDTO.setPassword("testUsername");
-        userPostDTO.setUserType("registered");
+        userPostDTO.setUserType("RegisteredUser");
 
         given(userService.createRegisteredUser(Mockito.any())).willReturn(user);
 
@@ -143,7 +144,7 @@ public class UserControllerTest {
         user.setStatus(UserStatus.ONLINE);
 
         UserPostDTO userPostDTO = new UserPostDTO();
-        userPostDTO.setUserType("guest");
+        userPostDTO.setUserType("GuestUser");
 
         given(userService.createGuestUser()).willReturn(user);
 

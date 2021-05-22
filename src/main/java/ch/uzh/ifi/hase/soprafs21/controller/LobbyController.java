@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
+import ch.uzh.ifi.hase.soprafs21.constant.LobbyPosition;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
@@ -81,6 +82,22 @@ public class LobbyController {
         } else if(!userIdDTO.getAdd() && userIdDTO.getRemove()) {
             updatedLobby = lobbyService.removeUserFromLobby(userIdDTO, lobbyId);
         }
+        return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(updatedLobby);
+    }
+
+    @PutMapping("/lobbies/{lobbyId}/sit/{userId}/{position}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public LobbyGetDTO sitUserAtPositionInLobby(@PathVariable("lobbyId") UUID lobbyId, @PathVariable("position") LobbyPosition pos, @PathVariable("userId") UUID userId) {
+        Lobby updatedLobby = lobbyService.placeUserAtPosition(lobbyId, userId, pos);
+        return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(updatedLobby);
+    }
+
+    @PutMapping("/lobbies/{lobbyId}/unsit/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public LobbyGetDTO unsitUserInLobby(@PathVariable("lobbyId") UUID lobbyId, @PathVariable("userId") UUID userId) {
+        Lobby updatedLobby = lobbyService.unsitUserInLobby(lobbyId, userId);
         return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(updatedLobby);
     }
 

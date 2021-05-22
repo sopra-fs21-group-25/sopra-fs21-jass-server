@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.constant.LobbyPosition;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
@@ -66,7 +67,9 @@ public class LobbyService {
 
         User userToAdd = this.lobbyRepository.findUserById(userIdDTO.getUserId());
 
-        lobby.getUsersInLobby().add(userToAdd);
+        Set<User> lobbyUsers = lobby.getUsersInLobby();
+        lobbyUsers.add(userToAdd);
+        lobby.setUsersInLobby(lobbyUsers);
 
         return lobby;
     }
@@ -75,9 +78,97 @@ public class LobbyService {
         Lobby lobby = this.lobbyRepository.findById(lobbyId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a lobby with this id."));
 
-        User userToRemove = this.lobbyRepository.findUserById(userIdDTO.getUserId());
+        User userToRemove = null;
 
-        lobby.getUsersInLobby().remove(userToRemove);
+        for(User u : lobby.getUsersInLobby()) {
+            if(u.getId().equals(userIdDTO.getUserId())) {
+                userToRemove = u;
+                break;
+            }
+        }
+
+        if(userToRemove == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not in lobby");
+        }
+
+        Set<User> lobbyUsers = new HashSet<>(lobby.getUsersInLobby());
+        lobbyUsers.remove(userToRemove);
+
+        lobby.setUsersInLobby(lobbyUsers);
+
+        if(lobby.getUserTop() != null && lobby.getUserTop().equals(userToRemove)) {
+            lobby.setUserTop(null);
+        }
+        if(lobby.getUserRight() != null && lobby.getUserRight().equals(userToRemove)) {
+            lobby.setUserRight(null);
+        }
+        if(lobby.getUserBottom() != null && lobby.getUserBottom().equals(userToRemove)) {
+            lobby.setUserBottom(null);
+        }
+        if(lobby.getUserLeft() != null && lobby.getUserLeft().equals(userToRemove)) {
+            lobby.setUserLeft(null);
+        }
+
+        return lobby;
+    }
+
+    public Lobby placeUserAtPosition(UUID lobbyId, UUID userId, LobbyPosition pos) {
+        Lobby lobby = this.lobbyRepository.findById(lobbyId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a lobby with this id."));
+
+        User userToPlace = null;
+
+        for(User u : lobby.getUsersInLobby()) {
+            if(u.getId().equals(userId)) {
+                userToPlace = u;
+                break;
+            }
+        }
+
+        if(userToPlace == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not in lobby");
+        }
+
+        switch (pos) {
+            case TOP -> {
+                if(lobby.getUserTop() != null) { throw new ResponseStatusException(HttpStatus.CONFLICT, "Seat already taken"); }
+                lobby.setUserTop(userToPlace);
+            }
+            case RIGHT -> {
+                if(lobby.getUserRight() != null) { throw new ResponseStatusException(HttpStatus.CONFLICT, "Seat already taken"); }
+                lobby.setUserRight(userToPlace);
+            }
+            case BOTTOM -> {
+                if(lobby.getUserBottom() != null) { throw new ResponseStatusException(HttpStatus.CONFLICT, "Seat already taken"); }
+                lobby.setUserBottom(userToPlace);
+            }
+            case LEFT -> {
+                if(lobby.getUserLeft() != null) { throw new ResponseStatusException(HttpStatus.CONFLICT, "Seat already taken"); }
+                lobby.setUserLeft(userToPlace);
+            }
+        }
+
+        return lobby;
+    }
+
+    public Lobby unsitUserInLobby(UUID lobbyId, UUID userId) {
+        Lobby lobby = this.lobbyRepository.findById(lobbyId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a lobby with this id."));
+
+
+
+        if(lobby.getUserTop() != null && lobby.getUserTop().getId().equals(userId)) {
+            lobby.setUserTop(null);
+        }
+        if(lobby.getUserRight() != null && lobby.getUserRight().getId().equals(userId)) {
+            lobby.setUserRight(null);
+        }
+        if(lobby.getUserBottom() != null && lobby.getUserBottom().getId().equals(userId)) {
+            lobby.setUserBottom(null);
+        }
+        if(lobby.getUserLeft() != null && lobby.getUserLeft().getId().equals(userId)) {
+            lobby.setUserLeft(null);
+        }
 
         return lobby;
     }

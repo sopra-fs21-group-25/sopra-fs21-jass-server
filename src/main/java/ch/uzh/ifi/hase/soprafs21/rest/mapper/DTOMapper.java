@@ -1,14 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs21.controller.UserController;
-import ch.uzh.ifi.hase.soprafs21.entity.FacebookUser;
+import ch.uzh.ifi.hase.soprafs21.entity.GoogleUser;
 import ch.uzh.ifi.hase.soprafs21.entity.FriendRequest;
-import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
-import ch.uzh.ifi.hase.soprafs21.game.Card;
-import ch.uzh.ifi.hase.soprafs21.game.Suit;
-import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
@@ -16,10 +11,8 @@ import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * DTOMapper
@@ -30,7 +23,7 @@ import java.util.UUID;
  * Always created one mapper for getting information (GET) and one mapper for creating information (POST).
  */
 @Mapper(
-        uses = {GameService.class},
+        uses = {GameService.class, UserService.class},
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         componentModel = "spring"
 )
@@ -47,7 +40,7 @@ public interface DTOMapper {
     RegisteredUser convertUserPostDTOtoRegisteredUser(UserPostDTO userPostDTO);
 
     @Mapping(source = "username", target = "username")
-    FacebookUser convertUserPostDTOtoFacebookUser(UserPostDTO userPostDTO);
+    GoogleUser convertUserPostDTOtoGoogleUser(UserPostDTO userPostDTO);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
@@ -58,7 +51,7 @@ public interface DTOMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "status", target = "status")
-    @Mapping(source = "userType", target = "userType")
+    @Mapping(source = "userType.type", target = "userType")
     @Mapping(source = "token", target = "token")
     // @Mapping(source = "friends", target = "friends")
     @Mapping(source = "lobby.id", target = "lobbyId")
@@ -78,7 +71,11 @@ public interface DTOMapper {
     @Mapping(source = "crossWeisAllowed", target = "crossWeis")
     @Mapping(source = "weisAsk", target = "weisAsk")
     @Mapping(source = "creatorUsername", target = "creatorUsername")
-    @Mapping(source = "usersInLobby", target = "usersInLobby", qualifiedByName = "userSetToUsernames")
+    @Mapping(source = "usersInLobby", target = "usersInLobby", qualifiedByName = "convertUsersToUserGetDTOs")
+    @Mapping(target = "userTop", expression = "java(this.convertEntityToUserGetDTO(lobby.getUserTop()))")
+    @Mapping(target = "userRight", expression = "java(this.convertEntityToUserGetDTO(lobby.getUserRight()))")
+    @Mapping(target = "userBottom", expression = "java(this.convertEntityToUserGetDTO(lobby.getUserBottom()))")
+    @Mapping(target = "userLeft", expression = "java(this.convertEntityToUserGetDTO(lobby.getUserLeft()))")
     LobbyGetDTO convertEntityToLobbyGetDTO(Lobby lobby);
 
     @Mapping(source = "mode", target = "mode")
@@ -94,19 +91,14 @@ public interface DTOMapper {
     @Mapping(source = "usersInLobby", target = "usersInLobby")
     Lobby convertLobbyPostDTOtoLobby(LobbyPostDTO lobbyPostDTO);
 
-    @Named("userSetToUsernames")
-    static String[] userSetToUsernames(Set<User> users) {
-        int length = users.size();
-
-        String[] usernames = new String[length];
+    @Named("convertUsersToUserGetDTOs")
+    static UserGetDTO[] convertUsersToUserGetDTOs(Set<User> users) {
+        UserGetDTO[] userGetDTOs = new UserGetDTO[users.size()];
 
         int i = 0;
-        for(User user : users) {
-            usernames[i] = user.getUsername();
-            i++;
-        }
+        for(User user : users) { userGetDTOs[i++] = DTOMapper.INSTANCE.convertEntityToUserGetDTO(user); }
 
-        return usernames;
+        return userGetDTOs;
     }
 
 
@@ -115,28 +107,23 @@ public interface DTOMapper {
     FriendRequest related mappings
 */
 
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "fromId", target = "fromId")
-    @Mapping(source = "toId", target = "toId")
+    @Mapping(target = "fromUser", expression = "java(userService.getUserById(friendRequestPostDTO.getFromId()))")
+    @Mapping(target = "toUser", expression = "java(userService.getUserById(friendRequestPostDTO.getToId()))")
+    FriendRequest convertFriendRequestPostDTOToFriendRequest(FriendRequestPostDTO friendRequestPostDTO, @Context UserService userService);
+
+
+    @Mapping(target = "fromId", expression = "java(friendRequest.getFromUser().getId())")
+    @Mapping(target = "toId", expression = "java(friendRequest.getToUser().getId())")
+    @Mapping(target = "fromUsername", expression = "java(friendRequest.getFromUser().getUsername())")
     FriendRequestGetDTO convertEntityToFriendRequestGetDTO(FriendRequest friendRequest);
 
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "fromUser", target = "fromUser")
-    @Mapping(source = "toUser", target = "toUser")
-    FriendRequest convertFriendRequestPostDTOToFriendRequest(FriendRequestPostDTO friendRequestPostDTO);
 
 /*
     Game related mappings
 */
 
     /**
-     * Here we are leveraging the getUserById method from the UserService.class to
-     * convert a UUID userId to its corresponding user counterpart in the database;
-     * For this purpose we extended the Mapper (see annotation of this interface)
-     * to use UserService.class and specified the qualifier, i.e. the getUserById
-     * method, by annotating the method in UserService.class with @Named(..).
-     *
-     * Additionally, since the player to start the first round of the game is only
+     * Since the player to start the first round of the game is only
      * known after the starting-card has been mapped already and the cards have been
      * distributed to the players, the BeanMapping ensures to set the starting-player
      * flag via calling an AfterMapping method defined in the SchieberGameSession.class.
@@ -183,5 +170,7 @@ public interface DTOMapper {
     @Mapping(source = "currentIngameMode", target = "currentIngameMode")
     SchieberGameGetDTO convertEntityToSchieberGameGetDTO(SchieberGameSession schieberGameSession);
 
-
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "username", target = "username")
+    RegisteredUser convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 }

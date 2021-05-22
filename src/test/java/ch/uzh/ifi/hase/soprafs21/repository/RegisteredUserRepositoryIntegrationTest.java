@@ -39,6 +39,5 @@ public class RegisteredUserRepositoryIntegrationTest {
         assertEquals(found.getId(), user.getId());
         assertEquals(found.getUsername(), user.getUsername());
         assertEquals(found.getStatus(), user.getStatus());
-        assertTrue(found instanceof RegisteredUser);
     }
 }

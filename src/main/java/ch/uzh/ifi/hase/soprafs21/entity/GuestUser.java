@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
+import ch.uzh.ifi.hase.soprafs21.constant.UserType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.persistence.DiscriminatorValue;
@@ -15,6 +16,10 @@ import java.util.Random;
 @DiscriminatorValue("GuestUser")
 @SuppressWarnings("unchecked")
 public class GuestUser extends User {
+
+    public GuestUser() {
+        this.userType = UserType.GUEST;
+    }
 
     public void setFunnyUsername() throws IOException {
         InputStream animalJson = new FileInputStream("src/main/java/ch/uzh/ifi/hase/soprafs21/assets/animals.json");

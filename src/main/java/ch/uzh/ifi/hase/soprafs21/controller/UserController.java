@@ -1,11 +1,13 @@
 package ch.uzh.ifi.hase.soprafs21.controller;
 
 
+import ch.uzh.ifi.hase.soprafs21.constant.UserType;
 import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -60,31 +62,28 @@ public class UserController {
     public UserGetDTO createUser(@RequestBody UserPostDTO userPostDTO) {
         UserGetDTO returnedUser = null;
         // convert API user to internal representation
-        if (userPostDTO.getUserType().equals("registered")) {
+        if (userPostDTO.getUserType().equals(UserType.REGISTERED.getType())) {
             RegisteredUser userInput = DTOMapper.INSTANCE.convertUserPostDTOtoRegisteredUser(userPostDTO);
             User newUser = userService.createRegisteredUser(userInput);
 
             returnedUser = DTOMapper.INSTANCE.convertEntityToUserGetDTO(newUser);
-            returnedUser.setUserType("registered");
         }
 
-        if (userPostDTO.getUserType().equals("facebook")) {
-            User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoFacebookUser(userPostDTO);
-            User newUser = userService.createFacebookUser(userInput);
+        if (userPostDTO.getUserType().equals(UserType.GOOGLE.getType())) {
+            User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoGoogleUser(userPostDTO);
+            User newUser = userService.createGoogleUser(userInput);
 
             returnedUser = DTOMapper.INSTANCE.convertEntityToUserGetDTO(newUser);
-            returnedUser.setUserType("facebook");
         }
 
-        if (userPostDTO.getUserType().equals("guest")) {
+        if (userPostDTO.getUserType().equals(UserType.GUEST.getType())) {
             GuestUser newGuest = userService.createGuestUser();
 
             returnedUser = DTOMapper.INSTANCE.convertEntityToUserGetDTO(newGuest);
-            returnedUser.setUserType("guest");
         }
 
         if (returnedUser == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to create guest user, due to wrong userType");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to create user, due to invalid userType");
         }
 
         return returnedUser;
@@ -112,8 +111,32 @@ public class UserController {
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
     }
 
+    @PutMapping("/users/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void updateUser(@PathVariable UUID id, @RequestBody UserPutDTO userPutDTO) {
+        RegisteredUser userInput = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+        userService.updateUserProfile(id, userInput);
+    }
+
     @PutMapping("/users/logout/{token}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
     public void logoutUserWithToken(@PathVariable String token) { userService.logout(token); }
+
+    // ---------------------------------------------------------
+
+    @GetMapping("/users/not_friends/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<UserGetDTO> getUsersThatAreNotFriendOfUserWithId(@PathVariable("userId") UUID userId) {
+        List<User> remainingUsers = userService.getRemainingUsersForUserWithId(userId);
+        List<UserGetDTO> getDTOs = new ArrayList<>();
+
+        for(User u : remainingUsers) {
+            getDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(u));
+        }
+
+        return getDTOs;
+    }
 }

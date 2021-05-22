@@ -55,17 +55,20 @@ public class LobbyServiceIntegrationTest {
         susi.setUsername("Susi");
         susi.setPassword("password4");
         susi.setStatus(UserStatus.ONLINE);
+        susi.setId(UUID.randomUUID());
 
         timon = new RegisteredUser();
         timon.setUsername("Timon");
         timon.setPassword("TimonAndPumba");
         timon.setStatus(UserStatus.ONLINE);
+        timon.setId(UUID.randomUUID());
+
+        timon = userRepository.save(timon);
+        susi = userRepository.save(susi);
+        userRepository.flush();
 
         users = new HashSet<>();
         users.add(susi);
-
-        userRepository.saveAndFlush(timon);
-        userRepository.saveAndFlush(susi);
 
         List<IngameModeMultiplicatorObject> ingameModeMultiplicators = new ArrayList<>();
         IngameModeMultiplicatorObject oneObject = new IngameModeMultiplicatorObject();
@@ -85,8 +88,8 @@ public class LobbyServiceIntegrationTest {
         lobby.setCrossWeisAllowed(Boolean.FALSE);
         lobby.setWeisAsk("never");
         lobby.setIngameModes(ingameModeMultiplicators);
-        susi.setLobby(lobby);
-        lobbyRepository.saveAndFlush(lobby);
+        lobbyRepository.save(lobby);
+        lobbyRepository.flush();
     }
 
 
@@ -107,7 +110,7 @@ public class LobbyServiceIntegrationTest {
     }
 
     @Test
-    public void getAccessibleLobbies_onlyPrivateLobbies_noreturns()  {
+    public void getAccessibleLobbies_onlyPrivateLobbies_noReturns()  {
         // when
         lobby.setLobbyType("private");
         lobbyRepository.saveAndFlush(lobby);
@@ -119,7 +122,7 @@ public class LobbyServiceIntegrationTest {
     }
 
     @Test
-    public void getLobbywithId_success()  {
+    public void getLobbyWithId_success()  {
         // given
         assertNotNull(lobbyRepository.findById(lobby.getId()));
 
@@ -134,7 +137,7 @@ public class LobbyServiceIntegrationTest {
     }
 
     @Test
-    public void addUsertoLobby_success()  {
+    public void addUserToLobby_success()  {
         // add Timon to the existing lobby
         LobbyPutUserWithIdDTO usernotinLobbyyet = new LobbyPutUserWithIdDTO();
         usernotinLobbyyet.setAdd(Boolean.TRUE);
@@ -151,7 +154,7 @@ public class LobbyServiceIntegrationTest {
     }
 
     @Test
-    public void addUsertoLobby_fail_lobbydoesnotExist()  {
+    public void addUserToLobby_fail_lobbyDoesNotExist()  {
         // add Timon to the existing lobby
         LobbyPutUserWithIdDTO usernotinLobbyyet = new LobbyPutUserWithIdDTO();
         usernotinLobbyyet.setAdd(Boolean.TRUE);
@@ -170,24 +173,24 @@ public class LobbyServiceIntegrationTest {
     }
 
     @Test
-    public void removeUserfromLobby_success()  {
+    public void removeUserFromLobby_success()  {
         //given
-        UUID myId = UUID.randomUUID();
-        LobbyPutUserWithIdDTO usernotinLobbyyet = new LobbyPutUserWithIdDTO();
-        usernotinLobbyyet.setAdd(Boolean.TRUE);
-        usernotinLobbyyet.setUserId(myId);
-        usernotinLobbyyet.setRemove(Boolean.FALSE);
+        UUID timonUUID = userRepository.findByUsername("Timon").getId();
+        LobbyPutUserWithIdDTO userNotInLobbyYet = new LobbyPutUserWithIdDTO();
+        userNotInLobbyYet.setAdd(Boolean.TRUE);
+        userNotInLobbyYet.setUserId(timonUUID);
+        userNotInLobbyYet.setRemove(Boolean.FALSE);
 
         //setup check
-        Lobby returnedLobby = lobbyService.addUserToLobby(usernotinLobbyyet, lobby.getId());
+        Lobby returnedLobby = lobbyService.addUserToLobby(userNotInLobbyYet, lobby.getId());
         assertEquals(2, returnedLobby.getUsersInLobby().size());
 
         //when
-        Lobby returnedLobbywithonly1user = lobbyService.removeUserFromLobby(usernotinLobbyyet, lobby.getId());
+        Lobby returnedLobbyWithOnlyOneUser = lobbyService.removeUserFromLobby(userNotInLobbyYet, lobby.getId());
 
         //then
-        assertEquals(1, returnedLobbywithonly1user.getUsersInLobby().size());
-        assertEquals(lobby.getCreatorUsername(), returnedLobbywithonly1user.getCreatorUsername());
+        assertEquals(1, returnedLobbyWithOnlyOneUser.getUsersInLobby().size());
+        assertEquals(lobby.getCreatorUsername(), returnedLobbyWithOnlyOneUser.getCreatorUsername());
     }
 
     @Test

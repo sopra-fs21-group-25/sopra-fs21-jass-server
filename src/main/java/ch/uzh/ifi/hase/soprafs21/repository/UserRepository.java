@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.repository;
 
+import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import org.mapstruct.Named;
@@ -19,13 +20,18 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     User findByToken(String token);
     
-    @Query("select distinct u from User u \n" + 
-		   "where (u.status = 0) and (u.id != :id) and \n" +
+    @Query("select distinct u from User u \n" +
+		   "where (u.status = 0) and not (u.id = :id) and \n" +
 		       "not exists(select f from u.friends f where f.id = :id) and \n" +
 		       "not exists(select f from u.friendOf f where f.id = :id)")
     List<User> availableUsersForUserWithId(@Param("id") UUID id);
 
-    @Query(value = "SELECT u FROM User u WHERE u.status = 0")
-    List<User> findAllOnlineUsers();
+
+    List<User> findAllByStatus(UserStatus status);
+
+    // -------------------------------
+
+    @Query("SELECT DISTINCT u FROM User u WHERE NOT (u.id = :id) AND NOT EXISTS (SELECT f FROM u.friends f WHERE f.id = :id) AND NOT EXISTS (SELECT f FROM u.friendOf f WHERE f.id = :id)")
+    List<User> usersNotBefriendedWith(@Param("id") UUID id);
 
 }

@@ -19,7 +19,11 @@ public class LobbyGetDTO {
     private Boolean crossWeis;
     private String weisAsk;
     private String creatorUsername;
-    private String[] usersInLobby;
+    private UserGetDTO[] usersInLobby;
+    private UserGetDTO userTop;
+    private UserGetDTO userRight;
+    private UserGetDTO userBottom;
+    private UserGetDTO userLeft;
 
     public UUID getId() { return id; }
     public String getLobbyType() { return lobbyType; }
@@ -31,7 +35,7 @@ public class LobbyGetDTO {
     public Boolean getCrossWeis() { return crossWeis; }
     public String getWeisAsk() { return weisAsk; }
     public String getCreatorUsername() { return creatorUsername; }
-    public String[] getUsersInLobby() { return usersInLobby; }
+    public UserGetDTO[] getUsersInLobby() { return usersInLobby; }
 
     public void setId(UUID id) { this.id = id; }
     public void setMode(GameMode mode) { this.mode = mode; }
@@ -43,5 +47,13 @@ public class LobbyGetDTO {
     public void setCrossWeis(Boolean crossWeisAllowed) { this.crossWeis = crossWeisAllowed; }
     public void setWeisAsk(String weisAsk) { this.weisAsk = weisAsk; }
     public void setCreatorUsername(String creatorUsername) { this.creatorUsername = creatorUsername; }
-    public void setUsersInLobby(String[] usersInLobby) { this.usersInLobby = usersInLobby; }
+    public void setUsersInLobby(UserGetDTO[] usersInLobby) { this.usersInLobby = usersInLobby; }
+    public UserGetDTO getUserTop() { return userTop; }
+    public void setUserTop(UserGetDTO userTop) { this.userTop = userTop; }
+    public UserGetDTO getUserRight() { return userRight; }
+    public void setUserRight(UserGetDTO userRight) { this.userRight = userRight; }
+    public UserGetDTO getUserBottom() { return userBottom; }
+    public void setUserBottom(UserGetDTO userBottom) { this.userBottom = userBottom; }
+    public UserGetDTO getUserLeft() { return userLeft; }
+    public void setUserLeft(UserGetDTO userLeft) { this.userLeft = userLeft; }
 }

@@ -40,17 +40,20 @@ public class Deck {
         /*
         NOTE: Works only for Schieber so far (!)
          */
-        Card[][] playersCards = new Card[4][9];
-        for(int i=0; i<36; i++) {
-            playersCards[i%4][i%9] = this.cards[i];
+        if(mode == GameMode.SCHIEBER) {
+            Card[][] playersCards = new Card[4][9];
+            for(int i=0; i<36; i++) {
+                playersCards[i%4][i%9] = this.cards[i];
+            }
+
+            playersCards[0] = Card.sortCardArray(playersCards[0]);
+            playersCards[1] = Card.sortCardArray(playersCards[1]);
+            playersCards[2] = Card.sortCardArray(playersCards[2]);
+            playersCards[3] = Card.sortCardArray(playersCards[3]);
+
+            return playersCards;
         }
-
-        playersCards[0] = Card.sortCardArray(playersCards[0]);
-        playersCards[1] = Card.sortCardArray(playersCards[1]);
-        playersCards[2] = Card.sortCardArray(playersCards[2]);
-        playersCards[3] = Card.sortCardArray(playersCards[3]);
-
-        return playersCards;
+        return null;
     }
 
     public static void initializePlayerCards(SchieberGameSession schieberGameSession) {
