@@ -85,6 +85,31 @@ public abstract class User implements Serializable {
     @Column(nullable = true, unique = true)
     protected String token;
 
+    @ManyToMany
+    @JoinTable(name="user_In_Group", 
+    joinColumns=@JoinColumn(name="user_id"),
+    inverseJoinColumns=@JoinColumn(name="group_id"))
+    private List<Group> groups;
+
+    public List<Group> getGroups() {
+        return this.groups;
+    }
+
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
+    }
+
+    @OneToMany(mappedBy="sender")
+    private List<Message> senderMessages;
+
+    public List<Message> getSenderMessages() {
+        return this.senderMessages;
+    }
+
+    public void setSenderMessages(List<Message> senderMessages) {
+        this.senderMessages = senderMessages;
+    }
+
     @Column
     protected UserType userType;
 
