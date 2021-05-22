@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.stompWebsocket;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -20,4 +21,7 @@ public class GameWSController {
         return "";
     }
 
+    @MessageMapping("/games/{gameId}/shove/notify/{partnerId}")
+    @SendTo("/games/{gameId}/shove/receive/{partnerId}")
+    public String sendShovingInfo(String msg) { return msg; }
 }
