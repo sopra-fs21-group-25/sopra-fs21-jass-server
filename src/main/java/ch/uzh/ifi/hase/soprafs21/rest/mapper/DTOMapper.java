@@ -9,6 +9,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
+import ch.uzh.ifi.hase.soprafs21.stompWebsocket.ChatMessageDTO;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -173,4 +174,11 @@ public interface DTOMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")
     RegisteredUser convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
+
+
+/*
+    Message related mappings
+*/
+
+    Message convertChatMessageDTOToEntity(ChatMessageDTO chatMessageDTO);
 }
