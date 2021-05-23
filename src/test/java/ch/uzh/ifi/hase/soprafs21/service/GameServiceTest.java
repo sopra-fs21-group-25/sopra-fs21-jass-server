@@ -1,9 +1,12 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
+import ch.uzh.ifi.hase.soprafs21.entity.Group;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.SchieberGameSession;
 import ch.uzh.ifi.hase.soprafs21.game.*;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
+import ch.uzh.ifi.hase.soprafs21.repository.GroupRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.SchieberGamePutDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +34,9 @@ class GameServiceTest {
 
     @Mock
     private GameRepository gameRepository;
+
+    @Mock
+    private GroupRepository groupRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -154,6 +160,8 @@ class GameServiceTest {
         ingameModeMultiplicators.add(oneObject);
         //IngameModeMultiplicatorObject[] myObjectforDTO = new IngameModeMultiplicatorObject[3];
 
+        Group group = new Group(GroupType.COLLECTIVE);
+
         //setup of the schhieber Game Session
         schieberGameSession = new SchieberGameSession();
         UUID gameID = UUID.randomUUID();
@@ -188,6 +196,7 @@ class GameServiceTest {
 
 
         Mockito.when(gameRepository.saveAndFlush(Mockito.any())).thenReturn(schieberGameSession);
+        Mockito.when(groupRepository.findByLobbyIdOrGameId(Mockito.any())).thenReturn(group);
 
     }
 
@@ -246,7 +255,7 @@ class GameServiceTest {
         //when
         Mockito.when(gameRepository.save(schieberGameSession)).thenReturn(schieberGameSession);
         Mockito.doNothing().when(gameRepository).flush();
-        assertEquals(gameService.createNewGame(schieberGameSession), schieberGameSession);
+        assertEquals(gameService.createNewGame(schieberGameSession, UUID.randomUUID()), schieberGameSession);
 
     }
 
