@@ -4,7 +4,10 @@ import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.SchieberGameSession;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.game.*;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.CardsGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.SchieberGameGetDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.SchieberGamePostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.SchieberGamePutDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.LobbyService;
@@ -21,16 +24,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyListOf;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
+import static org.springframework.http.RequestEntity.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,12 +52,18 @@ class GameControllerTest {
     private GameService gameService;
 
     private RegisteredUser peter;
+    private RegisteredUser marie;
+    private RegisteredUser ursine;
+    private RegisteredUser kai;
     private List<Card> listCard;
     private Card[] listofCard;
 
     private SchieberGameSession schieberGameSession;
-    private SchieberGameGetDTO schieberGameGetDTO;
+    private SchieberGameSession postDTO;
+    private SchieberGamePostDTO schieberGamePostDTO;
+    private SchieberGamePutDTO schieberGamePutDTO;
     private SchieberGameGetDTO schieber;
+    private CardsGetDTO playerCards;
 
     @BeforeEach
     public void setupGameSession(){
@@ -58,6 +71,7 @@ class GameControllerTest {
         card1.setRank(Rank.ACE);
         card1.setSuit(Suit.BELL);
         card1.setIsTrumpf(false);
+
 
 
         Card card2 = new Card();
@@ -80,17 +94,17 @@ class GameControllerTest {
         UUID peterID = UUID.randomUUID();
         peter.setId(peterID);
 
-        User marie = new RegisteredUser();
+        marie = new RegisteredUser();
         marie.setUsername("Marie");
         UUID marieID = UUID.randomUUID();
         marie.setId(marieID);
 
-        User ursine = new RegisteredUser();
+        ursine = new RegisteredUser();
         ursine.setUsername("Ursine");
         UUID ursineID = UUID.randomUUID();
         ursine.setId(ursineID);
 
-        User kai = new RegisteredUser();
+        kai = new RegisteredUser();
         kai.setUsername("Kai");
         UUID kaiID = UUID.randomUUID();
         kai.setId(kaiID);
@@ -112,7 +126,8 @@ class GameControllerTest {
         oneObject.setIngameMode(IngameMode.ACORN);
         oneObject.setMultiplicator(20);
         ingameModeMultiplicators.add(oneObject);
-        //IngameModeMultiplicatorObject[] myObjectforDTO = new IngameModeMultiplicatorObject[3];
+        IngameModeMultiplicatorObject[] myObjectforDTO = new IngameModeMultiplicatorObject[1];
+        myObjectforDTO[0]= new IngameModeMultiplicatorObject(IngameMode.ACORN, 1000);
 
         //setup of the schhieber Game Session
         schieberGameSession = new SchieberGameSession();
@@ -148,31 +163,38 @@ class GameControllerTest {
 
 
         //setup of the DTO
+        schieberGamePostDTO = new SchieberGamePostDTO();
+        schieberGamePostDTO.setPointsToWin(2000);
+
+        schieberGamePostDTO.setPlayer0id(peter.getId());
+        schieberGamePostDTO.setPlayer1id(marie.getId());
+        schieberGamePostDTO.setPlayer2id(kai.getId());
+        schieberGamePostDTO.setPlayer3id(ursine.getId());
+        schieberGamePostDTO.setWeisAsk("true");
+        schieberGamePostDTO.setCrossWeisAllowed(true);
+        schieberGamePostDTO.setWeisAllowed(false);
+        schieberGamePostDTO.setIngameModes(myObjectforDTO);
+        schieberGamePostDTO.setStartingCard(card1);
 
 
-
-//        schieberGameGetDTO = new SchieberGameGetDTO();
-//        schieberGameGetDTO.setTrickToPlay(1);
-//        schieberGameGetDTO.setId(gameID);
-//        schieberGameGetDTO.setPointsToWin(2000);
-//        schieberGameGetDTO.setPlayer0id(peterID);
-//        schieberGameGetDTO.setPlayer1id(marieID);
-//        schieberGameGetDTO.setPlayer2id(kaiID);
-//        schieberGameGetDTO.setPlayer3id(ursineID);
-//        schieberGameGetDTO.setWeisAsk("true");
-//        schieberGameGetDTO.setCrossWeisAllowed(Boolean.TRUE);
-//        schieberGameGetDTO.setWeisAllowed(Boolean.FALSE);
-//        schieberGameGetDTO.setCardsOfPlayer(listofCard);
-//        schieberGameGetDTO.setIngameModes(myObjectforDTO);
-//        schieberGameGetDTO.setHasTrickStarted(Boolean.FALSE);
-//        schieberGameGetDTO.setTrickToPlay(1);
-//        schieberGameGetDTO.setCardsPlayed(listofCard);
-//        schieberGameGetDTO.setIdOfRoundStartingPlayer(peter.getId());
-//        schieberGameGetDTO.setPointsTeam0_2(200);
-
+//        postDTO = DTOMapper.INSTANCE.convertSchieberGamePostDTOtoEntity(schieberGamePostDTO, gameService);
 
 
         schieber = DTOMapper.INSTANCE.convertEntityToSchieberGameGetDTO(schieberGameSession);
+
+        playerCards = new CardsGetDTO();
+        playerCards.setCards(listofCard);
+
+        //set up of the put DTO
+        schieberGamePutDTO = new SchieberGamePutDTO();
+        schieberGamePutDTO.setIngameMode(IngameMode.ACORN);
+        schieberGamePutDTO.setUserId(peter.getId());
+        schieberGamePutDTO.setLowOrHigh(Roundstart.OBE);
+        schieberGamePutDTO.setPlayedCard(card3);
+
+
+
+
 
     }
 
@@ -196,17 +218,19 @@ class GameControllerTest {
                 .andExpect(status().isOk());
     }
 
-//    @Test
-//    public void getGamewithID_noID_test()throws Exception{
-//        //when
-//        Mockito.doThrow(ResponseStatusException.class).when(gameService).getGameWithId(schieberGameSession.getId());
-//        //make request
-//        MockHttpServletRequestBuilder getRequest = get("/games/" + schieberGameSession.getId().toString())
-//                .contentType(asJsonString(MediaType.APPLICATION_JSON));
-//
-//        mockMvc.perform(getRequest)
-//                .andExpect(status().isNotFound());
-//    }
+    @Test
+    public void getGamewithID_noID_test()throws Exception{
+        //when
+       given(gameService.getGameWithId(schieberGameSession.getId()))
+                .willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find game with that id"));
+        //make request
+        MockHttpServletRequestBuilder getRequest = get("/games/" + schieberGameSession.getId().toString())
+                .contentType(asJsonString(MediaType.APPLICATION_JSON));
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().isNotFound())
+                .andExpect(status().reason(containsString("Could not find game with that id")));
+    }
 
     @Test
     public void getGamewithID_ContainingCardsofPlayer_test()throws Exception{
@@ -219,23 +243,92 @@ class GameControllerTest {
         mockMvc.perform(getRequest)
                 .andExpect(jsonPath("$.id", is(schieber.getId().toString())))
                 .andExpect(jsonPath("$.pointsToWin", is(schieber.getPointsToWin())))
+                .andExpect(jsonPath("$.pointsTeam0_2", is(schieber.getPointsTeam0_2())))
+                .andExpect(jsonPath("$.pointsTeam1_3", is(schieber.getPointsTeam1_3())))
+                .andExpect(jsonPath("$.trickToPlay", is(schieber.getTrickToPlay())))
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void getGamewithID_ContainingCardsofPlayer_DoNotExist_test()throws Exception{
+        given(gameService.getGameWithId(Mockito.any())).willReturn(schieberGameSession);
+        //given(gameService.getPlayerCards(peter.getId(), schieberGameSession)).willReturn(java.util.Optional.ofNullable(listofCard));
+
+        MockHttpServletRequestBuilder getRequest = get("/games/" + schieberGameSession.getId().toString()+"/"+ peter.getId())
+                .contentType(asJsonString(MediaType.APPLICATION_JSON));
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().is(404))
+                .andExpect(status().reason(containsString("Cards for this player do not exist")));
+    }
+
+    @Test
+    public void getCardsOfUserWithId_test()throws Exception{
+        given(gameService.getGameWithId(Mockito.any())).willReturn(schieberGameSession);
+        given(gameService.getPlayerCards(peter.getId(), schieberGameSession)).willReturn(java.util.Optional.ofNullable(listofCard));
+
+        MockHttpServletRequestBuilder getRequest = get("/games/" + schieberGameSession.getId().toString()+"/cards/"+ peter.getId())
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(getRequest)
+                //.andExpect(jsonPath("$.cards", is(listofCard)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getCardsOfUserWithId_DoNotExist_test()throws Exception{
+        given(gameService.getGameWithId(Mockito.any())).willReturn(schieberGameSession);
+        //given(gameService.getPlayerCards(peter.getId(), schieberGameSession)).willReturn(java.util.Optional.ofNullable(listofCard));
+
+        MockHttpServletRequestBuilder getRequest = get("/games/" + schieberGameSession.getId().toString()+"/cards/"+ peter.getId())
+                .contentType(asJsonString(MediaType.APPLICATION_JSON));
+
+        mockMvc.perform(getRequest)
+                .andExpect(status().is(404))
+                .andExpect(status().reason(containsString("Cards for this player do not exist")));
+    }
+
+
 //    @Test
-//    public void getGamewithID_ContainingCardsofPlayer_DoNotExist_test()throws Exception{
-//        given(gameService.getGameWithId(Mockito.any())).willReturn(schieberGameSession);
-//        //given(gameService.getPlayerCards(peter.getId(), schieberGameSession)).willReturn(java.util.Optional.ofNullable(listofCard));
+//    public void createGame_test()throws Exception{
+//        given(gameService.createNewGame(Mockito.any())).willReturn(schieberGameSession);
 //
-//        MockHttpServletRequestBuilder getRequest = get("/games/" + schieberGameSession.getId().toString()+"/"+ peter.getId())
-//                .contentType(asJsonString(MediaType.APPLICATION_JSON));
+//        MockHttpServletRequestBuilder postRequest = MockMvcRequestBuilders.post("/games")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(asJsonString(schieberGamePostDTO));
 //
-//        mockMvc.perform(getRequest)
-//                .andExpect(jsonPath("$.id", is(schieber.getId().toString())))
-//                .andExpect(jsonPath("$.pointsToWin", is(schieber.getPointsToWin())))
-//                .andExpect(status().isOk());
+//
+//        mockMvc.perform(postRequest)
+//                .andExpect(status().is(405));
 //    }
 
+
+
+    @Test
+    public void updateGameState_test()throws Exception{
+        given(gameService.updateStateOfGameWithId(UUID.randomUUID(), schieberGamePutDTO)).willReturn(schieberGameSession);
+        given(gameService.getPlayerCards(UUID.randomUUID(), schieberGameSession)).willReturn(java.util.Optional.ofNullable(listofCard));
+
+        MockHttpServletRequestBuilder putRequest = put("/games/" + schieberGameSession.getId().toString())
+                .content(asJsonString(schieberGamePutDTO))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().is(404));
+    }
+
+
+
+    @Test
+    public void deleteGame_test()throws Exception{
+        doNothing().when(gameService).deleteGameSession(Mockito.any());
+
+        MockHttpServletRequestBuilder putRequest = put("/games/" + schieberGameSession.getId().toString()+"/close");
+
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().is(204));
+    }
 
     private String asJsonString(final Object object) {
         try {
