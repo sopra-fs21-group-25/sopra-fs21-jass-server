@@ -31,29 +31,6 @@ public class FriendRequestService {
         this.friendService = friendService;
     }
 
-    /*
-    Not in use any longer. Will be soonish
-
-    public FriendRequest sendFriendRequest(User fromUser, User toUser){
-        FriendRequest newRequest = new FriendRequest(fromUser, toUser);
-        this.friendRequestRepository.save(newRequest); 
-        return newRequest; 
-    }
-
-    public void declineRequest(UUID id){
-        friendRequestRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a friend request with this id."));
-        friendRequestRepository.deleteById(id);
-    }
-
-    public void acceptRequest(UUID id){
-        FriendRequest newRequest = friendRequestRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a friend request with this id."));
-        friendService.addFriends(newRequest.getFromUser(), newRequest.getToUser());
-        friendRequestRepository.deleteById(id);
-    }*/
-
-
     public FriendRequest createAndStoreNewFriendRequest(FriendRequest newRequest) throws ResponseStatusException {
         if(friendService.getFriends(newRequest.getFromUser()).contains(newRequest.getToUser())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot send friend request to user who is already a friend");

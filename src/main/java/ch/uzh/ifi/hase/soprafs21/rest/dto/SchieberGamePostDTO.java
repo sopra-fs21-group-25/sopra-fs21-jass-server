@@ -17,6 +17,7 @@ public class SchieberGamePostDTO {
     private UUID player1id;
     private UUID player2id;
     private UUID player3id;
+    private UUID prevLobbyId;
 
     public IngameModeMultiplicatorObject[] getIngameModes() {
         return ingameModes;
@@ -96,5 +97,13 @@ public class SchieberGamePostDTO {
 
     public void setPlayer3id(UUID player3id) {
         this.player3id = player3id;
+    }
+
+    public UUID getPrevLobbyId() {
+        return prevLobbyId;
+    }
+
+    public void setPrevLobbyId(UUID prevLobbyId) {
+        this.prevLobbyId = prevLobbyId;
     }
 }

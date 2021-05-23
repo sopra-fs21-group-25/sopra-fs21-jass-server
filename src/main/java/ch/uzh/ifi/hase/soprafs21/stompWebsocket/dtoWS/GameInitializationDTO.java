@@ -1,9 +1,9 @@
-package ch.uzh.ifi.hase.soprafs21.stompWebsocket;
+package ch.uzh.ifi.hase.soprafs21.stompWebsocket.dtoWS;
 
 import java.util.UUID;
 
 @SuppressWarnings("unused")
-public class GameInitializationMSG {
+public class GameInitializationDTO {
 
     private UUID id;
     private UUID player0id;
@@ -11,7 +11,7 @@ public class GameInitializationMSG {
     private UUID player2id;
     private UUID player3id;
 
-    public GameInitializationMSG(UUID id, UUID player0id, UUID player1id, UUID player2id, UUID player3id) {
+    public GameInitializationDTO(UUID id, UUID player0id, UUID player1id, UUID player2id, UUID player3id) {
         this.id = id;
         this.player0id = player0id;
         this.player1id = player1id;
@@ -19,7 +19,7 @@ public class GameInitializationMSG {
         this.player3id = player3id;
     }
 
-    public GameInitializationMSG() {}
+    public GameInitializationDTO() {}
 
     public UUID getId() {
         return id;

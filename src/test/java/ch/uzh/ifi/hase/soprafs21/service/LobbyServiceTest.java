@@ -1,14 +1,13 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
-import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
-import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.game.GameMode;
 import ch.uzh.ifi.hase.soprafs21.game.IngameModeMultiplicatorObject;
 import ch.uzh.ifi.hase.soprafs21.game.Rank;
 import ch.uzh.ifi.hase.soprafs21.game.Suit;
+import ch.uzh.ifi.hase.soprafs21.repository.GroupRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.RegisteredUserRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
@@ -30,6 +29,9 @@ public class LobbyServiceTest {
 
     @Mock
     private LobbyRepository lobbyRepository;
+
+    @Mock
+    private GroupRepository groupRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -107,6 +109,11 @@ public class LobbyServiceTest {
         users2.add(hans);
         users2.add(wanda);
 
+        Group group1 = new Group(GroupType.COLLECTIVE);
+        group1.setUsers(new ArrayList<>(users));
+        Group group2 = new Group(GroupType.COLLECTIVE);
+        group2.setUsers(new ArrayList<>(users2));
+
 
         List<IngameModeMultiplicatorObject> ingameModeMultiplicators = new ArrayList<>();
         lobby = new Lobby();
@@ -121,6 +128,7 @@ public class LobbyServiceTest {
         lobby.setCrossWeisAllowed(false);
         lobby.setWeisAsk("never");
         lobby.setIngameModes(ingameModeMultiplicators);
+        lobby.setGroup(group1);
 
         lobby2 = new Lobby();
         lobby2.setCreatorUsername(timon.getUsername());
@@ -134,6 +142,7 @@ public class LobbyServiceTest {
         lobby2.setCrossWeisAllowed(false);
         lobby2.setWeisAsk("never");
         lobby2.setIngameModes(ingameModeMultiplicators);
+        lobby2.setGroup(group2);
 
         myLobbyList = new ArrayList<>();
         myLobbyListfriends =  new HashSet<>();
@@ -196,7 +205,7 @@ public class LobbyServiceTest {
     }
 
     @Test
-    public void addUserSusitoLobby_success() {
+    public void addUserSusiToLobby_success() {
 
         // setup
         LobbyPutUserWithIdDTO usernotinLobbyyet = new LobbyPutUserWithIdDTO();
@@ -216,7 +225,7 @@ public class LobbyServiceTest {
     }
 
     @Test
-    public void addUserSusitoLobby_lobbynotfound() {
+    public void addUserSusiToLobby_lobbynotfound() {
 
         // when
         LobbyPutUserWithIdDTO usernotinLobbyyet = new LobbyPutUserWithIdDTO();

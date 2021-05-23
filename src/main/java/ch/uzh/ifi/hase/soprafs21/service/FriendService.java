@@ -1,6 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
+import ch.uzh.ifi.hase.soprafs21.entity.Group;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.repository.GroupRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +24,11 @@ public class FriendService {
 
     private final Logger log = LoggerFactory.getLogger(FriendService.class);
 
-    private final UserRepository userRepository;
+    private final GroupRepository groupRepository;
 
     @Autowired
-    public FriendService(@Qualifier("userRepository") UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public FriendService(@Qualifier("groupRepository") GroupRepository groupRepository) {
+        this.groupRepository = groupRepository;
     }
 
     public List<User> getFriends(User a){
@@ -41,22 +44,25 @@ public class FriendService {
         List<User> friends = new ArrayList<>(a.getFriends());
         friends.add(b);
         a.setFriends(friends);
+
+        Group newGroup = new Group(GroupType.BIDIRECTIONAL, a, b);
+        groupRepository.saveAndFlush(newGroup);
     }
 
     public void removeFriend(User a, User b){
         List<User> friends_A = a.getFriends();
         List<User> friends_B = b.getFriends();
         if(friends_A != null){
-            if (friends_A.contains(b)){
-                friends_A.remove(b);
-            }
+            friends_A.remove(b);
         }
         if(friends_B != null){
-            if (friends_B.contains(a)){
-                friends_B.remove(a);
-            }
+            friends_B.remove(a);
         }
         a.setFriends(friends_A);
         b.setFriends(friends_B);
+
+        Group toDelete = groupRepository.findByGroupTypeAndUsersWithIds(GroupType.BIDIRECTIONAL, a.getId(), b.getId());
+        toDelete.getUsers().forEach(u -> u.getGroups().remove(toDelete));
+        groupRepository.delete(toDelete);
     }
 }

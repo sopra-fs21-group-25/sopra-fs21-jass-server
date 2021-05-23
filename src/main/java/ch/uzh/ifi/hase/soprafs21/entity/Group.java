@@ -17,7 +17,7 @@ public class Group implements Serializable{
     @GeneratedValue(strategy = GenerationType.AUTO)   
     private UUID id;
     
-    @OneToMany(mappedBy="group")
+    @OneToMany(mappedBy="group", cascade = CascadeType.REMOVE)
     private List<Message> messages;
 
     @ManyToMany(mappedBy="groups")
@@ -32,6 +32,14 @@ public class Group implements Serializable{
     @Enumerated(EnumType.STRING)
     private GroupType groupType;
 
+
+    public Group(GroupType groupType, User... users) {
+        this.groupType = groupType;
+        for(User u : users) { u.getGroups().add(this); }
+        this.messages = new ArrayList<>();
+    }
+
+    public Group() {}
 
     public UUID evaluateEnvironmentId(UUID senderId) {
         if(this.groupType == GroupType.BIDIRECTIONAL) {

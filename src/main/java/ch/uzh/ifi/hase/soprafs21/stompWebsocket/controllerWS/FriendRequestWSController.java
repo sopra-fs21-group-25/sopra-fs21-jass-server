@@ -1,6 +1,7 @@
-package ch.uzh.ifi.hase.soprafs21.stompWebsocket;
+package ch.uzh.ifi.hase.soprafs21.stompWebsocket.controllerWS;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
@@ -15,5 +16,5 @@ public class FriendRequestWSController {
 
     @MessageMapping("/friends/notify_remove/{toUserId}")
     @SendTo("/friends/notify_remove/{toUserId}")
-    public String notifyToFetchFriendsAndUsers() { return ""; }
+    public String notifyToFetchFriendsAndUsers(@Payload String fromUserId) { return fromUserId; }
 }

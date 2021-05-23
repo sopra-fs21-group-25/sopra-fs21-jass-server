@@ -101,14 +101,24 @@ public class LobbyController {
         return DTOMapper.INSTANCE.convertEntityToLobbyGetDTO(updatedLobby);
     }
 
-    @PutMapping("/lobbies/{lobbyId}/close")
+    @DeleteMapping("/lobbies/{lobbyId}/delete/no-cascade")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public void closeLobbyAndRemoveUsers(@PathVariable("lobbyId") UUID lobbyId) {
+    public void deleteLobbyNoCascadeDeleteChatGroup(@PathVariable("lobbyId") UUID lobbyId) {
         Lobby lobbyToClose = lobbyService.getLobbyWithId(lobbyId);
         lobbyToClose = lobbyService.clearLobby(lobbyToClose);
 
-        lobbyService.deleteLobby(lobbyToClose);
+        lobbyService.deleteNoCascadeChatGroupLobby(lobbyToClose);
+    }
+
+    @DeleteMapping("/lobbies/{lobbyId}/delete/cascade")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public void deleteLobbyAndCascadeDeleteChatGroup(@PathVariable("lobbyId") UUID lobbyId) {
+        Lobby lobbyToClose = lobbyService.getLobbyWithId(lobbyId);
+        lobbyToClose = lobbyService.clearLobby(lobbyToClose);
+
+        lobbyService.deleteCascadeChatGroupLobby(lobbyToClose);
     }
 
     /* Returns a DTO containing an array of users, whose fields are null except for
