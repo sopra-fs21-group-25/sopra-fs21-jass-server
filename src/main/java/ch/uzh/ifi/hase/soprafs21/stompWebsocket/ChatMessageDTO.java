@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.stompWebsocket;
 
+import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
+
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
@@ -7,10 +9,9 @@ import java.util.UUID;
 public class ChatMessageDTO {
 
     private UUID senderId;
-    private UUID recipientId;
     private String senderUsername;
-    private String recipientUsername;
-
+    private UUID environmentId;
+    private GroupType groupType;
     private Date timestamp;
     private String text;
 
@@ -24,28 +25,12 @@ public class ChatMessageDTO {
         this.senderId = senderId;
     }
 
-    public UUID getRecipientId() {
-        return recipientId;
-    }
-
-    public void setRecipientId(UUID recipientId) {
-        this.recipientId = recipientId;
-    }
-
     public String getSenderUsername() {
         return senderUsername;
     }
 
     public void setSenderUsername(String senderUsername) {
         this.senderUsername = senderUsername;
-    }
-
-    public String getRecipientUsername() {
-        return recipientUsername;
-    }
-
-    public void setRecipientUsername(String recipientUsername) {
-        this.recipientUsername = recipientUsername;
     }
 
     public Date getTimestamp() {
@@ -63,4 +48,12 @@ public class ChatMessageDTO {
     public void setText(String text) {
         this.text = text;
     }
+
+    public UUID getEnvironmentId() { return environmentId; }
+
+    public void setEnvironmentId(UUID environmentId) { this.environmentId = environmentId; }
+
+    public GroupType getGroupType() { return groupType; }
+
+    public void setGroupType(GroupType groupType) { this.groupType = groupType; }
 }

@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
+import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
 import ch.uzh.ifi.hase.soprafs21.entity.GoogleUser;
 import ch.uzh.ifi.hase.soprafs21.entity.FriendRequest;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
@@ -7,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
+import ch.uzh.ifi.hase.soprafs21.service.ChatService;
 import ch.uzh.ifi.hase.soprafs21.service.GameService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import ch.uzh.ifi.hase.soprafs21.stompWebsocket.ChatMessageDTO;
@@ -24,7 +26,7 @@ import java.util.Set;
  * Always created one mapper for getting information (GET) and one mapper for creating information (POST).
  */
 @Mapper(
-        uses = {GameService.class, UserService.class},
+        uses = {GameService.class, UserService.class, ChatService.class},
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         componentModel = "spring"
 )
@@ -179,6 +181,21 @@ public interface DTOMapper {
 /*
     Message related mappings
 */
+    @Mapping(target = "sender", expression = "java(userService.getUserById(chatMessageDTO.getSenderId()))")
+    @Mapping(source = "text", target = "text")
+    @Mapping(source = "timestamp", target = "timestamp")
+    Message convertChatMessageDTOToMessage(ChatMessageDTO chatMessageDTO, @Context UserService userService, @Context ChatService chatService);
+    @AfterMapping
+    default void attainAndAssignGroup(@MappingTarget Message message, ChatMessageDTO chatMessageDTO, @Context ChatService chatService) {
+        Group group = chatService.evaluateGroupAssignment(chatMessageDTO.getSenderId(), chatMessageDTO.getEnvironmentId(), chatMessageDTO.getGroupType());
+        message.setGroup(group);
+    }
 
-    Message convertChatMessageDTOToEntity(ChatMessageDTO chatMessageDTO);
+    @Mapping(source = "sender.id", target = "senderId")
+    @Mapping(source = "sender.username", target = "senderUsername")
+    @Mapping(source = "group.groupType", target = "groupType")
+    @Mapping(source = "timestamp", target = "timestamp")
+    @Mapping(source = "text", target = "text")
+    @Mapping(target = "environmentId", expression = "java(message.getGroup().evaluateEnvironmentId(message.getSender().getId()))")
+    ChatMessageDTO convertMessageToChatMessageDTO(Message message);
 }

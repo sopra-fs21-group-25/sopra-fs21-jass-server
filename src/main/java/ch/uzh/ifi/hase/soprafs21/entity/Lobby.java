@@ -20,6 +20,9 @@ public class Lobby implements Serializable, Comparable<Lobby> {
     @Column(nullable = false, unique = true)
     private String creatorUsername;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id", updatable = false)
+    private Group group;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -216,6 +219,13 @@ public class Lobby implements Serializable, Comparable<Lobby> {
 
     public void setUserLeft(User userLeft) { this.userLeft = userLeft; }
 
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
 
     /**
      * Compares this object with the specified object for order.  Returns a

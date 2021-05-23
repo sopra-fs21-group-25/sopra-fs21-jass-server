@@ -109,6 +109,10 @@ public class SchieberGameSession implements Serializable {
     @Column
     private String weisAsk;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id", updatable = false)
+    private Group group;
+
 
 /*
     Consistent/Immutable parts of the state above
@@ -694,5 +698,29 @@ public class SchieberGameSession implements Serializable {
 
     public void setStartedLowOrHigh(Roundstart startedLowOrHigh) {
         this.startedLowOrHigh = startedLowOrHigh;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public Integer getPointsInCurrentRoundTeam0_2() {
+        return pointsInCurrentRoundTeam0_2;
+    }
+
+    public void setPointsInCurrentRoundTeam0_2(Integer pointsInCurrentRoundTeam0_2) {
+        this.pointsInCurrentRoundTeam0_2 = pointsInCurrentRoundTeam0_2;
+    }
+
+    public Integer getPointsInCurrentRoundTeam1_3() {
+        return pointsInCurrentRoundTeam1_3;
+    }
+
+    public void setPointsInCurrentRoundTeam1_3(Integer pointsInCurrentRoundTeam1_3) {
+        this.pointsInCurrentRoundTeam1_3 = pointsInCurrentRoundTeam1_3;
     }
 }

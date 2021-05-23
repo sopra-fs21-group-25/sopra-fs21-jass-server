@@ -30,7 +30,7 @@ public class Message implements Serializable {
     @JoinColumn(name="group_Id", nullable=false)
     private Group group;
 
-    public Message(){ 
+    public Message(){
         timestamp = new Date(); 
     }
     
@@ -65,4 +65,8 @@ public class Message implements Serializable {
     public void setSender(User sender) {
         this.sender = sender;
     }
+
+    public String getText() { return text; }
+
+    public void setText(String text) { this.text = text; }
 }
