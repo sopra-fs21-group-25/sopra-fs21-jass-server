@@ -109,7 +109,7 @@ public class SchieberGameSession implements Serializable {
     @Column
     private String weisAsk;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "group_id", updatable = false)
     private Group group;
 

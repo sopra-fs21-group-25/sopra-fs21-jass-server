@@ -95,7 +95,7 @@ public class GameController {
     @ResponseBody
     public SchieberGameGetDTO createGame(@RequestBody SchieberGamePostDTO postDTO) {
         SchieberGameSession schieberGameSession = DTOMapper.INSTANCE.convertSchieberGamePostDTOtoEntity(postDTO, gameService);
-        schieberGameSession = gameService.createNewGame(schieberGameSession);
+        schieberGameSession = gameService.createNewGame(schieberGameSession, postDTO.getPrevLobbyId());
 
         return DTOMapper.INSTANCE.convertEntityToSchieberGameGetDTO(schieberGameSession);
     }

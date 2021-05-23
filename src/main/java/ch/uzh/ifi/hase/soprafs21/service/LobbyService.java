@@ -1,8 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
 import ch.uzh.ifi.hase.soprafs21.constant.LobbyPosition;
+import ch.uzh.ifi.hase.soprafs21.entity.Group;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.repository.GroupRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPutUserWithIdDTO;
@@ -25,10 +28,12 @@ public class LobbyService {
     private final Logger log = LoggerFactory.getLogger(LobbyService.class);
 
     private final LobbyRepository lobbyRepository;
+    private final GroupRepository groupRepository;
 
     @Autowired
-    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository) {
+    public LobbyService(@Qualifier("lobbyRepository") LobbyRepository lobbyRepository, @Qualifier("groupRepository") GroupRepository groupRepository) {
         this.lobbyRepository = lobbyRepository;
+        this.groupRepository = groupRepository;
     }
 
     public List<Lobby> getLobbies() { return this.lobbyRepository.findAll(); }
@@ -57,9 +62,10 @@ public class LobbyService {
     }
 
     public Lobby createLobby(Lobby newLobby) {
-
-        newLobby = lobbyRepository.save(newLobby);
-        lobbyRepository.flush();
+        Group chatGroup = new Group(GroupType.COLLECTIVE);
+        chatGroup = groupRepository.saveAndFlush(chatGroup);
+        newLobby.setGroup(chatGroup);
+        newLobby = lobbyRepository.saveAndFlush(newLobby);
 
         log.debug("Created Information for Lobby: {}", newLobby);
         return newLobby;
@@ -73,6 +79,7 @@ public class LobbyService {
         User userToAdd = this.lobbyRepository.findUserById(userIdDTO.getUserId());
 
         lobby.getUsersInLobby().add(userToAdd);
+        lobby.getGroup().getUsers().add(userToAdd);
 
         return lobby;
     }
@@ -94,10 +101,8 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not in lobby");
         }
 
-        Set<User> lobbyUsers = new HashSet<>(lobby.getUsersInLobby());
-        lobbyUsers.remove(userToRemove);
-
-        lobby.setUsersInLobby(lobbyUsers);
+        lobby.getUsersInLobby().remove(userToRemove);
+        lobby.getGroup().getUsers().remove(userToRemove);
 
         if(lobby.getUserTop() != null && lobby.getUserTop().equals(userToRemove)) {
             lobby.setUserTop(null);
@@ -185,12 +190,21 @@ public class LobbyService {
         return lobby;
     }
 
-    public void deleteLobby(Lobby lobby) {
+    public void deleteCascadeChatGroupLobby(Lobby lobby) {
         try {
+            groupRepository.delete(lobby.getGroup());
             lobbyRepository.delete(lobby);
         } catch(Exception e) {
-            System.out.println("Could not delete lobby, needs to be cleared!");
+            log.error("Could not delete lobby. Error: ", e);
             throw e;
+        }
+    }
+
+    public void deleteNoCascadeChatGroupLobby(Lobby lobby) {
+        try {
+            lobbyRepository.delete(lobby);
+        } catch (Exception e) {
+            log.error("Could not delete lobby. Error: ", e);
         }
     }
 

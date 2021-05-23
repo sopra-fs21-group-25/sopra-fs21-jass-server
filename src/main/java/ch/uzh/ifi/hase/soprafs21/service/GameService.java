@@ -1,11 +1,14 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
+import ch.uzh.ifi.hase.soprafs21.entity.Group;
 import ch.uzh.ifi.hase.soprafs21.entity.SchieberGameSession;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.game.Card;
 import ch.uzh.ifi.hase.soprafs21.game.Deck;
 import ch.uzh.ifi.hase.soprafs21.game.IngameMode;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
+import ch.uzh.ifi.hase.soprafs21.repository.GroupRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.SchieberGamePutDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +31,12 @@ public class GameService {
     private final Logger log = LoggerFactory.getLogger(GameService.class);
 
     private final GameRepository gameRepository;
+    private final GroupRepository groupRepository;
 
     @Autowired
-    public GameService(@Qualifier("gameRepository") GameRepository gameRepository) {
+    public GameService(@Qualifier("gameRepository") GameRepository gameRepository, @Qualifier("groupRepository") GroupRepository groupRepository) {
         this.gameRepository = gameRepository;
+        this.groupRepository = groupRepository;
     }
 
     public SchieberGameSession getGameWithId(UUID id) {
@@ -66,9 +71,10 @@ public class GameService {
         }
     }
 
-    public SchieberGameSession createNewGame(SchieberGameSession gameInput) {
-        gameInput = gameRepository.save(gameInput);
-        gameRepository.flush();
+    public SchieberGameSession createNewGame(SchieberGameSession gameInput, UUID prevLobbyId) {
+        Group chatGroup = groupRepository.findByLobbyIdOrGameId(prevLobbyId);
+        gameInput = gameRepository.saveAndFlush(gameInput);
+        gameInput.setGroup(chatGroup);
 
         log.debug("Created Information for Game {}", gameInput);
         return gameInput;

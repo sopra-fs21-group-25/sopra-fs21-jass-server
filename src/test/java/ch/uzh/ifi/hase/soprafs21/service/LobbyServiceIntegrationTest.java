@@ -1,10 +1,13 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.entity.Group;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.game.*;
+import ch.uzh.ifi.hase.soprafs21.repository.GroupRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.RegisteredUserRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
@@ -32,6 +35,8 @@ public class LobbyServiceIntegrationTest {
     @Autowired
     private LobbyRepository lobbyRepository;
 
+    @Autowired
+    private GroupRepository groupRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -40,6 +45,7 @@ public class LobbyServiceIntegrationTest {
     private LobbyService lobbyService;
 
     private Lobby lobby;
+    private Group group;
     private RegisteredUser susi = new RegisteredUser();
     private RegisteredUser timon = new RegisteredUser();
 
@@ -51,6 +57,8 @@ public class LobbyServiceIntegrationTest {
         lobbyRepository.flush();
         userRepository.deleteAll();
         userRepository.flush();
+        groupRepository.deleteAll();
+        groupRepository.flush();
         susi = new RegisteredUser();
         susi.setUsername("Susi");
         susi.setPassword("password4");
@@ -76,6 +84,9 @@ public class LobbyServiceIntegrationTest {
         oneObject.setMultiplicator(20);
 
         ingameModeMultiplicators.add(oneObject);
+
+        group = groupRepository.saveAndFlush(new Group(GroupType.COLLECTIVE));
+
         lobby = new Lobby();
         lobby.setCreatorUsername(susi.getUsername());
         lobby.setUsersInLobby(users);
@@ -88,8 +99,9 @@ public class LobbyServiceIntegrationTest {
         lobby.setCrossWeisAllowed(Boolean.FALSE);
         lobby.setWeisAsk("never");
         lobby.setIngameModes(ingameModeMultiplicators);
-        lobbyRepository.save(lobby);
-        lobbyRepository.flush();
+        lobby.setGroup(group);
+        lobby = lobbyRepository.saveAndFlush(lobby);
+
     }
 
 
@@ -139,12 +151,12 @@ public class LobbyServiceIntegrationTest {
     @Test
     public void addUserToLobby_success()  {
         // add Timon to the existing lobby
-        LobbyPutUserWithIdDTO usernotinLobbyyet = new LobbyPutUserWithIdDTO();
-        usernotinLobbyyet.setAdd(Boolean.TRUE);
-        usernotinLobbyyet.setUserId(UUID.randomUUID());
-        usernotinLobbyyet.setRemove(Boolean.FALSE);
+        LobbyPutUserWithIdDTO userNotInLobbyYet = new LobbyPutUserWithIdDTO();
+        userNotInLobbyYet.setAdd(Boolean.TRUE);
+        userNotInLobbyYet.setUserId(UUID.randomUUID());
+        userNotInLobbyYet.setRemove(Boolean.FALSE);
         // when
-        Lobby returnedLobby = lobbyService.addUserToLobby(usernotinLobbyyet, lobby.getId());
+        Lobby returnedLobby = lobbyService.addUserToLobby(userNotInLobbyYet, lobby.getId());
 
         // then
         assertEquals(returnedLobby.getId(), lobby.getId());

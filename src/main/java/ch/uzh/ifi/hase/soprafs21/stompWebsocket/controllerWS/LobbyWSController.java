@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs21.stompWebsocket;
+package ch.uzh.ifi.hase.soprafs21.stompWebsocket.controllerWS;
 
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;

@@ -99,7 +99,7 @@ public abstract class User implements Serializable {
         this.groups = groups;
     }
 
-    @OneToMany(mappedBy="sender")
+    @OneToMany(mappedBy="sender", cascade = CascadeType.REMOVE)
     private List<Message> senderMessages;
 
     public List<Message> getSenderMessages() {

@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs21.stompWebsocket;
+package ch.uzh.ifi.hase.soprafs21.stompWebsocket.dtoWS;
 
 import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
 
