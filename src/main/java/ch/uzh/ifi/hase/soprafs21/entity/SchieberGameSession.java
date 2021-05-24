@@ -327,14 +327,10 @@ public class SchieberGameSession implements Serializable {
     }
 
     public Boolean allCardsPlayedThisTrick() {
-        if(cardPlayedByPlayer0 != null &&
+        return cardPlayedByPlayer0 != null &&
                 cardPlayedByPlayer1 != null &&
                 cardPlayedByPlayer2 != null &&
-                cardPlayedByPlayer3 != null) {
-            return true;
-        }
-
-        return false;
+                cardPlayedByPlayer3 != null;
     }
 
     // ATTENTION: only call this method after the ones above have been invoked!
@@ -403,7 +399,7 @@ public class SchieberGameSession implements Serializable {
 
     public void achievePointsWithMatchBonus() {
 
-        // retrieve multiplicator of curentIngameMode
+        // retrieve multiplicator of currentIngameMode
         int multiplicator = 0;
         for(IngameModeMultiplicatorObject obj : getIngameModes()) {
             if(obj.getIngameMode() == getCurrentIngameMode()) {

@@ -20,7 +20,7 @@ public class Message implements Serializable {
     @JoinColumn(name="sender_Id", nullable=false)
     private User sender;
 
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String text;
 
     @Column(nullable = false)
