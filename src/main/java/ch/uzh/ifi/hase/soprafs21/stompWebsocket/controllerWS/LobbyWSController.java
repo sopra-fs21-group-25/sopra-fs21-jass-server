@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs21.stompWebsocket.controllerWS;
 
+import ch.uzh.ifi.hase.soprafs21.stompWebsocket.dtoWS.LobbyJoinDTO;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -34,7 +35,7 @@ public class LobbyWSController {
 
     @MessageMapping("/lobbies/invite/{userId}")
     @SendTo("/lobbies/invite/{userId}")
-    public String sendLobbyInvitationToUser(String msg) {
-        return msg;
+    public LobbyJoinDTO sendLobbyInvitationToUser(LobbyJoinDTO dto) {
+        return dto;
     }
 }

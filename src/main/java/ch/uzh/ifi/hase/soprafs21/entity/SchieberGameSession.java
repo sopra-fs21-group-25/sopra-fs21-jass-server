@@ -33,6 +33,8 @@ public class SchieberGameSession implements Serializable {
         pointsTeam1_3 = 0;
         pointsInCurrentRoundTeam0_2 = 0;
         pointsInCurrentRoundTeam1_3 = 0;
+        tricksWonThisRoundTeam0_2 = 0;
+        tricksWonThisRoundTeam1_3 = 0;
         trickToPlay = 0;
         player0startsTrick = false;
         player1startsTrick = false;
@@ -132,6 +134,12 @@ public class SchieberGameSession implements Serializable {
 
     @Column(nullable = false)
     private Integer pointsInCurrentRoundTeam1_3;
+
+    @Column(nullable = false)
+    private Integer tricksWonThisRoundTeam0_2;
+
+    @Column(nullable = false)
+    private Integer tricksWonThisRoundTeam1_3;
 
     @ElementCollection
     @CollectionTable(
@@ -384,16 +392,24 @@ public class SchieberGameSession implements Serializable {
         // points to that player's team
         if(cardPlayedByPlayer0.equals(highestCardPlayed)) {
             pointsInCurrentRoundTeam0_2 += achievedPoints;
+            if(trickToPlay == 8) { pointsInCurrentRoundTeam0_2 += 5; }
             player0startsTrick = true;
+            tricksWonThisRoundTeam0_2++;
         } else if(cardPlayedByPlayer1.equals(highestCardPlayed)) {
             pointsInCurrentRoundTeam1_3 += achievedPoints;
+            if(trickToPlay == 8) { pointsInCurrentRoundTeam1_3 += 5; }
             player1startsTrick = true;
+            tricksWonThisRoundTeam1_3++;
         } else if(cardPlayedByPlayer2.equals(highestCardPlayed)) {
             pointsInCurrentRoundTeam0_2 += achievedPoints;
+            if(trickToPlay == 8) { pointsInCurrentRoundTeam0_2 += 5; }
             player2startsTrick = true;
+            tricksWonThisRoundTeam0_2++;
         } else if(cardPlayedByPlayer3.equals(highestCardPlayed)) {
             pointsInCurrentRoundTeam1_3 += achievedPoints;
+            if(trickToPlay == 8) { pointsInCurrentRoundTeam1_3 += 5; }
             player3startsTrick = true;
+            tricksWonThisRoundTeam1_3++;
         }
     }
 
@@ -404,12 +420,13 @@ public class SchieberGameSession implements Serializable {
         for(IngameModeMultiplicatorObject obj : getIngameModes()) {
             if(obj.getIngameMode() == getCurrentIngameMode()) {
                 multiplicator = obj.getMultiplicator();
+                break;
             }
         }
 
         // award match bonus if necessary
-        if(pointsInCurrentRoundTeam0_2 == 157 * multiplicator) { pointsInCurrentRoundTeam0_2 += 100 * multiplicator; }
-        if(pointsInCurrentRoundTeam1_3 == 157 * multiplicator) { pointsInCurrentRoundTeam1_3 += 100 * multiplicator; }
+        if(tricksWonThisRoundTeam0_2 == 9) { pointsInCurrentRoundTeam0_2 += 100 * multiplicator; }
+        if(tricksWonThisRoundTeam1_3 == 9) { pointsInCurrentRoundTeam1_3 += 100 * multiplicator; }
 
         // store accumulated points made this round
         pointsTeam0_2 += pointsInCurrentRoundTeam0_2;
@@ -418,6 +435,10 @@ public class SchieberGameSession implements Serializable {
         // reset points accumulators for next round
         pointsInCurrentRoundTeam0_2 = 0;
         pointsInCurrentRoundTeam1_3 = 0;
+
+        // reset accumulated tricks won for next round
+        tricksWonThisRoundTeam0_2 = 0;
+        tricksWonThisRoundTeam1_3 = 0;
     }
 
     public void updateIdOfPlayerWhoStartsNextRoundAndSetPlayerWhoStartsNextTrick() {
@@ -427,17 +448,17 @@ public class SchieberGameSession implements Serializable {
         player3startsTrick = false;
 
         if(user0.getId().equals(idOfRoundStartingPlayer)) {
-            idOfRoundStartingPlayer = user0.getId();
-            player0startsTrick = true;
-        } else if(user1.getId().equals(idOfRoundStartingPlayer)) {
             idOfRoundStartingPlayer = user1.getId();
             player1startsTrick = true;
-        } else if(user2.getId().equals(idOfRoundStartingPlayer)) {
+        } else if(user1.getId().equals(idOfRoundStartingPlayer)) {
             idOfRoundStartingPlayer = user2.getId();
             player2startsTrick = true;
-        } else if(user3.getId().equals(idOfRoundStartingPlayer)) {
+        } else if(user2.getId().equals(idOfRoundStartingPlayer)) {
             idOfRoundStartingPlayer = user3.getId();
             player3startsTrick = true;
+        } else if(user3.getId().equals(idOfRoundStartingPlayer)) {
+            idOfRoundStartingPlayer = user0.getId();
+            player0startsTrick = true;
         }
     }
 
@@ -718,5 +739,21 @@ public class SchieberGameSession implements Serializable {
 
     public void setPointsInCurrentRoundTeam1_3(Integer pointsInCurrentRoundTeam1_3) {
         this.pointsInCurrentRoundTeam1_3 = pointsInCurrentRoundTeam1_3;
+    }
+
+    public Integer getTricksWonThisRoundTeam0_2() {
+        return tricksWonThisRoundTeam0_2;
+    }
+
+    public void setTricksWonThisRoundTeam0_2(Integer tricksWonThisRoundTeam0_2) {
+        this.tricksWonThisRoundTeam0_2 = tricksWonThisRoundTeam0_2;
+    }
+
+    public Integer getTricksWonThisRoundTeam1_3() {
+        return tricksWonThisRoundTeam1_3;
+    }
+
+    public void setTricksWonThisRoundTeam1_3(Integer tricksWonThisRoundTeam1_3) {
+        this.tricksWonThisRoundTeam1_3 = tricksWonThisRoundTeam1_3;
     }
 }
