@@ -9,10 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Embeddable
 public class Card {
@@ -75,18 +72,18 @@ public class Card {
         List<Card> bells = new ArrayList<>();
         List<Card> shields = new ArrayList<>();
 
-        for(int i=0; i<cards.length; i++) {
-            if(cards[i].getSuit() == Suit.ACORN) {
-                acorns.add(cards[i]);
+        for(Card card : cards) {
+            if(card.getSuit() == Suit.ACORN) {
+                acorns.add(card);
             }
-            if(cards[i].getSuit() == Suit.ROSE) {
-                roses.add(cards[i]);
+            if(card.getSuit() == Suit.ROSE) {
+                roses.add(card);
             }
-            if(cards[i].getSuit() == Suit.BELL) {
-                bells.add(cards[i]);
+            if(card.getSuit() == Suit.BELL) {
+                bells.add(card);
             }
-            if(cards[i].getSuit() == Suit.SHIELD) {
-                shields.add(cards[i]);
+            if(card.getSuit() == Suit.SHIELD) {
+                shields.add(card);
             }
         }
 
@@ -123,26 +120,28 @@ public class Card {
         switch(mode) {
             case ACORN, ROSE, BELL, SHIELD -> {
                 comparator = new TrumpfComparator();
-                for(int i=0; i<cards.length; i++) {
-                    if(cards[i].getIsTrumpf() && cards[i].getRank() == Rank.UNDER) {
+                for(Card card : cards) {
+                    if(card.getIsTrumpf() && card.getRank() == Rank.UNDER) {
                         pointsCollector[0] += 20;
-                    } else if(cards[i].getIsTrumpf() && cards[i].getRank() == Rank.NINE) {
+                    }
+                    else if(card.getIsTrumpf() && card.getRank() == Rank.NINE) {
                         pointsCollector[0] += 14;
-                    } else {
-                        pointsCollector[0] += cards[i].calcObenabePoints();
+                    }
+                    else {
+                        pointsCollector[0] += card.calcObenabePoints(mode);
                     }
                 }
             }
             case OBENABE -> {
                 comparator = new ObenabeComparator();
-                for(int i=0; i<cards.length; i++) {
-                    pointsCollector[0] += cards[i].calcObenabePoints();
+                for(Card card : cards) {
+                    pointsCollector[0] += card.calcObenabePoints(mode);
                 }
             }
             case UNDENUFE -> {
                 comparator = new UndenufeComparator();
-                for(int i=0; i<cards.length; i++) {
-                    pointsCollector[0] += cards[i].calcUndenufePoints();
+                for(Card card : cards) {
+                    pointsCollector[0] += card.calcUndenufePoints();
                 }
             }
             case SLALOM -> {
@@ -152,8 +151,8 @@ public class Card {
                 determine which comparator to use
                  */
                 if(start == Roundstart.OBE) {
-                    for(int i=0; i<cards.length; i++) {
-                        pointsCollector[0] += cards[i].calcObenabePoints();
+                    for(Card card : cards) {
+                        pointsCollector[0] += card.calcObenabePoints(mode);
                     }
 
                     if(trick % 2 == 0) {
@@ -162,8 +161,8 @@ public class Card {
                         comparator = new UndenufeComparator();
                     }
                 } else {
-                    for(int i=0; i<cards.length; i++) {
-                        pointsCollector[0] += cards[i].calcUndenufePoints();
+                    for(Card card : cards) {
+                        pointsCollector[0] += card.calcUndenufePoints();
                     }
 
                     if(trick % 2 != 0) {
@@ -185,8 +184,8 @@ public class Card {
                     comparator = new ObenabeComparator();
                 }
 
-                for(int i=0; i<cards.length; i++) {
-                    pointsCollector[0] += cards[i].calcObenabePoints();
+                for(Card card : cards) {
+                    pointsCollector[0] += card.calcObenabePoints(mode);
                 }
             }
             case MARY -> {
@@ -199,8 +198,8 @@ public class Card {
                     comparator = new ObenabeComparator();
                 }
 
-                for(int i=0; i<cards.length; i++) {
-                    pointsCollector[0] += cards[i].calcUndenufePoints();
+                for(Card card : cards) {
+                    pointsCollector[0] += card.calcUndenufePoints();
                 }
             }
             default -> throw new IllegalStateException("Unexpected value: " + mode);
@@ -210,20 +209,21 @@ public class Card {
         finally use the chosen comparator to determine the highest card
          */
         if(trickStartingCard.getIsTrumpf()) {
-            for (int i=0; i<cards.length; i++) {
-                if(comparator.compare(result, cards[i]) < 0) {
-                    result = cards[i];
+            for(Card card : cards) {
+                if(comparator.compare(result, card) < 0) {
+                    result = card;
                 }
             }
         } else {
-            for (int i=0; i<cards.length; i++) {
-                if(cards[i].getIsTrumpf()) {
-                    if(comparator.compare(result, cards[i]) < 0) {
-                        result = cards[i];
+            for(Card card : cards) {
+                if(card.getIsTrumpf()) {
+                    if(comparator.compare(result, card) < 0) {
+                        result = card;
                     }
-                } else {
-                    if(cards[i].getSuit() == trickStartingCard.getSuit() && comparator.compare(result, cards[i]) < 0) {
-                        result = cards[i];
+                }
+                else {
+                    if(card.getSuit() == trickStartingCard.getSuit() && comparator.compare(result, card) < 0) {
+                        result = card;
                     }
                 }
             }
@@ -233,13 +233,15 @@ public class Card {
         return result;
     }
 
-    private int calcObenabePoints() {
+    private int calcObenabePoints(IngameMode mode) {
         switch (rank) {
             case SIX, SEVEN, NINE -> {
                 return 0;
             }
             case EIGHT -> {
-                return 8;
+                // ordVal in [0,..,3] means Trump mode, i.e. no points for the EIGHT
+                int ordVal = mode.ordinal();
+                return ordVal==0||ordVal==1||ordVal==2||ordVal==3 ? 0 : 8;
             }
             case TEN -> {
                 return 10;
