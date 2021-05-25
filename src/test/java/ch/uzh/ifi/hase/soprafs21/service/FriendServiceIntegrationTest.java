@@ -11,6 +11,7 @@ import ch.uzh.ifi.hase.soprafs21.game.Suit;
 import ch.uzh.ifi.hase.soprafs21.repository.FriendRequestRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
@@ -108,4 +108,13 @@ public class FriendServiceIntegrationTest {
         assertEquals(0, louisesFriends.size());
     }
 
+    @AfterEach
+    public void cleanUpEach() {
+        friendRequestRepository.deleteAll();
+        userRepository.deleteAll();
+
+        assertTrue(userRepository.findAll().isEmpty());
+        assertTrue(friendRequestRepository.findAll().isEmpty());
     }
+
+}

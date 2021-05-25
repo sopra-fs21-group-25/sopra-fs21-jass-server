@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.RegisteredUserRepository;
+import org.junit.After;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +91,16 @@ public class LoginServiceIntegrationTest {
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> loginService.login(usertoLogin));
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    }
+
+
+    @After
+    public void cleanDatabase(){
+        gameRepository.deleteAll();
+        registeredUserRepository.deleteAll();
+
+        assertTrue(gameRepository.findAll().isEmpty());
+        assertTrue(registeredUserRepository.findAll().isEmpty());
     }
 
 

@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import org.junit.After;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,4 +93,11 @@ public class UserServiceIntegrationTest {
         // check that an error is thrown
         assertThrows(ResponseStatusException.class, () -> userService.createRegisteredUser(testUser2));
     }
+    @After
+    public void cleanDatabase(){
+        userRepository.deleteAll();
+
+        assertTrue(userRepository.findAll().isEmpty());
+    }
+
 }

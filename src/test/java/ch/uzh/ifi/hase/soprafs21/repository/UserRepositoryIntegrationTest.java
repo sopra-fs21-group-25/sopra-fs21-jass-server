@@ -3,11 +3,13 @@ package ch.uzh.ifi.hase.soprafs21.repository;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -39,5 +41,11 @@ public class UserRepositoryIntegrationTest {
         assertEquals(found.getUsername(), user.getUsername());
         assertEquals(found.getStatus(), user.getStatus());
         assertTrue(found instanceof User);
+    }
+
+    @AfterEach
+    public void cleanUpEach() {
+        userRepository.deleteAll();
+        assertTrue(userRepository.findAll().isEmpty());
     }
 }

@@ -9,6 +9,7 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.CardsGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.SchieberGameGetDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.SchieberGamePostDTO;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.SchieberGamePutDTO;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -163,25 +165,31 @@ class GameRepositoryIntegrationTest {
 
     }
 
-        @Test
+    @Test
     void findByUserId() {
-            // given
-            entityManager.persistAndFlush(doris);
-            entityManager.persistAndFlush(esmeralda);
-            entityManager.persistAndFlush(erwin);
-            entityManager.persistAndFlush(justus);
-             entityManager.persist(schieberGameSession);
-            entityManager.flush();
+        // given
+        entityManager.persistAndFlush(doris);
+        entityManager.persistAndFlush(esmeralda);
+        entityManager.persistAndFlush(erwin);
+        entityManager.persistAndFlush(justus);
+        entityManager.persist(schieberGameSession);
+        entityManager.flush();
 
-            // when
-            User found = gameRepository.findByUserId(doris.getId());
+        // when
+        User found = gameRepository.findByUserId(doris.getId());
 
-            // then
-            assertEquals(found.getId(), doris.getId());
-            assertEquals(found.getUsername(), doris.getUsername());
-            assertEquals(found.getStatus(), doris.getStatus());
-            assertTrue(found instanceof RegisteredUser);
+        // then
+        assertEquals(found.getId(), doris.getId());
+        assertEquals(found.getUsername(), doris.getUsername());
+        assertEquals(found.getStatus(), doris.getStatus());
+        assertTrue(found instanceof RegisteredUser);
 
 
-        }
+    }
+
+    @AfterEach
+    public void cleanUpEach() {
+        gameRepository.deleteAll();
+        assertTrue(gameRepository.findAll().isEmpty());
+    }
 }

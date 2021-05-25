@@ -12,6 +12,7 @@ import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.RegisteredUserRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPutUserWithIdDTO;
+import org.junit.After;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -252,6 +253,18 @@ public class LobbyServiceTest {
 
         // then
         assertEquals(emptyLobby.getUsersInLobby().size(), 0);
+    }
+
+
+    @After
+    public void cleanDatabase(){
+        lobbyRepository.deleteAll();
+        groupRepository.deleteAll();
+        userRepository.deleteAll();
+
+        assertTrue(userRepository.findAll().isEmpty());
+        assertTrue(lobbyRepository.findAll().isEmpty());
+        assertTrue(groupRepository.findAll().isEmpty());
     }
 
 }

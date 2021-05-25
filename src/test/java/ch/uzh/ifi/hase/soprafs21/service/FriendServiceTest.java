@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs21.repository.FriendRequestRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.RegisteredUserRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.hibernate.annotations.common.util.StringHelper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,8 +17,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FriendServiceTest {
     @Mock
@@ -90,6 +91,13 @@ public class FriendServiceTest {
         assertEquals( louise, willisFriends.get(1));
         assertEquals(2, willisFriends.size());
     }
+    @AfterEach
+    public void cleanUpEach() {
+        friendRequestRepository.deleteAll();
+        userRepository.deleteAll();
 
+        assertTrue(userRepository.findAll().isEmpty());
+        assertTrue(friendRequestRepository.findAll().isEmpty());
+    }
 
 }

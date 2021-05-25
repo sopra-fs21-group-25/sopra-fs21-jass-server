@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import org.junit.After;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -84,6 +85,13 @@ public class UserServiceTest {
         // then
         assertEquals(UserStatus.ONLINE, createdUser.getStatus());
         assertNotNull(createdUser.getUsername());
+    }
+
+    @After
+    public void cleanDatabase(){
+        userRepository.deleteAll();
+
+        assertTrue(userRepository.findAll().isEmpty());
     }
 
 

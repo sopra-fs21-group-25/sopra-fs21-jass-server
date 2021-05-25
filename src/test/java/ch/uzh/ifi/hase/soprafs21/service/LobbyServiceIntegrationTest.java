@@ -216,7 +216,13 @@ public class LobbyServiceIntegrationTest {
 
     @After
     public void cleanDatabase(){
+        lobbyRepository.deleteAll();
+        groupRepository.deleteAll();
         userRepository.deleteAll();
+
+        assertTrue(userRepository.findAll().isEmpty());
+        assertTrue(lobbyRepository.findAll().isEmpty());
+        assertTrue(groupRepository.findAll().isEmpty());
     }
 
 }

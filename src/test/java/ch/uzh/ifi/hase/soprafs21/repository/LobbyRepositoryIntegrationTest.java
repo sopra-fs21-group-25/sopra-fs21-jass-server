@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs21.game.GameMode;
 import ch.uzh.ifi.hase.soprafs21.game.IngameModeMultiplicatorObject;
 import ch.uzh.ifi.hase.soprafs21.game.Rank;
 import ch.uzh.ifi.hase.soprafs21.game.Suit;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -230,5 +231,11 @@ public class LobbyRepositoryIntegrationTest {
 
         // then
         assertEquals(0, foundLobbies.size());
+    }
+
+    @AfterEach
+    public void cleanUpEach() {
+        lobbyRepository.deleteAll();
+        assertTrue(lobbyRepository.findAll().isEmpty());
     }
 }

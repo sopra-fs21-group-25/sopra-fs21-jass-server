@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.repository.RegisteredUserRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import org.junit.After;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -94,6 +95,14 @@ public class LoginServiceTest {
 
         assertEquals(HttpStatus.NOT_FOUND, status);
         assertEquals("No user with such username", reason);
+    }
+    @After
+    public void cleanDatabase(){
+        userRepository.deleteAll();
+        registeredUserRepository.deleteAll();
+
+        assertTrue(userRepository.findAll().isEmpty());
+        assertTrue(registeredUserRepository.findAll().isEmpty());
     }
 }
 

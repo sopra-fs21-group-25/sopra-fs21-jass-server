@@ -9,6 +9,7 @@ import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.GroupRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.SchieberGamePutDTO;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -350,5 +351,17 @@ class GameServiceTest {
         Mockito.doNothing().when(gameRepository).deleteById(schieberGameSession.getId());
         gameService.deleteGameSession(schieberGameSession.getId());
         verify(gameRepository,times(1)).deleteById(schieberGameSession.getId());
+    }
+
+    @AfterEach
+    public void cleanUpEach() {
+        gameRepository.deleteAll();
+        groupRepository.deleteAll();
+        userRepository.deleteAll();
+
+
+        assertTrue(userRepository.findAll().isEmpty());
+        assertTrue(gameRepository.findAll().isEmpty());
+        assertTrue(groupRepository.findAll().isEmpty());
     }
 }
