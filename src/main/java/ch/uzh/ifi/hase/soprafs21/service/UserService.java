@@ -85,26 +85,18 @@ public class UserService {
         return newGuest;
     }
 
-    public User createGoogleUser(User newUser) {
-        boolean userExists = checkIfUserExists(newUser);
-
-        if (userExists) {
-            throwUserConflict();
-        }
-
-        // saves the given entity but data is only persisted in the database once flush() is called
-        newUser = userRepository.save(newUser);
-        userRepository.flush();
-
-        log.debug("Created Information for User: {}", newUser);
-        return newUser;
-    }
-
-
     public User getUserById(UUID id) {
         User user = this.userRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a user with this id."));
         return user;
+    }
+
+    public User getUserByEmail(String email) throws ResponseStatusException {
+        if (this.userRepository.findByEmail(email) == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find a user with this email.");
+        } else {
+            return this.userRepository.findByEmail(email);
+        }
     }
 
     public List<User> getOnlineUsers() { return userRepository.findAllByStatus(UserStatus.ONLINE); }

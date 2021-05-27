@@ -69,13 +69,6 @@ public class UserController {
             returnedUser = DTOMapper.INSTANCE.convertEntityToUserGetDTO(newUser);
         }
 
-        if (userPostDTO.getUserType().equals(UserType.GOOGLE.getType())) {
-            User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoGoogleUser(userPostDTO);
-            User newUser = userService.createGoogleUser(userInput);
-
-            returnedUser = DTOMapper.INSTANCE.convertEntityToUserGetDTO(newUser);
-        }
-
         if (userPostDTO.getUserType().equals(UserType.GUEST.getType())) {
             GuestUser newGuest = userService.createGuestUser();
 
@@ -108,6 +101,15 @@ public class UserController {
     public UserGetDTO getSingleUser(@PathVariable UUID id) {
         // fetch particular user
         User user = userService.getUserById(id);
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
+    }
+
+    @GetMapping("/users/email/{email}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public UserGetDTO getSingleUserByEmail(@PathVariable String email) {
+        // fetch particular user
+        User user = userService.getUserByEmail(email);
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
     }
 

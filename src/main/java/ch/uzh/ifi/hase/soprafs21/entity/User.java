@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.constant.UserType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -28,6 +29,10 @@ public abstract class User implements Serializable {
 
     @Column(unique = true)
     protected String username;
+
+    @Email
+    @Column(unique = true, length=60, nullable=true)
+    protected String email;
 
     @Column
     protected UserStatus status;
@@ -151,6 +156,14 @@ public abstract class User implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public UserStatus getStatus() {

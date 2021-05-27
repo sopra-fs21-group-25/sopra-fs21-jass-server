@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs21.entity.GoogleUser;
 import ch.uzh.ifi.hase.soprafs21.entity.FriendRequest;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
@@ -40,9 +39,6 @@ public interface DTOMapper {
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
     RegisteredUser convertUserPostDTOtoRegisteredUser(UserPostDTO userPostDTO);
-
-    @Mapping(source = "username", target = "username")
-    GoogleUser convertUserPostDTOtoGoogleUser(UserPostDTO userPostDTO);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "username", target = "username")

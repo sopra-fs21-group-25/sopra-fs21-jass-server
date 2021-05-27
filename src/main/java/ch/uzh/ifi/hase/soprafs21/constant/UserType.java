@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs21.constant;
 
 public enum UserType {
     REGISTERED("RegisteredUser"),
-    GOOGLE("GoogleUser"),
     GUEST("GuestUser");
 
     private final String type;

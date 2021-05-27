@@ -18,6 +18,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     User findByUsername(String username);
 
+    User findByEmail(String email);
+
     User findByToken(String token);
     
     @Query("select distinct u from User u \n" +
