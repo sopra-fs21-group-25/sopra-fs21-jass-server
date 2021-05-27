@@ -1,33 +1,31 @@
-# SoPra RESTful Service Template FS21
+# Group 25 - Jass Game
 
-## Getting started with Spring Boot
+## Introduction
+The goal of this project is to build an application which allows multiple users to play the popular Swiss card game “Jass”. These include registering/logging in as a player, adding friends, creating or joining games, playing different modes of Jass on global or private tables and using the chat functionality to communicate with friends and opponents during the game. Overall the aim is to create a playable “Jass” game, with a playing atmosphere similar to the real world. The external API should be implemented by enabling the user to login with their Google account and use their Google profile picture as an avatar.
 
--   Documentation: https://docs.spring.io/spring-boot/docs/current/reference/html/index.html
--   Guides: http://spring.io/guides
-    -   Building a RESTful Web Service: http://spring.io/guides/gs/rest-service/
-    -   Building REST services with Spring: http://spring.io/guides/tutorials/bookmarks/
+## Technologies
+* React
+* Java Spring Boot
+* PostgeSQL
+* Heroku: Cloud Application Platform
 
-## Setup this Template with your IDE of choice
+## High-level components
+* [UserList](https://github.com/sopra-fs21-group-25/sopra-fs21-jass-client/blob/master/src/components/application/applicationAssets/UserList.js): component, which provides functionality of searching Global Users, adding Friends and communicate with Users by invoking Chat component.
+* [Chat](https://github.com/sopra-fs21-group-25/sopra-fs21-jass-client/blob/master/src/components/application/applicationAssets/UserChat.js): component, which provides functionality of live communication between two or several users during lobby creation process, being in the game or simply private chatting.  
+* [Lobby](https://github.com/sopra-fs21-group-25/sopra-fs21-jass-client/blob/master/src/components/application/LobbyPage.js): component, which makes it possible to prepare for the game, adjust in-game characteristics, invite people to the game or remove players from the lobby. 
+* [Game](https://github.com/sopra-fs21-group-25/sopra-fs21-jass-client/blob/master/src/components/game/GamePlus.js): the most important component, which provides full experience of playing Jass. These include cards dealign, ability to play card, seeing scoreboard and much more.
+* [Google Login](https://github.com/sopra-fs21-group-25/sopra-fs21-jass-client/blob/master/src/components/login/Login.js): external API, ability to sign in/sign up with your Google account.
 
-Download your IDE of choice: (e.g., [Eclipse](http://www.eclipse.org/downloads/), [IntelliJ](https://www.jetbrains.com/idea/download/)), [Visual Studio Code](https://code.visualstudio.com/) and make sure Java 15 is installed on your system (for Windows-users, please make sure your JAVA_HOME environment variable is set to the correct version of Java).
+## Launch & Deployment
+### Frontend
+Installing React dependencies:
+### `npm install --legacy-peer-deps`
+Running the app in the development mode:
+### `npm run dev`
+Builds the app for production to the `build` folder:
+### `npm run build`
 
-1. File -> Open... -> SoPra Server Template
-2. Accept to import the project as a `gradle project`
-
-To build right click the `build.gradle` file and choose `Run Build`
-
-### VS Code
-The following extensions will help you to run it more easily:
--   `pivotal.vscode-spring-boot`
--   `vscjava.vscode-spring-initializr`
--   `vscjava.vscode-spring-boot-dashboard`
--   `vscjava.vscode-java-pack`
--   `richardwillis.vscode-gradle`
-
-**Note:** You'll need to build the project first with Gradle, just click on the `build` command in the _Gradle Tasks_ extension. Then check the _Spring Boot Dashboard_ extension if it already shows `soprafs21` and hit the play button to start the server. If it doesn't show up, restart VS Code and check again.
-
-## Building with Gradle
-
+### Backend
 You can use the local Gradle Wrapper to build the application.
 
 Plattform-Prefix:
@@ -36,64 +34,30 @@ Plattform-Prefix:
 -   Linux: `./gradlew`
 -   Windows: `./gradlew.bat`
 
-More Information about [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) and [Gradle](https://gradle.org/docs/).
+Running the app:
+### `./gradlew bootRun`
+Building the app:
+### `./gradlew build`
+To set up connection to the database refer to the [application.properties](https://github.com/sopra-fs21-group-25/sopra-fs21-jass-server/blob/master/src/main/resources/application.properties).
 
-### Build
+### Deployment
+Change to the deployment settings of the client [here](https://github.com/sopra-fs21-group-25/sopra-fs21-jass-client/blob/master/.github/workflows/deploy.yml) and deployment settings of the server [here](https://github.com/sopra-fs21-group-25/sopra-fs21-jass-server/blob/master/.github/workflows/deploy.yml). As deployment server we use Heroku.
 
-```bash
-./gradlew build
-```
+## Roadmap
+:black_square_button: in case of internet failure/one or more inactive users: pause the game<br/>
+:black_square_button: in running game: show player's avatars next to their end of the table<br/>
+:black_square_button: add 'Merry' in-game mode<br/>
+:black_square_button: add 'Gusti' in-game mode<br/>
+:black_square_button: add 'Slalom' in-game mode<br/>
+:black_square_button: add 'Undenufe' in-game mode<br/>
+:black_square_button: add 'Obenabe' in-game mode<br/>
+:black_square_button: add 'Trump' in-game mode<br/>
 
-### Run
+## Authors and acknowledgment
+- [Gregory Frommelt](https://github.com/fromGreg)
+- [Daniil Ratarov](https://github.com/RatarovDaniil)
+- [Denys Trieskunov](https://github.com/treskdenis)
+- [Laura Vogt](https://github.com/laura-vogt)
 
-```bash
-./gradlew bootRun
-```
-
-### Test
-
-```bash
-./gradlew test
-```
-
-### Development Mode
-
-You can start the backend in development mode, this will automatically trigger a new build and reload the application
-once the content of a file has been changed and you save the file.
-
-Start two terminal windows and run:
-
-`./gradlew build --continuous`
-
-and in the other one:
-
-`./gradlew bootRun`
-
-If you want to avoid running all tests with every change, use the following command instead:
-
-`./gradlew build --continuous -xtest`
-
-## API Endpoint Testing
-
-### Postman
-
--   We highly recommend to use [Postman](https://www.getpostman.com) in order to test your API Endpoints.
-
-## Debugging
-
-If something is not working and/or you don't know what is going on. We highly recommend that you use a debugger and step
-through the process step-by-step.
-
-To configure a debugger for SpringBoot's Tomcat servlet (i.e. the process you start with `./gradlew bootRun` command),
-do the following:
-
-1. Open Tab: **Run**/Edit Configurations
-2. Add a new Remote Configuration and name it properly
-3. Start the Server in Debug mode: `./gradlew bootRun --debug-jvm`
-4. Press `Shift + F9` or the use **Run**/Debug"Name of your task"
-5. Set breakpoints in the application where you need it
-6. Step through the process one step at a time
-
-## Testing
-
-Have a look here: https://www.baeldung.com/spring-boot-testing
+## License
+We decided not to license our project since our creative work is under exclusive copyright by default. Nobody else can copy, distribute, or modify our work without being at risk of take-downs, shake-downs, or litigation.
