@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
-import ch.uzh.ifi.hase.soprafs21.repository.RegisteredUserRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +20,11 @@ public class LoginService {
 
     private final Logger log = LoggerFactory.getLogger(UserService.class);
 
-    private final RegisteredUserRepository registeredUserRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public LoginService(@Qualifier("registeredUserRepository") RegisteredUserRepository registeredUserRepository) {
-        this.registeredUserRepository = registeredUserRepository;
+    public LoginService(@Qualifier("userRepository") UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public RegisteredUser login(RegisteredUser userToLogIn) {
@@ -33,14 +32,14 @@ public class LoginService {
         userToLogIn.setToken(UUID.randomUUID().toString());
         userToLogIn.setStatus(UserStatus.ONLINE);
 
-        RegisteredUser loggedInUser = registeredUserRepository.saveAndFlush(userToLogIn);
+        RegisteredUser loggedInUser = userRepository.saveAndFlush(userToLogIn);
 
         log.debug("User logged in: {}", loggedInUser);
         return loggedInUser;
     }
 
     private RegisteredUser checkIfUserExistsAndPasswordIsValid(RegisteredUser userToLogIn) throws ResponseStatusException {
-        RegisteredUser userByUsername = registeredUserRepository.findByUsername(userToLogIn.getUsername());
+        RegisteredUser userByUsername = (RegisteredUser) userRepository.findRegisteredUserByUsername(userToLogIn.getUsername());
 
         if (userByUsername == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No user with such username");

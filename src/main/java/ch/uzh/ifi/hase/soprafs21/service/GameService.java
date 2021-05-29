@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -72,9 +73,10 @@ public class GameService {
     }
 
     public SchieberGameSession createNewGame(SchieberGameSession gameInput, UUID prevLobbyId) {
-        Group chatGroup = groupRepository.findByLobbyIdOrGameId(prevLobbyId);
-        gameInput = gameRepository.saveAndFlush(gameInput);
+        Group chatGroup = groupRepository.retrieveGroupByEnvironmentIdAsLobbyIdOrGameId(prevLobbyId);
+
         gameInput.setGroup(chatGroup);
+        gameInput = gameRepository.saveAndFlush(gameInput);
 
         log.debug("Created Information for Game {}", gameInput);
         return gameInput;
@@ -143,32 +145,7 @@ public class GameService {
                 schieberGameSession.setTrickToPlay((schieberGameSession.getTrickToPlay() + 1) % 9);
 
 
-                /*
-                Additionally if the round has terminated, i.e. trickToPlay has been set
-                to 0 again, then a new round starts. There is this mad thing in Swiss Jass
-                called 'Match'. Essentially this means one team has won all tricks of the
-                round. Since the total sum of points in any ingameMode always sums up to
-                157, that's what that team would be rewarded with however when the team
-                plays a 'Match', they receive another 100 extra points, i.e. in total
-                they have 257 then (not accounting the multiplicator here).
-                Thus the following needs to be adjusted:
-                - pointsInCurrentRoundTeamX: pointsInCurrentRoundTeamX == 157 * multiplicator ? pointsInCurrentRoundTeamX += 100 * multiplicator : ...
-                - pointsTeamX: pointsTeamX = pointsTeamX += pointsInCurrentRoundTeamX
-                - currentIngameMode: oldVal -> null
-                - playerYstartsTrick: true -> false
-                - playerZstartsTrick: false -> true; where player Z is the one "right" to the player with id idOfRoundStartingPlayer
-                - idOfRoundStartingPlayer: gets assigned the id of player Z from 1 line above
-                - cardsHeldByPlayerALL: Deck.initializePlayerCards(...cardsHeldByPlayerALL) to deal new cards to each player
-                */
-                if(schieberGameSession.getTrickToPlay() == 0) {
-                    schieberGameSession.achievePointsWithMatchBonus();
 
-                    schieberGameSession.setCurrentIngameMode(null);
-
-                    schieberGameSession.updateIdOfPlayerWhoStartsNextRoundAndSetPlayerWhoStartsNextTrick();
-
-                    Deck.initializePlayerCards(schieberGameSession);
-                }
             }
 
 
@@ -191,6 +168,32 @@ public class GameService {
             schieberGameSession.setCardPlayedByPlayer2(null);
             schieberGameSession.setCardPlayedByPlayer3(null);
 
+            /*
+            Additionally if the round has terminated, i.e. trickToPlay has been set
+            to 0 again, then a new round starts. There is this mad thing in Swiss Jass
+            called 'Match'. Essentially this means one team has won all tricks of the
+            round. Since the total sum of points in any ingameMode always sums up to
+            157, that's what that team would be rewarded with however when the team
+            plays a 'Match', they receive another 100 extra points, i.e. in total
+            they have 257 then (not accounting the multiplicator here).
+            Thus the following needs to be adjusted:
+            - pointsInCurrentRoundTeamX: pointsInCurrentRoundTeamX == 157 * multiplicator ? pointsInCurrentRoundTeamX += 100 * multiplicator : ...
+            - pointsTeamX: pointsTeamX = pointsTeamX += pointsInCurrentRoundTeamX
+            - currentIngameMode: oldVal -> null
+            - playerYstartsTrick: true -> false
+            - playerZstartsTrick: false -> true; where player Z is the one "right" to the player with id idOfRoundStartingPlayer
+            - idOfRoundStartingPlayer: gets assigned the id of player Z from 1 line above
+            - cardsHeldByPlayerALL: Deck.initializePlayerCards(...cardsHeldByPlayerALL) to deal new cards to each player
+            */
+            if(schieberGameSession.getTrickToPlay() == 0) {
+                schieberGameSession.achievePointsWithMatchBonus();
+
+                schieberGameSession.setCurrentIngameMode(null);
+
+                schieberGameSession.updateIdOfPlayerWhoStartsNextRoundAndSetPlayerWhoStartsNextTrick();
+
+                Deck.initializePlayerCards(schieberGameSession);
+            }
 
         }
 

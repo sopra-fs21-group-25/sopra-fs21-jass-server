@@ -1,9 +1,11 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.entity.Avatar;
 import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.repository.AvatarRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +34,12 @@ public class UserService {
     private final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
+    private final AvatarRepository avatarRepository;
 
     @Autowired
-    public UserService(@Qualifier("userRepository") UserRepository userRepository) {
+    public UserService(@Qualifier("userRepository") UserRepository userRepository, @Qualifier("avatarRepository") AvatarRepository avatarRepository) {
         this.userRepository = userRepository;
+        this.avatarRepository = avatarRepository;
     }
 
 
@@ -44,18 +48,15 @@ public class UserService {
     }
 
     public RegisteredUser createRegisteredUser(RegisteredUser newUser) {
+        if (checkIfUserExists(newUser)) { throwUserConflict(); }
+
         newUser.setToken(UUID.randomUUID().toString());
         newUser.setStatus(UserStatus.ONLINE);
 
-        boolean userExists = checkIfUserExists(newUser);
-
-        if (userExists) {
-            throwUserConflict();
-        }
-
-        // saves the given entity but data is only persisted in the database once flush() is called
-        newUser = userRepository.save(newUser);
-        userRepository.flush();
+        newUser = userRepository.saveAndFlush(newUser);
+        Avatar avatar = new Avatar();
+        avatar.setUser(newUser);
+        avatarRepository.saveAndFlush(avatar);
 
         log.debug("Created Information for User: {}", newUser);
         return newUser;

@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.entity;
 
 import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
 import ch.uzh.ifi.hase.soprafs21.game.*;
+import javassist.SerialVersionUID;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -10,23 +11,25 @@ import java.util.Date;
 
 
 @Entity
-@Table(name = "Groups")
-public class Group implements Serializable{
+@Table(name = "Groups_")
+public class Group implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)   
     private UUID id;
     
-    @OneToMany(mappedBy="group", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy="group", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Message> messages;
 
     @ManyToMany(mappedBy="groups")
     private List<User> users;
 
-    @OneToOne(mappedBy = "group")
+    @OneToOne(mappedBy = "group", fetch = FetchType.LAZY)
     private Lobby lobby;
 
-    @OneToOne(mappedBy = "group")
+    @OneToOne(mappedBy = "group", fetch = FetchType.LAZY)
     private SchieberGameSession game;
 
     @Enumerated(EnumType.STRING)
@@ -56,6 +59,23 @@ public class Group implements Serializable{
                 return this.lobby.getId();
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == null) {
+            return false;
+        }
+        if(!(o instanceof Group)) {
+            return false;
+        }
+
+        return this.id.equals(((Group) o).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
     }
 
     public UUID getId() {

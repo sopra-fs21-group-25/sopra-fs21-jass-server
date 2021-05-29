@@ -79,7 +79,7 @@ public class LobbyService {
         User userToAdd = this.lobbyRepository.findUserById(userIdDTO.getUserId());
 
         lobby.getUsersInLobby().add(userToAdd);
-        lobby.getGroup().getUsers().add(userToAdd);
+        userToAdd.getGroups().add(lobby.getGroup());
 
         return lobby;
     }
@@ -102,7 +102,7 @@ public class LobbyService {
         }
 
         lobby.getUsersInLobby().remove(userToRemove);
-        lobby.getGroup().getUsers().remove(userToRemove);
+        userToRemove.getGroups().remove(lobby.getGroup());
 
         if(lobby.getUserTop() != null && lobby.getUserTop().equals(userToRemove)) {
             lobby.setUserTop(null);
@@ -182,18 +182,29 @@ public class LobbyService {
     }
 
     public Lobby clearLobby(Lobby lobby) {
+        Group group = lobby.getGroup();
         for(User user : lobby.getUsersInLobby()) {
             user.setLobby(null);
+            user.getGroups().remove(group);
         }
+        group.setUsers(null);
         lobby.getUsersInLobby().clear();
 
         return lobby;
     }
 
     public void deleteCascadeChatGroupLobby(Lobby lobby) {
+        Group group = lobby.getGroup();
+        for(User user : lobby.getUsersInLobby()) {
+            user.setLobby(null);
+            user.getGroups().remove(group);
+        }
+        group.setUsers(null);
+        lobby.getUsersInLobby().clear();
+
         try {
-            groupRepository.delete(lobby.getGroup());
-            lobbyRepository.delete(lobby);
+            lobbyRepository.deleteById(lobby.getId());
+            groupRepository.deleteById(group.getId());
         } catch(Exception e) {
             log.error("Could not delete lobby. Error: ", e);
             throw e;
@@ -201,6 +212,22 @@ public class LobbyService {
     }
 
     public void deleteNoCascadeChatGroupLobby(Lobby lobby) {
+        List<User> usersAtTable = new ArrayList<>();
+        usersAtTable.add(lobby.getUserTop());
+        usersAtTable.add(lobby.getUserLeft());
+        usersAtTable.add(lobby.getUserBottom());
+        usersAtTable.add(lobby.getUserRight());
+
+        Group group = lobby.getGroup();
+        for(User user : lobby.getUsersInLobby()) {
+            user.setLobby(null);
+            if(!usersAtTable.contains(user)) {
+                user.getGroups().remove(group);
+            }
+        }
+        group.setUsers(usersAtTable);
+        lobby.getUsersInLobby().clear();
+
         try {
             lobbyRepository.delete(lobby);
         } catch (Exception e) {

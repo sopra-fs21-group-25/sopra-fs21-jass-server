@@ -153,6 +153,8 @@ public interface DTOMapper {
     @Mapping(target = "player1id", expression = "java(schieberGameSession.getUser1().getId())")
     @Mapping(target = "player2id", expression = "java(schieberGameSession.getUser2().getId())")
     @Mapping(target = "player3id", expression = "java(schieberGameSession.getUser3().getId())")
+    @Mapping(target = "playerUsernames", expression = "java(schieberGameSession.composeUsernamesArray())")
+    @Mapping(target = "playerCardsAmount", expression = "java(schieberGameSession.composeCardsAmountArray())")
     @Mapping(source = "pointsToWin", target = "pointsToWin")
     @Mapping(source = "ingameModes", target = "ingameModes")
     @Mapping(source = "weisAllowed", target = "weisAllowed")
