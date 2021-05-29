@@ -1,10 +1,7 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
-import ch.uzh.ifi.hase.soprafs21.entity.Avatar;
-import ch.uzh.ifi.hase.soprafs21.entity.Group;
-import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
-import ch.uzh.ifi.hase.soprafs21.entity.SchieberGameSession;
+import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.game.*;
 import ch.uzh.ifi.hase.soprafs21.repository.AvatarRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
@@ -14,10 +11,7 @@ import ch.uzh.ifi.hase.soprafs21.rest.dto.SchieberGamePutDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -72,6 +66,7 @@ class GameServiceTest {
     private List<Card> listCard2;
     private List<Card> listCard3;
 
+    private Group group;
     private Card[] listofCard;
     private SchieberGamePutDTO schieberGamePutDTO;
 
@@ -167,7 +162,8 @@ class GameServiceTest {
         oneObject.setMultiplicator(20);
         ingameModeMultiplicators.add(oneObject);
 
-        Group group = new Group(GroupType.COLLECTIVE);
+        group = new Group(GroupType.COLLECTIVE);
+        group.setId(UUID.randomUUID());
 
         //setup of the schhieber Game Session
         schieberGameSession = new SchieberGameSession();
@@ -355,6 +351,16 @@ class GameServiceTest {
     @Test
     void deleteGameSession() {
         Mockito.doNothing().when(gameRepository).deleteById(schieberGameSession.getId());
+        Mockito.when(gameRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(schieberGameSession));
+
+        List<Group> groups = new ArrayList<>();
+        List<User> users = new ArrayList<>();
+        users.add(peter);
+        groups.add(group);
+        peter.setGroups(groups);
+        group.setUsers(users);
+        schieberGameSession.setGroup(group);
+
         gameService.deleteGameSession(schieberGameSession.getId());
         verify(gameRepository,times(1)).deleteById(schieberGameSession.getId());
     }
