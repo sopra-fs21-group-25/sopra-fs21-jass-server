@@ -197,7 +197,7 @@ class GameServiceTest {
 
 
         Mockito.when(gameRepository.saveAndFlush(Mockito.any())).thenReturn(schieberGameSession);
-        Mockito.when(groupRepository.findByLobbyIdOrGameId(Mockito.any())).thenReturn(group);
+        Mockito.when(groupRepository.retrieveGroupByEnvironmentIdAsLobbyIdOrGameId(Mockito.any())).thenReturn(group);
 
     }
 

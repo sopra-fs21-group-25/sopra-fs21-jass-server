@@ -111,7 +111,7 @@ public class SchieberGameSession implements Serializable {
     @Column
     private String weisAsk;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
     @JoinColumn(name = "group_id", updatable = false)
     private Group group;
 
@@ -301,7 +301,6 @@ public class SchieberGameSession implements Serializable {
         arr[1] = player1startsTrick;
         arr[2] = player2startsTrick;
         arr[3] = player3startsTrick;
-
         return arr;
     }
 
@@ -311,7 +310,24 @@ public class SchieberGameSession implements Serializable {
         arr[1] = cardPlayedByPlayer1;
         arr[2] = cardPlayedByPlayer2;
         arr[3] = cardPlayedByPlayer3;
+        return arr;
+    }
 
+    public String[] composeUsernamesArray() {
+        String[] arr = new String[4];
+        arr[0] = user0.getUsername();
+        arr[1] = user1.getUsername();
+        arr[2] = user2.getUsername();
+        arr[3] = user3.getUsername();
+        return arr;
+    }
+
+    public Integer[] composeCardsAmountArray() {
+        Integer[] arr = new Integer[4];
+        arr[0] = cardsHeldByPlayer0.size();
+        arr[1] = cardsHeldByPlayer1.size();
+        arr[2] = cardsHeldByPlayer2.size();
+        arr[3] = cardsHeldByPlayer3.size();
         return arr;
     }
 

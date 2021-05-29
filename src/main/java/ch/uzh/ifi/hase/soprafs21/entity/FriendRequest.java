@@ -14,12 +14,12 @@ public class FriendRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name="FROM_USER_ID", nullable=false)
     private User fromUser;
 
     @Id
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name="TO_USER_ID", nullable=false)
     private User toUser;
 

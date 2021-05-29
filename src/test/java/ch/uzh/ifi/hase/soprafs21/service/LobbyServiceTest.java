@@ -9,7 +9,6 @@ import ch.uzh.ifi.hase.soprafs21.game.Rank;
 import ch.uzh.ifi.hase.soprafs21.game.Suit;
 import ch.uzh.ifi.hase.soprafs21.repository.GroupRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
-import ch.uzh.ifi.hase.soprafs21.repository.RegisteredUserRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPutUserWithIdDTO;
 import org.junit.After;
