@@ -201,7 +201,14 @@ public class GameService {
     }
 
 
-    public void deleteGameSession(UUID gameId) {
+    public void deleteGameSession(UUID gameId) throws ResponseStatusException {
+        SchieberGameSession game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find game with this id."));
+        Group group = game.getGroup();
+        for(User u : game.getGroup().getUsers()) {
+            u.getGroups().remove(group);
+        }
+
         gameRepository.deleteById(gameId);
     }
 
