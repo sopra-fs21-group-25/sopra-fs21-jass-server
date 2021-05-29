@@ -304,7 +304,6 @@ class GroupRepositoryIntegrationTest {
         List<Message> messageList1 = new ArrayList<>();
         messageList1.add(message0);
         messageList1.add(message1);
-        newGroup.setMessages(messageList1);
         lobby.setGroup(newGroup);
 
         entityManager.persistAndFlush(lobby);
@@ -342,10 +341,9 @@ class GroupRepositoryIntegrationTest {
         List<Message> messageList1 = new ArrayList<>();
         messageList1.add(message0);
         messageList1.add(message1);
-        newGroup.setMessages(messageList1);
         schieberGameSession.setGroup(newGroup);
 
-        entityManager.persistAndFlush(lobby);
+        entityManager.persistAndFlush(schieberGameSession);
         entityManager.persistAndFlush(newGroup);
         entityManager.persistAndFlush(message0);
         entityManager.persistAndFlush(message1);

@@ -53,6 +53,12 @@ public class LobbyServiceTest {
     private RegisteredUser susi;
     private RegisteredUser timon;
     private RegisteredUser fred;
+    private Avatar hansAvatar;
+    private Avatar wandaAvatar;
+    private Avatar nicoleAvatar;
+    private Avatar susiAvatar;
+    private Avatar timonAvatar;
+    private Avatar fredAvatar;
     Set<User> users;
     Set<User> users2;
     List<Lobby> myLobbyList;
@@ -75,24 +81,28 @@ public class LobbyServiceTest {
         hans.setPassword("password1");
         hans.setStatus(UserStatus.OFFLINE);
         hans.setId(UUID.randomUUID());
+        hans.setAvatar(hansAvatar);
 
         wanda= new RegisteredUser();
         wanda.setUsername("Wanda");
         wanda.setPassword("password2");
         wanda.setStatus(UserStatus.ONLINE);
         wanda.setId(UUID.randomUUID());
+        wanda.setAvatar(wandaAvatar);
 
         nicole= new RegisteredUser();
         nicole.setUsername("Nicole");
         nicole.setPassword("password3");
         nicole.setStatus(UserStatus.ONLINE);
         nicole.setId(UUID.randomUUID());
+        nicole.setAvatar(nicoleAvatar);
 
         susi = new RegisteredUser();
         susi.setUsername("Susi");
         susi.setPassword("password4");
         susi.setStatus(UserStatus.ONLINE);
         susi.setId(UUID.randomUUID());
+        susi.setAvatar(susiAvatar);
 
 
         timon = new RegisteredUser();
@@ -100,12 +110,14 @@ public class LobbyServiceTest {
         timon.setPassword("TimonAndPumba");
         timon.setStatus(UserStatus.ONLINE);
         timon.setId(UUID.randomUUID());
+        timon.setAvatar(timonAvatar);
 
         fred = new RegisteredUser();
         fred.setUsername("Fred");
         fred.setPassword("Freddy");
         fred.setStatus(UserStatus.ONLINE);
         fred.setId(UUID.randomUUID());
+        fred.setAvatar(fredAvatar);
 
         users = new HashSet<>();
         users.add(hans);

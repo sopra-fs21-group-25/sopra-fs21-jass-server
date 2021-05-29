@@ -13,7 +13,6 @@ public class UserGetDTO {
     private UserStatus status;
     private String userType;
     private String token;
-    // private User[] friends;
     private UUID lobbyId;
 
     public String getToken() { return token; }
@@ -57,10 +56,6 @@ public class UserGetDTO {
     public void setUserType(String userType) {
         this.userType = userType;
     }
-
-    // public User[] getFriends() { return friends; }
-
-    // public void setFriends(User[] friends) { this.friends = friends; }
 
     public UUID getLobbyId() { return lobbyId; }
 

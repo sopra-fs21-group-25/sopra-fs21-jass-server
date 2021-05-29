@@ -49,6 +49,11 @@ public class LobbyServiceIntegrationTest {
 
     @BeforeEach
     public void createLobby(){
+        if(lobby != null) { lobbyRepository.delete(lobby); }
+        if(susi != null) { userRepository.delete(susi); }
+        if(timon != null) { userRepository.delete(timon); }
+        if(group != null) { groupRepository.delete(group); }
+
         susi = new RegisteredUser();
         susi.setUsername("Susi");
         susi.setPassword("password4");
@@ -87,6 +92,10 @@ public class LobbyServiceIntegrationTest {
         ingameModeMultiplicators.add(oneObject);
 
         group = groupRepository.saveAndFlush(new Group(GroupType.COLLECTIVE));
+        List<Group> groups = new ArrayList<>();
+        groups.add(group);
+        timon.setGroups(groups);
+        susi.setGroups(groups);
 
         lobby = new Lobby();
         lobby.setCreatorUsername(susi.getUsername());
@@ -116,7 +125,7 @@ public class LobbyServiceIntegrationTest {
         List<Lobby> returnedLobbies = lobbyService.getAccessibleLobbies(timon.getId());
 
         // then
-        assertNotNull(returnedLobbies.size());
+        assertNotEquals(returnedLobbies.size(), 0);
         assertEquals(returnedLobbies.get(0).getCreatorUsername(), "Susi");
         assertEquals(returnedLobbies.get(0).getLobbyType(), "public");
     }
@@ -217,9 +226,12 @@ public class LobbyServiceIntegrationTest {
     @AfterEach
     public void cleanDatabase(){
         lobbyRepository.delete(lobby);
+        lobbyRepository.flush();
         userRepository.delete(timon);
         userRepository.delete(susi);
+        userRepository.flush();
         groupRepository.delete(group);
+        groupRepository.flush();
     }
 
 }

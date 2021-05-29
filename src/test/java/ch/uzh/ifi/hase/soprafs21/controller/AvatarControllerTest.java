@@ -3,7 +3,9 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.Avatar;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
+import ch.uzh.ifi.hase.soprafs21.repository.AvatarRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs21.service.AvatarService;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -41,6 +43,12 @@ class AvatarControllerTest {
 
     @MockBean
     private UserRepository userRepository;
+
+    @MockBean
+    private AvatarService avatarService;
+
+    @MockBean
+    AvatarRepository avatarRepository;
 
     @Test
     void uploadFile_successful_test() throws Exception {
@@ -80,11 +88,12 @@ class AvatarControllerTest {
     @Test
     void getFile() throws Exception {
         RegisteredUser registeredUser = new RegisteredUser();
+        Avatar avatar = new Avatar();
         registeredUser.setId(new UUID(1,1));
         registeredUser.setUsername("Zora");
         registeredUser.setToken("1");
         registeredUser.setStatus(UserStatus.ONLINE);
-        registeredUser.setAvatar(new Avatar());
+        registeredUser.setAvatar(avatar);
 
         //create a mock multipartfile
         Path path = Paths.get("src/main/java/ch/uzh/ifi/hase/soprafs21/assets/acorn.png");
@@ -102,6 +111,7 @@ class AvatarControllerTest {
         registeredUser.getAvatar().setAvatarFile(result.getBytes());
 
         given(userService.getUserById(Mockito.any())).willReturn(registeredUser);
+        given(avatarService.getAvatarOfUserWithId(Mockito.any())).willReturn(avatar);
 
         //then
         MockHttpServletRequestBuilder getRequest = get("/files/"+ registeredUser.getId());

@@ -2,9 +2,7 @@ package ch.uzh.ifi.hase.soprafs21.entity;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.constant.UserType;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.validator.constraints.Email;
+import javax.validation.constraints.Email;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,7 +10,6 @@ import javax.persistence.DiscriminatorColumn;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.ArrayList;
 
 
 @Entity
@@ -31,7 +28,7 @@ public abstract class User implements Serializable {
     protected String username;
 
     @Email
-    @Column(unique = true, length=60, nullable=true)
+    @Column(unique = true, length=60)
     protected String email;
 
     @Column

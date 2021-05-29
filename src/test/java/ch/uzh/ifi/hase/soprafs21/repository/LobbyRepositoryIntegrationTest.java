@@ -39,6 +39,7 @@ public class LobbyRepositoryIntegrationTest {
 
     Set<User> users;
 
+    Group group;
     Lobby lobby;
 
     List<Lobby> myLobbyList;
@@ -92,6 +93,8 @@ public class LobbyRepositoryIntegrationTest {
 
         List<IngameModeMultiplicatorObject> ingameModeMultiplicators = new ArrayList<>();
         lobby = new Lobby();
+        group = new Group(GroupType.COLLECTIVE);
+        lobby.setGroup(group);
         lobby.setCreatorUsername(boss.getUsername());
         lobby.setUsersInLobby(users);
         lobby.setLobbyType("public");
@@ -111,6 +114,7 @@ public class LobbyRepositoryIntegrationTest {
     public void findByUserId_success() {
         // given
         // Set containing the registeredUser
+        entityManager.persistAndFlush(group);
         entityManager.persistAndFlush(lobby);
 
         // when
@@ -126,6 +130,7 @@ public class LobbyRepositoryIntegrationTest {
     public void findByUserId_fail() {
         // given
         // Set containing the registeredUser
+        entityManager.persistAndFlush(group);
         entityManager.persistAndFlush(lobby);
 
         // when
@@ -138,6 +143,7 @@ public class LobbyRepositoryIntegrationTest {
     @Test
     public void getallexcludePrivate_success() {
         // given
+        entityManager.persistAndFlush(group);
         entityManager.persistAndFlush(lobby);
 
         // when
@@ -152,6 +158,7 @@ public class LobbyRepositoryIntegrationTest {
     @Test
     public void getallexcludePrivate_fail() {
         // given
+        entityManager.persistAndFlush(group);
         lobby.setLobbyType("private");
         entityManager.persistAndFlush(lobby);
 
@@ -165,6 +172,7 @@ public class LobbyRepositoryIntegrationTest {
     @Test
     public void getPublicLobbies_success() {
         // given
+        entityManager.persistAndFlush(group);
         entityManager.persistAndFlush(lobby);
 
         // when
@@ -179,6 +187,7 @@ public class LobbyRepositoryIntegrationTest {
     @Test
     public void getPublicLobbies_fail() {
         // given
+        entityManager.persistAndFlush(group);
         lobby.setLobbyType("friends");
         entityManager.persistAndFlush(lobby);
 
@@ -192,6 +201,7 @@ public class LobbyRepositoryIntegrationTest {
     @Test
     public void getFriendsLobbiesOfUserWithId_success() {
         // given
+        entityManager.persistAndFlush(group);
         lobby.setLobbyType("friends");
         entityManager.persistAndFlush(lobby);
 
@@ -225,6 +235,7 @@ public class LobbyRepositoryIntegrationTest {
     @Test
     public void getFriendsLobbiesOfUserWithId_fails() {
         // given
+        entityManager.persistAndFlush(group);
         lobby.setLobbyType("friends");
         entityManager.persistAndFlush(lobby);
 
