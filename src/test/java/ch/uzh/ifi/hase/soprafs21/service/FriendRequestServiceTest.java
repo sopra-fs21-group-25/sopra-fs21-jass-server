@@ -83,14 +83,5 @@ public class FriendRequestServiceTest {
         assertEquals(rebekka, williRequestToRebekka.getToUser());
     }
 
-    @AfterEach
-    public void cleanUpEach() {
-        friendRequestRepository.deleteAll();
-        userRepository.deleteAll();
-
-        assertTrue(userRepository.findAll().isEmpty());
-        assertTrue(friendRequestRepository.findAll().isEmpty());
-    }
-
 
 }

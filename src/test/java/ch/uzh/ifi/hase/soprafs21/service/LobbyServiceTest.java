@@ -2,14 +2,12 @@ package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs21.entity.Group;
-import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
-import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
-import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.entity.*;
 import ch.uzh.ifi.hase.soprafs21.game.GameMode;
 import ch.uzh.ifi.hase.soprafs21.game.IngameModeMultiplicatorObject;
 import ch.uzh.ifi.hase.soprafs21.game.Rank;
 import ch.uzh.ifi.hase.soprafs21.game.Suit;
+import ch.uzh.ifi.hase.soprafs21.repository.AvatarRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.GroupRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
@@ -39,6 +37,9 @@ public class LobbyServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private AvatarRepository avatarRepository;
+
     @InjectMocks
     private LobbyService lobbyService;
     @InjectMocks
@@ -57,6 +58,9 @@ public class LobbyServiceTest {
     List<Lobby> myLobbyList;
     HashSet<Lobby> myLobbyListpublic;
     HashSet<Lobby> myLobbyListfriends;
+    private Group group1;
+    private Group group2;
+    private List<Group> groupList;
 
     public LobbyServiceTest() {
     }
@@ -89,7 +93,7 @@ public class LobbyServiceTest {
         susi.setPassword("password4");
         susi.setStatus(UserStatus.ONLINE);
         susi.setId(UUID.randomUUID());
-        susi.setId(UUID.randomUUID());
+
 
         timon = new RegisteredUser();
         timon.setUsername("Timon");
@@ -112,9 +116,11 @@ public class LobbyServiceTest {
         users2.add(hans);
         users2.add(wanda);
 
-        Group group1 = new Group(GroupType.COLLECTIVE);
+        group1 = new Group(GroupType.COLLECTIVE);
         group1.setUsers(new ArrayList<>(users));
-        Group group2 = new Group(GroupType.COLLECTIVE);
+
+
+        group2 = new Group(GroupType.COLLECTIVE);
         group2.setUsers(new ArrayList<>(users2));
 
 
@@ -156,15 +162,23 @@ public class LobbyServiceTest {
         myLobbyListpublic.add(lobby);
         myLobbyListfriends.add(lobby);
 
+        groupList = new ArrayList<>();
+        wanda.setGroups(groupList);
+        hans.setGroups(groupList);
+        nicole.setGroups(groupList);
+        susi.setGroups(groupList);
+        timon.setGroups(groupList);
+        fred.setGroups(groupList);
+
         Mockito.when(lobbyRepository.findUserById(Mockito.any())).thenReturn(susi);
         Mockito.when(lobbyRepository.getAllExcludePrivate()).thenReturn(myLobbyList);
         Mockito.when(lobbyRepository.getPublicLobbies()).thenReturn(myLobbyListpublic);
         Mockito.when(lobbyRepository.getFriendsLobbiesOfUserWithId(timon.getId())).thenReturn(myLobbyListfriends);
 
-        userService.createRegisteredUser(susi);
+        //userService.createRegisteredUser(susi);
         Mockito.when(lobbyRepository.saveAndFlush(Mockito.any())).thenReturn(lobby);
         Mockito.when(lobbyRepository.save(Mockito.any())).thenReturn(lobby);
-        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any());
+      //  Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any());
 
     }
 
@@ -209,8 +223,6 @@ public class LobbyServiceTest {
 
     @Test
     public void addUserSusiToLobby_success() {
-
-        // setup
         LobbyPutUserWithIdDTO usernotinLobbyyet = new LobbyPutUserWithIdDTO();
         usernotinLobbyyet.setAdd(Boolean.TRUE);
         usernotinLobbyyet.setUserId(susi.getId());
@@ -255,18 +267,6 @@ public class LobbyServiceTest {
 
         // then
         assertEquals(emptyLobby.getUsersInLobby().size(), 0);
-    }
-
-
-    @After
-    public void cleanDatabase(){
-        lobbyRepository.deleteAll();
-        groupRepository.deleteAll();
-        userRepository.deleteAll();
-
-        assertTrue(userRepository.findAll().isEmpty());
-        assertTrue(lobbyRepository.findAll().isEmpty());
-        assertTrue(groupRepository.findAll().isEmpty());
     }
 
 }

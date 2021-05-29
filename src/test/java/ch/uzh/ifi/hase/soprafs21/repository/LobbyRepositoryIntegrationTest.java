@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.repository;
 
+import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.entity.Group;
 import ch.uzh.ifi.hase.soprafs21.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
@@ -39,9 +41,14 @@ public class LobbyRepositoryIntegrationTest {
 
     Lobby lobby;
 
+    List<Lobby> myLobbyList;
+    HashSet<Lobby> myLobbyListpublic;
+    HashSet<Lobby> myLobbyListfriends;
+    private Group group1;
+    private List<Group> groupList;
+
     @BeforeEach
     public void setup() {
-        lobbyRepository.deleteAll();
 
         // given
         boss = new RegisteredUser();
@@ -79,6 +86,10 @@ public class LobbyRepositoryIntegrationTest {
         users.add(silvia);
         users.add(annegret);
 
+        group1 = new Group(GroupType.COLLECTIVE);
+        group1.setUsers(new ArrayList<>(users));
+        entityManager.persistAndFlush(group1);
+
         List<IngameModeMultiplicatorObject> ingameModeMultiplicators = new ArrayList<>();
         lobby = new Lobby();
         lobby.setCreatorUsername(boss.getUsername());
@@ -93,6 +104,7 @@ public class LobbyRepositoryIntegrationTest {
         lobby.setWeisAsk("never");
         lobby.setIngameModes(ingameModeMultiplicators);
         lobby.setUsersInLobby(users);
+        lobby.setGroup(group1);
     }
 
     @Test
@@ -235,7 +247,11 @@ public class LobbyRepositoryIntegrationTest {
 
     @AfterEach
     public void cleanUpEach() {
-        lobbyRepository.deleteAll();
-        assertTrue(lobbyRepository.findAll().isEmpty());
+        lobbyRepository.delete(lobby);
+        entityManager.remove(group1);
+        entityManager.remove(annegret);
+        entityManager.remove(fridolin);
+        entityManager.remove(timon);
+        entityManager.remove(boss);
     }
 }

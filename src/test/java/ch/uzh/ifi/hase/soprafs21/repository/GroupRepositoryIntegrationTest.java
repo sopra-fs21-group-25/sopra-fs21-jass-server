@@ -231,7 +231,7 @@ class GroupRepositoryIntegrationTest {
 
     @Test
     void findByLobbyIdOrGameId_Test() {
-        Group foundGroup = groupRepository.findByLobbyIdOrGameId(lobby.getId());
+        Group foundGroup = groupRepository.retrieveGroupByEnvironmentIdAsLobbyIdOrGameId(lobby.getId());
         assertEquals(foundGroup.getId(), newGroup.getId());
         assertEquals(foundGroup.getUsers(), newGroup.getUsers());
     }

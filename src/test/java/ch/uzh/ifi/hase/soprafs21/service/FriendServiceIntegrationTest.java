@@ -45,10 +45,6 @@ public class FriendServiceIntegrationTest {
 
         @BeforeEach
         public void createFriends(){
-            friendRequestRepository.deleteAll();
-            userRepository.deleteAll();
-
-
             willi = new RegisteredUser();
             willi.setPassword("verySafe");
             willi.setUsername("Willi");
@@ -110,11 +106,9 @@ public class FriendServiceIntegrationTest {
 
     @AfterEach
     public void cleanUpEach() {
-        friendRequestRepository.deleteAll();
-        userRepository.deleteAll();
-
-        assertTrue(userRepository.findAll().isEmpty());
-        assertTrue(friendRequestRepository.findAll().isEmpty());
+        userRepository.delete(willi);
+        userRepository.delete(louise);
+        userRepository.delete(rebekka);
     }
 
 }

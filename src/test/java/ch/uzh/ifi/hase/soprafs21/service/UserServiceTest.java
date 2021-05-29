@@ -1,11 +1,14 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.entity.Avatar;
 import ch.uzh.ifi.hase.soprafs21.entity.GuestUser;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.repository.AvatarRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -22,6 +25,9 @@ public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private AvatarRepository avatarRepository;
 
     @InjectMocks
     private UserService userService;
@@ -42,18 +48,17 @@ public class UserServiceTest {
         testGuestUser = new GuestUser();
         testGuestUser.setStatus(UserStatus.ONLINE);
         testGuestUser.setUsername("Sharp Bat");
+        Mockito.when(avatarRepository.saveAndFlush(Mockito.any())).thenReturn(new Avatar());
     }
 
     @Test
     public void createRegisteredUser_validInputs_success() {
         // when -> any object is being save in the userRepository -> return the dummy testUser
-        Mockito.when(userRepository.save(Mockito.any())).thenReturn(testRegisteredUser);
+        Mockito.when(userRepository.saveAndFlush(Mockito.any())).thenReturn(testRegisteredUser);
         testRegisteredUser.setPassword("SuperSafePassword");
 
         RegisteredUser createdUser = userService.createRegisteredUser(testRegisteredUser);
 
-        // then
-        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any());
 
         assertEquals(testRegisteredUser.getId(), createdUser.getId());
         assertEquals(testRegisteredUser.getUsername(), createdUser.getUsername());
@@ -87,12 +92,6 @@ public class UserServiceTest {
         assertNotNull(createdUser.getUsername());
     }
 
-    @After
-    public void cleanDatabase(){
-        userRepository.deleteAll();
-
-        assertTrue(userRepository.findAll().isEmpty());
-    }
 
 
 }

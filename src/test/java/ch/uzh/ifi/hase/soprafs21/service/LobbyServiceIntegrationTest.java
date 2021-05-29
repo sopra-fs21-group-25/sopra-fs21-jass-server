@@ -12,6 +12,7 @@ import ch.uzh.ifi.hase.soprafs21.repository.LobbyRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.LobbyPutUserWithIdDTO;
 import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,17 +44,11 @@ public class LobbyServiceIntegrationTest {
     private Group group;
     private RegisteredUser susi = new RegisteredUser();
     private RegisteredUser timon = new RegisteredUser();
-
+    private List<Group> groupList;
     Set<User> users;
 
     @BeforeEach
     public void createLobby(){
-        lobbyRepository.deleteAll();
-        lobbyRepository.flush();
-        userRepository.deleteAll();
-        userRepository.flush();
-        groupRepository.deleteAll();
-        groupRepository.flush();
         susi = new RegisteredUser();
         susi.setUsername("Susi");
         susi.setPassword("password4");
@@ -72,6 +67,17 @@ public class LobbyServiceIntegrationTest {
 
         users = new HashSet<>();
         users.add(susi);
+
+        group = new Group(GroupType.COLLECTIVE);
+        group.setUsers(new ArrayList<>(users));
+
+
+
+
+        groupList = new ArrayList<>();
+        groupList.add(group);
+        susi.setGroups(groupList);
+        timon.setGroups(groupList);
 
         List<IngameModeMultiplicatorObject> ingameModeMultiplicators = new ArrayList<>();
         IngameModeMultiplicatorObject oneObject = new IngameModeMultiplicatorObject();
@@ -113,7 +119,6 @@ public class LobbyServiceIntegrationTest {
         assertNotNull(returnedLobbies.size());
         assertEquals(returnedLobbies.get(0).getCreatorUsername(), "Susi");
         assertEquals(returnedLobbies.get(0).getLobbyType(), "public");
-        userRepository.deleteAll();
     }
 
     @Test
@@ -148,7 +153,7 @@ public class LobbyServiceIntegrationTest {
         // add Timon to the existing lobby
         LobbyPutUserWithIdDTO userNotInLobbyYet = new LobbyPutUserWithIdDTO();
         userNotInLobbyYet.setAdd(Boolean.TRUE);
-        userNotInLobbyYet.setUserId(UUID.randomUUID());
+        userNotInLobbyYet.setUserId(timon.getId());
         userNotInLobbyYet.setRemove(Boolean.FALSE);
         // when
         Lobby returnedLobby = lobbyService.addUserToLobby(userNotInLobbyYet, lobby.getId());
@@ -209,15 +214,12 @@ public class LobbyServiceIntegrationTest {
         assertEquals(0, returnedLobby.getUsersInLobby().size());
     }
 
-    @After
+    @AfterEach
     public void cleanDatabase(){
-        lobbyRepository.deleteAll();
-        groupRepository.deleteAll();
-        userRepository.deleteAll();
-
-        assertTrue(userRepository.findAll().isEmpty());
-        assertTrue(lobbyRepository.findAll().isEmpty());
-        assertTrue(groupRepository.findAll().isEmpty());
+        lobbyRepository.delete(lobby);
+        userRepository.delete(timon);
+        userRepository.delete(susi);
+        groupRepository.delete(group);
     }
 
 }

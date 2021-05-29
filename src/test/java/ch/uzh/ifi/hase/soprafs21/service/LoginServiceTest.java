@@ -1,7 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.entity.Avatar;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
+import ch.uzh.ifi.hase.soprafs21.repository.AvatarRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.junit.After;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,12 +15,17 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class LoginServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private AvatarRepository avatarRepository;
 
     @InjectMocks
     private LoginService loginService;
@@ -34,23 +41,25 @@ public class LoginServiceTest {
         testRegisteredUser = new RegisteredUser();
         testRegisteredUser.setPassword("verySafe");
         testRegisteredUser.setUsername("testUsername");
+        testRegisteredUser.setId(UUID.randomUUID());
 
-        Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testRegisteredUser);
+
         Mockito.when(userRepository.saveAndFlush(Mockito.any())).thenReturn(testRegisteredUser);
+        //
 
+        Mockito.when(avatarRepository.saveAndFlush(Mockito.any())).thenReturn(new Avatar());
         userService.createRegisteredUser(testRegisteredUser);
 
-        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any());
+
 
     }
 
     @Test
     public void loginRegisteredUser_validInputs_success() {
         // when -> any object is being save in the userRepository -> return the dummy testUser
+        Mockito.when(userRepository.findRegisteredUserByUsername(Mockito.any())).thenReturn(testRegisteredUser);
         RegisteredUser createdUser = loginService.login(testRegisteredUser);
 
-        // then
-        Mockito.verify(userRepository, Mockito.times(1)).saveAndFlush(Mockito.any());
 
         assertEquals(testRegisteredUser.getUsername(), createdUser.getUsername());
         assertEquals(testRegisteredUser.getPassword(), createdUser.getPassword());
@@ -60,12 +69,14 @@ public class LoginServiceTest {
 
     @Test
     public void loginRegisteredUser_invalidPassword_failed() {
-        // when -> any object is being save in the userRepository -> return the dummy testUser
+//         when -> any object is being save in the userRepository -> return the dummy testUser
         RegisteredUser userWithWrongPassword = new RegisteredUser();
         userWithWrongPassword.setUsername("testUsername");
         userWithWrongPassword.setPassword("VeryWrongPassoword");
+        userWithWrongPassword.setId(UUID.randomUUID());
+       Mockito.when(userRepository.findRegisteredUserByUsername(Mockito.any())).thenReturn(userWithWrongPassword);
 
-        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> loginService.login(userWithWrongPassword));
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> loginService.login(testRegisteredUser));
 
         var status = thrown.getStatus();
         var reason = thrown.getReason();
@@ -90,11 +101,6 @@ public class LoginServiceTest {
         assertEquals(HttpStatus.NOT_FOUND, status);
         assertEquals("No user with such username", reason);
     }
-    @After
-    public void cleanDatabase(){
-        userRepository.deleteAll();
 
-        assertTrue(userRepository.findAll().isEmpty());
-    }
 }
 

@@ -1,7 +1,9 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
+import ch.uzh.ifi.hase.soprafs21.entity.Avatar;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
+import ch.uzh.ifi.hase.soprafs21.repository.AvatarRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.FriendRequestRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -27,6 +29,9 @@ public class FriendServiceTest {
     @Mock
     private FriendService friendService;
 
+    @Mock
+    private AvatarRepository avatarRepository;
+
     @InjectMocks
     private UserService userService;
 
@@ -41,6 +46,7 @@ public class FriendServiceTest {
         willi = new RegisteredUser();
         willi.setPassword("verySafe");
         willi.setUsername("Willi");
+        Mockito.when(avatarRepository.saveAndFlush(Mockito.any())).thenReturn(new Avatar());
         userService.createRegisteredUser(willi);
 
         //willis friends
@@ -59,18 +65,8 @@ public class FriendServiceTest {
         friendList.add(rebekka);
         friendList.add(louise);
 
-//        List<User> friendList2 = new ArrayList<>();
-//        friendList.add(rebekka);
-//        friendList.add(willi);
-//
-//        List<User> friendList3 = new ArrayList<>();
-//        friendList.add(willi);
-//        friendList.add(louise);
-
         willi.setFriends(friendList);
         willi.setfriendOf(friendList);
-//        louise.setFriends(friendList2);
-//        rebekka.setFriends(friendList3);
 
         Mockito.when(friendService.getFriends(Mockito.any())).thenReturn(friendList);
     }
@@ -87,14 +83,6 @@ public class FriendServiceTest {
         assertEquals( rebekka, willisFriends.get(0));
         assertEquals( louise, willisFriends.get(1));
         assertEquals(2, willisFriends.size());
-    }
-    @AfterEach
-    public void cleanUpEach() {
-        friendRequestRepository.deleteAll();
-        userRepository.deleteAll();
-
-        assertTrue(userRepository.findAll().isEmpty());
-        assertTrue(friendRequestRepository.findAll().isEmpty());
     }
 
 }

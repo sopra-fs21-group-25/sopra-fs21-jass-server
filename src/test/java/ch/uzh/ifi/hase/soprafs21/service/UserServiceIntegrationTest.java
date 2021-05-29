@@ -93,11 +93,5 @@ public class UserServiceIntegrationTest {
         // check that an error is thrown
         assertThrows(ResponseStatusException.class, () -> userService.createRegisteredUser(testUser2));
     }
-    @After
-    public void cleanDatabase(){
-        userRepository.deleteAll();
-
-        assertTrue(userRepository.findAll().isEmpty());
-    }
 
 }

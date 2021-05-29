@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,15 +36,10 @@ public class LoginServiceIntegrationTest {
 //    @Autowired
 //    private MockMvc mvc;
 
-
+    private RegisteredUser user;
     @BeforeEach
     public void register(){
-        gameRepository.deleteAll();
-        userRepository.deleteAll();
-
-
-
-        RegisteredUser user = new RegisteredUser();
+        user = new RegisteredUser();
         user.setUsername("coolName");
         user.setPassword("password");
         user.setToken(UUID.randomUUID().toString());
@@ -94,13 +90,9 @@ public class LoginServiceIntegrationTest {
     }
 
 
-    @After
+    @AfterEach
     public void cleanDatabase(){
-        gameRepository.deleteAll();
-        userRepository.deleteAll();
-
-        assertTrue(gameRepository.findAll().isEmpty());
-        assertTrue(userRepository.findAll().isEmpty());
+        userRepository.delete(user);
     }
 
 

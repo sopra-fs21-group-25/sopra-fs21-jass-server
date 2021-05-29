@@ -1,10 +1,12 @@
 package ch.uzh.ifi.hase.soprafs21.service;
 
 import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
+import ch.uzh.ifi.hase.soprafs21.entity.Avatar;
 import ch.uzh.ifi.hase.soprafs21.entity.Group;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.SchieberGameSession;
 import ch.uzh.ifi.hase.soprafs21.game.*;
+import ch.uzh.ifi.hase.soprafs21.repository.AvatarRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.GroupRepository;
 import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
@@ -41,6 +43,10 @@ class GameServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private AvatarRepository avatarRepository;
+
 
     @InjectMocks
     private GameService gameService;
@@ -94,6 +100,7 @@ class GameServiceTest {
         card4.setIsTrumpf(true);
 
 
+        Mockito.when(avatarRepository.saveAndFlush(Mockito.any())).thenReturn(new Avatar());
         peter = new RegisteredUser();
         peter.setUsername("Peter");
         UUID peterID = UUID.randomUUID();
@@ -159,7 +166,6 @@ class GameServiceTest {
         oneObject.setIngameMode(IngameMode.ACORN);
         oneObject.setMultiplicator(20);
         ingameModeMultiplicators.add(oneObject);
-        //IngameModeMultiplicatorObject[] myObjectforDTO = new IngameModeMultiplicatorObject[3];
 
         Group group = new Group(GroupType.COLLECTIVE);
 
@@ -353,15 +359,4 @@ class GameServiceTest {
         verify(gameRepository,times(1)).deleteById(schieberGameSession.getId());
     }
 
-    @AfterEach
-    public void cleanUpEach() {
-        gameRepository.deleteAll();
-        groupRepository.deleteAll();
-        userRepository.deleteAll();
-
-
-        assertTrue(userRepository.findAll().isEmpty());
-        assertTrue(gameRepository.findAll().isEmpty());
-        assertTrue(groupRepository.findAll().isEmpty());
-    }
 }

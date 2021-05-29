@@ -88,7 +88,6 @@ class ChatServiceTest {
         pia.setPassword("password4");
         pia.setStatus(UserStatus.ONLINE);
         pia.setId(UUID.randomUUID());
-        pia.setId(UUID.randomUUID());
 
         //add users to two sets
         users = new HashSet<>();
@@ -106,9 +105,12 @@ class ChatServiceTest {
         //group
         bidirectGroup = new Group(GroupType.BIDIRECTIONAL);
         bidirectGroup.setUsers(new ArrayList<>(only2users));
+        bidirectGroup.setId(UUID.randomUUID());
+
 
         collectGroup = new Group(GroupType.COLLECTIVE);
         collectGroup.setUsers(new ArrayList<>(users));
+        collectGroup.setId(UUID.randomUUID());
 
         //messages
         message = new Message();
@@ -157,7 +159,7 @@ class ChatServiceTest {
 
     @Test
     void evaluateGroupAssignment_Collective_Test() {
-        Mockito.when(groupRepository.findByLobbyIdOrGameId(lobby.getId())).thenReturn(collectGroup);
+        Mockito.when(groupRepository.retrieveGroupByEnvironmentIdAsLobbyIdOrGameId(lobby.getId())).thenReturn(collectGroup);
         Group foundGroup = chatService.evaluateGroupAssignment(berthold.getId(), lobby.getId(), GroupType.COLLECTIVE);
         assertEquals(foundGroup, collectGroup);
         assertEquals(foundGroup.getId(), collectGroup.getId());

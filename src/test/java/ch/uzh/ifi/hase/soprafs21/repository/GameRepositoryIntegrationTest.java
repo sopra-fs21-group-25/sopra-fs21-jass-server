@@ -1,6 +1,8 @@
 package ch.uzh.ifi.hase.soprafs21.repository;
 
+import ch.uzh.ifi.hase.soprafs21.constant.GroupType;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs21.entity.Group;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.entity.SchieberGameSession;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
@@ -33,6 +35,8 @@ class GameRepositoryIntegrationTest {
     @Autowired
     private GameRepository gameRepository;
 
+
+
     private RegisteredUser doris;
     private RegisteredUser erwin;
     private RegisteredUser justus;
@@ -43,6 +47,7 @@ class GameRepositoryIntegrationTest {
     private Card card2;
     private Card card3;
     private List<Card> listCard;
+    private List<Group> listGroup;
 
     private SchieberGameSession schieberGameSession;
     private SchieberGameSession postDTO;
@@ -50,6 +55,7 @@ class GameRepositoryIntegrationTest {
     private SchieberGamePutDTO schieberGamePutDTO;
     private SchieberGameGetDTO schieber;
     private CardsGetDTO playerCards;
+    private Group newGroup;
 
     @BeforeEach
     public void setupGameSession() {
@@ -75,37 +81,45 @@ class GameRepositoryIntegrationTest {
         card3.setIsTrumpf(false);
 
 
+        newGroup = new Group(GroupType.COLLECTIVE);
+        listGroup = new ArrayList<>();
+        listGroup.add(newGroup);
+
+
         doris = new RegisteredUser();
         doris.setUsername("Doris");
         doris.setStatus(UserStatus.ONLINE);
         doris.setPassword("password");
         doris.setToken("4");
-//        UUID dorisId = UUID.randomUUID();
-//        doris.setId(dorisId);
+        doris.setGroups(listGroup);
+
 
         erwin = new RegisteredUser();
         erwin.setUsername("Erwin");
         erwin.setStatus(UserStatus.ONLINE);
         erwin.setPassword("password");
         erwin.setToken("3");
-//        UUID erwinId = UUID.randomUUID();
-//        erwin.setId(erwinId);
+        erwin.setGroups(listGroup);
 
+
+
+
+
+// set up users
         justus = new RegisteredUser();
         justus.setUsername("Justus");
         justus.setStatus(UserStatus.ONLINE);
         justus.setPassword("password");
         justus.setToken("2");
-//        UUID justusID = UUID.randomUUID();
-//        justus.setId(justusID);
+        justus.setGroups(listGroup);
 
         esmeralda = new RegisteredUser();
         esmeralda.setUsername("Esmeralda");
         esmeralda.setStatus(UserStatus.ONLINE);
         esmeralda.setPassword("password");
         esmeralda.setToken("1");
-//        UUID EsmeraldaID = UUID.randomUUID();
-//        esmeralda.setId(EsmeraldaID);
+        esmeralda.setGroups(listGroup);
+
 
         listofCard = new Card[4];
         listofCard[0] = card1;
@@ -162,16 +176,19 @@ class GameRepositoryIntegrationTest {
         schieberGameSession.setPointsTeam0_2(200);
         schieberGameSession.setPlayer0startsTrick(true);
         schieberGameSession.setHasTrickStarted(false);
+        schieberGameSession.setGroup(newGroup);
 
     }
 
     @Test
     void findByUserId() {
         // given
+        entityManager.persistAndFlush(newGroup);
         entityManager.persistAndFlush(doris);
         entityManager.persistAndFlush(esmeralda);
         entityManager.persistAndFlush(erwin);
         entityManager.persistAndFlush(justus);
+
         entityManager.persist(schieberGameSession);
         entityManager.flush();
 
@@ -189,7 +206,12 @@ class GameRepositoryIntegrationTest {
 
     @AfterEach
     public void cleanUpEach() {
-        gameRepository.deleteAll();
-        assertTrue(gameRepository.findAll().isEmpty());
+        gameRepository.delete(schieberGameSession);
+        entityManager.remove(doris);
+        entityManager.remove(esmeralda);
+        entityManager.remove(erwin);
+        entityManager.remove(justus);
+        entityManager.remove(newGroup);
+
     }
 }
