@@ -40,7 +40,7 @@ public class ChatService {
         if(groupType == GroupType.BIDIRECTIONAL) {
             return groupRepository.findByGroupTypeAndUsersWithIds(GroupType.BIDIRECTIONAL, senderId, environmentId);
         } else {
-            return groupRepository.findByLobbyIdOrGameId(environmentId);
+            return groupRepository.retrieveGroupByEnvironmentIdAsLobbyIdOrGameId(environmentId);
         }
     }
 

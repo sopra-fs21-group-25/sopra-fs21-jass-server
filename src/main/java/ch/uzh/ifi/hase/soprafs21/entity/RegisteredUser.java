@@ -15,23 +15,20 @@ public class RegisteredUser extends User {
         this.userType = UserType.REGISTERED;
     }
 
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    private byte[] profilePicture;
 
-    public byte[] getProfilePicture() {
-        return profilePicture;
-    }
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.REMOVE)
+    private Avatar avatar;
 
-    public void setProfilePicture(byte[] profilePicture) {
-        this.profilePicture = profilePicture;
-    }
 
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
 
+    public Avatar getAvatar() { return avatar; }
+
+    public void setAvatar(Avatar avatar) { this.avatar = avatar; }
 }

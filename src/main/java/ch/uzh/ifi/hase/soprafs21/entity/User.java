@@ -76,10 +76,10 @@ public abstract class User implements Serializable {
     )
     private List<User> friendOf;
 
-    @OneToMany(mappedBy="toUser")
+    @OneToMany(mappedBy="toUser", cascade = CascadeType.REMOVE)
     private List<FriendRequest> pendingFriendRequests;
 
-    @OneToMany(mappedBy="fromUser")
+    @OneToMany(mappedBy="fromUser", cascade = CascadeType.REMOVE)
     private List<FriendRequest> sentFriendRequests;
 
     @Column(nullable = true, unique = true)

@@ -27,7 +27,7 @@ public class Message implements Serializable {
     private Date timestamp;
 
     @ManyToOne
-    @JoinColumn(name="group_Id", nullable=false)
+    @JoinColumn(name="group_Id")
     private Group group;
 
     public Message(){

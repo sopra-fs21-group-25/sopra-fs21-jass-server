@@ -4,7 +4,7 @@ package ch.uzh.ifi.hase.soprafs21.service;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.RegisteredUser;
 import ch.uzh.ifi.hase.soprafs21.repository.GameRepository;
-import ch.uzh.ifi.hase.soprafs21.repository.RegisteredUserRepository;
+import ch.uzh.ifi.hase.soprafs21.repository.UserRepository;
 import org.junit.After;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,9 +22,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class LoginServiceIntegrationTest {
 
-    @Qualifier("registeredUserRepository")
+    @Qualifier("userRepository")
     @Autowired
-    private RegisteredUserRepository registeredUserRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private GameRepository gameRepository;
@@ -39,7 +39,7 @@ public class LoginServiceIntegrationTest {
     @BeforeEach
     public void register(){
         gameRepository.deleteAll();
-        registeredUserRepository.deleteAll();
+        userRepository.deleteAll();
 
 
 
@@ -49,13 +49,13 @@ public class LoginServiceIntegrationTest {
         user.setToken(UUID.randomUUID().toString());
         user.setStatus(UserStatus.ONLINE);
 
-        registeredUserRepository.saveAndFlush(user);
+        userRepository.saveAndFlush(user);
     }
 
     @Test
     public void login_RegisteredUser_validInputs_success()  {
         // given
-        assertNotNull(registeredUserRepository.findByUsername("coolName"));
+        assertNotNull(userRepository.findByUsername("coolName"));
 
         RegisteredUser usertoLogin = new RegisteredUser();
         usertoLogin.setUsername("coolName");
@@ -71,7 +71,7 @@ public class LoginServiceIntegrationTest {
 
     @Test
     public void login_RegisteredUser_invalidPassword_fails ()  {
-        assertNotNull(registeredUserRepository.findByUsername("coolName"));
+        assertNotNull(userRepository.findByUsername("coolName"));
 
         RegisteredUser usertoLogin = new RegisteredUser();
         usertoLogin.setUsername("coolName");
@@ -83,7 +83,7 @@ public class LoginServiceIntegrationTest {
 
     @Test
     public void login_RegisteredUser_invalidUsername_fails ()  {
-        assertNotNull(registeredUserRepository.findByUsername("coolName"));
+        assertNotNull(userRepository.findByUsername("coolName"));
 
         RegisteredUser usertoLogin = new RegisteredUser();
         usertoLogin.setUsername("coolName_Wrongly_Written_EifachVollFalschHey");
@@ -97,10 +97,10 @@ public class LoginServiceIntegrationTest {
     @After
     public void cleanDatabase(){
         gameRepository.deleteAll();
-        registeredUserRepository.deleteAll();
+        userRepository.deleteAll();
 
         assertTrue(gameRepository.findAll().isEmpty());
-        assertTrue(registeredUserRepository.findAll().isEmpty());
+        assertTrue(userRepository.findAll().isEmpty());
     }
 
 

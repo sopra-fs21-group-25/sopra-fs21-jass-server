@@ -106,8 +106,6 @@ public class LobbyController {
     @ResponseBody
     public void deleteLobbyNoCascadeDeleteChatGroup(@PathVariable("lobbyId") UUID lobbyId) {
         Lobby lobbyToClose = lobbyService.getLobbyWithId(lobbyId);
-        lobbyToClose = lobbyService.clearLobby(lobbyToClose);
-
         lobbyService.deleteNoCascadeChatGroupLobby(lobbyToClose);
     }
 
@@ -116,8 +114,6 @@ public class LobbyController {
     @ResponseBody
     public void deleteLobbyAndCascadeDeleteChatGroup(@PathVariable("lobbyId") UUID lobbyId) {
         Lobby lobbyToClose = lobbyService.getLobbyWithId(lobbyId);
-        lobbyToClose = lobbyService.clearLobby(lobbyToClose);
-
         lobbyService.deleteCascadeChatGroupLobby(lobbyToClose);
     }
 

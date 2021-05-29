@@ -20,7 +20,7 @@ public class Lobby implements Serializable, Comparable<Lobby> {
     @Column(nullable = false, unique = true)
     private String creatorUsername;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "group_id", updatable = false)
     private Group group;
 

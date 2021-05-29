@@ -14,6 +14,8 @@ public class SchieberGameGetDTO {
     private UUID player1id;
     private UUID player2id;
     private UUID player3id;
+    private String[] playerUsernames;
+    private Integer[] playerCardsAmount;
     private Integer pointsToWin;
     private IngameModeMultiplicatorObject[] ingameModes;
     private Boolean weisAllowed;
@@ -184,5 +186,21 @@ public class SchieberGameGetDTO {
 
     public void setCurrentIngameMode(IngameMode currentIngameMode) {
         this.currentIngameMode = currentIngameMode;
+    }
+
+    public String[] getPlayerUsernames() {
+        return playerUsernames;
+    }
+
+    public void setPlayerUsernames(String[] playerUsernames) {
+        this.playerUsernames = playerUsernames;
+    }
+
+    public Integer[] getPlayerCardsAmount() {
+        return playerCardsAmount;
+    }
+
+    public void setPlayerCardsAmount(Integer[] playerCardsAmount) {
+        this.playerCardsAmount = playerCardsAmount;
     }
 }
