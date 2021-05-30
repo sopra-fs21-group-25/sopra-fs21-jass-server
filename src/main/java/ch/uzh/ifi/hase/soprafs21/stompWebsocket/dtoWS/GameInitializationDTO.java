@@ -19,6 +19,25 @@ public class GameInitializationDTO {
         this.player3id = player3id;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == null) {
+            return false;
+        }
+        if(!(o instanceof GameInitializationDTO)) {
+            return false;
+        }
+
+        GameInitializationDTO dto = (GameInitializationDTO) o;
+        return id.equals(dto.getId()) &&
+                player0id.equals(dto.getPlayer0id()) &&
+                player1id.equals(dto.getPlayer1id()) &&
+                player2id.equals(dto.getPlayer2id()) &&
+                player3id.equals(dto.getPlayer3id());
+    }
+
+
     public GameInitializationDTO() {}
 
     public UUID getId() {
