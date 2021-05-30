@@ -8,6 +8,19 @@ public class LobbyJoinDTO {
     private String lobbyCreator;
 
 
+    @Override
+    public boolean equals(Object o) {
+        if(o == null) {
+            return false;
+        }
+        if(!(o instanceof LobbyJoinDTO)) {
+            return false;
+        }
+
+        LobbyJoinDTO dto = (LobbyJoinDTO) o;
+        return lobbyId.equals(dto.getLobbyId()) && lobbyCreator.equals(dto.getLobbyCreator());
+    }
+
     public UUID getLobbyId() {
         return lobbyId;
     }

@@ -16,6 +16,25 @@ public class ChatMessageDTO {
     private String text;
 
 
+    @Override
+    public boolean equals(Object o) {
+        if(o == null) {
+            return false;
+        }
+        if(!(o instanceof ChatMessageDTO)) {
+            return false;
+        }
+
+        ChatMessageDTO dto = (ChatMessageDTO) o;
+        return this.senderId.equals(dto.getSenderId()) &&
+                this.senderUsername.equals(dto.getSenderUsername()) &&
+                this.environmentId.equals(dto.getEnvironmentId()) &&
+                this.groupType == dto.getGroupType() &&
+                this.timestamp.equals(dto.getTimestamp()) &&
+                this.text.equals(dto.getText());
+    }
+
+
 
     public UUID getSenderId() {
         return senderId;

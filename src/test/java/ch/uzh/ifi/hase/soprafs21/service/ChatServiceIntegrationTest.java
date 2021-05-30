@@ -78,6 +78,21 @@ class ChatServiceIntegrationTest {
     public void setupGroup(){
         MockitoAnnotations.openMocks(this);
 
+        userRepository.deleteAll();
+        lobbyRepository.deleteAll();
+        gameRepository.deleteAll();
+        groupRepository.deleteAll();
+
+        if(lobby != null) { lobbyRepository.delete(lobby); }
+        if(schieberGameSession != null) { gameRepository.delete(schieberGameSession); }
+        if(bidirectGroup != null) { groupRepository.delete(bidirectGroup); }
+        if(collectGroup != null) { groupRepository.delete(collectGroup); }
+        if(message != null) { messageRepository.delete(message); }
+        if(hanna != null) { userRepository.delete(hanna); }
+        if(pia != null) { userRepository.delete(pia); }
+        if(berthold != null) { userRepository.delete(berthold); }
+        if(claude != null) { userRepository.delete(claude); }
+
         //set up test users
         claude = new RegisteredUser();
         claude.setUsername("Claude");
