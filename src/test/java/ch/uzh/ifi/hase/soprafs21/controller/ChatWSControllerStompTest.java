@@ -87,5 +87,7 @@ public class ChatWSControllerStompTest {
         session.send("/app/messages/incoming", chatMessageDTO);
 
         assertEquals(chatMessageDTO, blockingQueue.poll(1, TimeUnit.SECONDS));
+
+        session.disconnect();
     }
 }

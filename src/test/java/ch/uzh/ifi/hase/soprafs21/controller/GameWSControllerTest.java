@@ -64,6 +64,8 @@ public class GameWSControllerTest {
         session.send("/app/lobbies/" + lobbyId + "/initialSynchronization", gameInitializationDTO);
 
         assertEquals(gameInitializationDTO, blockingQueue.poll(1, TimeUnit.SECONDS));
+
+        session.disconnect();
     }
 
     @Test
@@ -94,6 +96,8 @@ public class GameWSControllerTest {
         session.send("/app/games/" + gameId + "/fetch", "DoesNotMatterWhatWeSendHere.ItsJustForNotifying");
 
         assertNull(blockingQueue.poll(1, TimeUnit.SECONDS));
+
+        session.disconnect();
     }
 
     @Test
@@ -127,5 +131,7 @@ public class GameWSControllerTest {
         session.send("/app/games/" + gameId + "/shove/notify/" + partnerId, msg);
 
         assertEquals(msg, blockingQueue.poll(1, TimeUnit.SECONDS));
+
+        session.disconnect();
     }
 }

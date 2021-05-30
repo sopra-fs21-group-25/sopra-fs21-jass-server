@@ -56,6 +56,8 @@ public class LobbyWSControllerTest {
         session.send("/app/lobbies/" + lobbyId + "/fetch", "DoesNotMatterWhatWeSendHere");
 
         assertEquals("fetch", blockingQueue.poll(1, TimeUnit.SECONDS));
+
+        session.disconnect();
     }
 
     @Test
@@ -84,6 +86,8 @@ public class LobbyWSControllerTest {
         session.send("/app/lobbies/" + lobbyId + "/notifyShutdown", "DoesNotMatterWhatWeSendHere");
 
         assertEquals("shutdown", blockingQueue.poll(1, TimeUnit.SECONDS));
+
+        session.disconnect();
     }
 
     @Test
@@ -112,6 +116,8 @@ public class LobbyWSControllerTest {
         session.send("/app/lobbies/" + lobbyId + "/kicked/" + userId, "DoesNotMatterWhatWeSendHere");
 
         assertEquals("kicked", blockingQueue.poll(1, TimeUnit.SECONDS));
+
+        session.disconnect();
     }
 
     @Test
@@ -144,5 +150,7 @@ public class LobbyWSControllerTest {
         session.send("/app/lobbies/invite/" + userId, lobbyJoinDTO);
 
         assertEquals(lobbyJoinDTO, blockingQueue.poll(1, TimeUnit.SECONDS));
+
+        session.disconnect();
     }
 }

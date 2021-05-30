@@ -60,6 +60,8 @@ public class FriendRequestWSControllerTest {
         session.send("/app/friend_requests/" + toId, msg);
 
         assertEquals(msg, blockingQueue.poll(1, TimeUnit.SECONDS));
+
+        session.disconnect();
     }
 
     @Test
@@ -87,5 +89,7 @@ public class FriendRequestWSControllerTest {
         session.send("/app/friends/notify_remove/" + toId, payloadId);
 
         assertEquals(payloadId, blockingQueue.poll(1, TimeUnit.SECONDS));
+
+        session.disconnect();
     }
 }
