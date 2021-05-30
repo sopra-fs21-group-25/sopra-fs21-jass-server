@@ -49,9 +49,6 @@ Change to the deployment settings of the client [here](https://github.com/sopra-
 :black_square_button: add 'Merry' in-game mode<br/>
 :black_square_button: add 'Gusti' in-game mode<br/>
 :black_square_button: add 'Slalom' in-game mode<br/>
-:black_square_button: add 'Undenufe' in-game mode<br/>
-:black_square_button: add 'Obenabe' in-game mode<br/>
-:black_square_button: add 'Trump' in-game mode<br/>
 
 ## Authors and acknowledgment
 - [Gregory Frommelt](https://github.com/fromGreg)
