@@ -77,8 +77,6 @@ public class LobbyServiceIntegrationTest {
         group.setUsers(new ArrayList<>(users));
 
 
-
-
         groupList = new ArrayList<>();
         groupList.add(group);
         susi.setGroups(groupList);
@@ -109,11 +107,47 @@ public class LobbyServiceIntegrationTest {
         lobby.setCrossWeisAllowed(Boolean.FALSE);
         lobby.setWeisAsk("never");
         lobby.setIngameModes(ingameModeMultiplicators);
+        lobby.setUserTop(susi);
         lobby.setGroup(group);
         lobby = lobbyRepository.saveAndFlush(lobby);
 
+
     }
 
+
+    @Test
+    public void getLobbies_Test()  {
+        // given
+        assertNotNull(lobbyRepository.findById(lobby.getId()));
+
+
+        // when
+        List<Lobby> returnedLobbies = lobbyService.getLobbies();
+
+        // then
+        assertNotEquals(returnedLobbies.size(), 0);
+        assertEquals(returnedLobbies.get(0).getCreatorUsername(), "Susi");
+        assertEquals(returnedLobbies.get(0).getLobbyType(), "public");
+    }
+
+
+    @Test
+    public void getPublicAndFriendsLobbies_Test()  {
+        // given
+        assertNotNull(lobbyRepository.findById(lobby.getId()));
+
+        // when
+        List<Lobby> returnedLobbies = lobbyService.getPublicAndFriendsLobbies();
+
+        // then
+        assertEquals(returnedLobbies.size(), 1);
+        assertEquals(returnedLobbies.get(0).getCreatorUsername(), "Susi");
+        assertEquals(returnedLobbies.get(0).getLobbyType(), "public");
+        assertEquals(returnedLobbies.get(0).getId(), lobby.getId());
+        assertEquals(returnedLobbies.get(0).getMode(), lobby.getMode());
+        assertEquals(returnedLobbies.get(0).getGroup(), lobby.getGroup());
+        assertEquals(returnedLobbies.get(0).getPointsToWin(), lobby.getPointsToWin());
+    }
 
 
     @Test
@@ -213,6 +247,287 @@ public class LobbyServiceIntegrationTest {
         assertEquals(1, returnedLobbyWithOnlyOneUser.getUsersInLobby().size());
         assertEquals(lobby.getCreatorUsername(), returnedLobbyWithOnlyOneUser.getCreatorUsername());
     }
+
+    @Test
+    public void  removeUserFromLobby_LobbyInexistent_failed()  {
+        //given
+        UUID timonUUID = userRepository.findByUsername("Timon").getId();
+        LobbyPutUserWithIdDTO userInLobby = new LobbyPutUserWithIdDTO();
+        userInLobby.setAdd(Boolean.FALSE);
+        userInLobby.setUserId(timonUUID);
+        userInLobby.setRemove(Boolean.TRUE);
+
+        //setup check
+        Lobby returnedLobby = lobbyService.addUserToLobby(userInLobby, lobby.getId());
+        assertEquals(2, returnedLobby.getUsersInLobby().size());
+
+
+        //when
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> lobbyService.removeUserFromLobby(userInLobby, UUID.randomUUID()));
+
+        var status = thrown.getStatus();
+        var reason = thrown.getReason();
+
+        assertEquals(HttpStatus.NOT_FOUND, status);
+        assertEquals("Could not find a lobby with this id.", reason);
+    }
+
+    @Test
+    public void  removeUserFromLobby_UserNotInLobby_failed()  {
+        //given
+        UUID timonUUID = userRepository.findByUsername("Timon").getId();
+        LobbyPutUserWithIdDTO userInLobby = new LobbyPutUserWithIdDTO();
+        userInLobby.setAdd(Boolean.TRUE);
+        userInLobby.setUserId(UUID.randomUUID());
+        userInLobby.setRemove(Boolean.TRUE);
+
+        //setup check
+        Lobby returnedLobby = lobbyService.getLobbyWithId(lobby.getId());
+        assertEquals(1, returnedLobby.getUsersInLobby().size());
+
+
+        //when
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> lobbyService.removeUserFromLobby(userInLobby, lobby.getId()));
+
+        var status = thrown.getStatus();
+        var reason = thrown.getReason();
+
+        assertEquals(HttpStatus.NOT_FOUND, status);
+        assertEquals("User not in lobby", reason);
+    }
+
+    @Test
+    public void  removeUserFromLobby_removeLeftUser_success()  {
+        //given
+        UUID timonUUID = userRepository.findByUsername("Timon").getId();
+        LobbyPutUserWithIdDTO userInLobby = new LobbyPutUserWithIdDTO();
+        userInLobby.setAdd(Boolean.FALSE);
+        userInLobby.setUserId(timonUUID);
+        userInLobby.setRemove(Boolean.TRUE);
+
+        //setup check
+        Lobby returnedLobby = lobbyService.addUserToLobby(userInLobby, lobby.getId());
+        returnedLobby.setUserLeft(timon);
+        lobbyRepository.saveAndFlush(returnedLobby);
+        assertEquals(2, returnedLobby.getUsersInLobby().size());
+
+
+        //when
+        Lobby lobbyWithLessPlayers =  lobbyService.removeUserFromLobby(userInLobby, returnedLobby.getId());
+        assertEquals(1, lobbyWithLessPlayers.getUsersInLobby().size());
+        assertEquals(lobbyWithLessPlayers.getUserLeft(), null);
+    }
+    @Test
+    public void  removeUserFromLobby_removeRigthUser_success()  {
+        //given
+        UUID timonUUID = userRepository.findByUsername("Timon").getId();
+        LobbyPutUserWithIdDTO userInLobby = new LobbyPutUserWithIdDTO();
+        userInLobby.setAdd(Boolean.FALSE);
+        userInLobby.setUserId(timonUUID);
+        userInLobby.setRemove(Boolean.TRUE);
+
+        //setup check
+        Lobby returnedLobby = lobbyService.addUserToLobby(userInLobby, lobby.getId());
+        returnedLobby.setUserRight(susi);
+        returnedLobby.setUserTop(timon);
+        lobbyRepository.saveAndFlush(returnedLobby);
+        assertEquals(2, returnedLobby.getUsersInLobby().size());
+
+
+        //when
+        Lobby lobbyWithLessPlayers =  lobbyService.removeUserFromLobby(userInLobby, returnedLobby.getId());
+        assertEquals(1, lobbyWithLessPlayers.getUsersInLobby().size());
+        assertEquals(lobbyWithLessPlayers.getUserTop(), null);
+    }
+
+    @Test
+    public void  removeUserFromLobby_removeTopUser_success()  {
+        //given
+        UUID timonUUID = userRepository.findByUsername("Timon").getId();
+        LobbyPutUserWithIdDTO userInLobby = new LobbyPutUserWithIdDTO();
+        userInLobby.setAdd(Boolean.FALSE);
+        userInLobby.setUserId(timonUUID);
+        userInLobby.setRemove(Boolean.TRUE);
+
+        //setup check
+        Lobby returnedLobby = lobbyService.addUserToLobby(userInLobby, lobby.getId());
+        returnedLobby.setUserBottom(timon);
+        lobbyRepository.saveAndFlush(lobby);
+        assertEquals(2, returnedLobby.getUsersInLobby().size());
+
+
+        //when
+        Lobby lobbyWithLessPlayers =  lobbyService.removeUserFromLobby(userInLobby, lobby.getId());
+        assertEquals(1, lobbyWithLessPlayers.getUsersInLobby().size());
+        assertEquals(lobbyWithLessPlayers.getUserBottom(), null);
+        assertEquals(lobbyWithLessPlayers.getUserTop(), susi);
+    }
+
+    @Test
+    public void  removeUserFromLobby_removeBottomUser_success()  {
+        //given
+        UUID timonUUID = userRepository.findByUsername("Timon").getId();
+        LobbyPutUserWithIdDTO userInLobby = new LobbyPutUserWithIdDTO();
+        userInLobby.setAdd(Boolean.FALSE);
+        userInLobby.setUserId(timonUUID);
+        userInLobby.setRemove(Boolean.TRUE);
+
+        //setup check
+        Lobby returnedLobby = lobbyService.addUserToLobby(userInLobby, lobby.getId());
+        returnedLobby.setUserBottom(timon);
+        lobbyRepository.saveAndFlush(returnedLobby);
+        assertEquals(2, returnedLobby.getUsersInLobby().size());
+
+
+        //when
+        Lobby lobbyWithLessPlayers =  lobbyService.removeUserFromLobby(userInLobby, returnedLobby.getId());
+        assertEquals(1, lobbyWithLessPlayers.getUsersInLobby().size());
+        assertEquals(lobbyWithLessPlayers.getUserBottom(), null);
+        assertEquals(lobbyWithLessPlayers.getUserTop(), susi);
+    }
+
+    @Test
+    public void  unsitUserinLobby_noLobby_failed()  {
+        //given
+        UUID timonUUID = userRepository.findByUsername("Timon").getId();
+        LobbyPutUserWithIdDTO userInLobby = new LobbyPutUserWithIdDTO();
+        userInLobby.setAdd(Boolean.FALSE);
+        userInLobby.setUserId(timonUUID);
+        userInLobby.setRemove(Boolean.TRUE);
+
+        //setup check
+        Lobby returnedLobby = lobbyService.addUserToLobby(userInLobby, lobby.getId());
+        returnedLobby.setUserBottom(timon);
+        lobbyRepository.saveAndFlush(returnedLobby);
+        assertEquals(2, returnedLobby.getUsersInLobby().size());
+
+
+
+        //when
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> lobbyService.unsitUserInLobby(UUID.randomUUID(), timonUUID));
+
+        var status = thrown.getStatus();
+        var reason = thrown.getReason();
+
+        assertEquals(HttpStatus.NOT_FOUND, status);
+        assertEquals("Could not find a lobby with this id.", reason);
+    }
+
+    @Test
+    public void  unsitUserinLobby_Bottom_success()  {
+        //given
+        UUID timonUUID = userRepository.findByUsername("Timon").getId();
+        LobbyPutUserWithIdDTO userInLobby = new LobbyPutUserWithIdDTO();
+        userInLobby.setAdd(Boolean.FALSE);
+        userInLobby.setUserId(timonUUID);
+        userInLobby.setRemove(Boolean.TRUE);
+
+        //setup check
+        Lobby returnedLobby = lobbyService.addUserToLobby(userInLobby, lobby.getId());
+        returnedLobby.setUserBottom(timon);
+        lobbyRepository.saveAndFlush(returnedLobby);
+        assertEquals(2, returnedLobby.getUsersInLobby().size());
+
+
+        //when
+        Lobby lobbyWithLessPlayers =  lobbyService.unsitUserInLobby(returnedLobby.getId(), timonUUID );
+        assertEquals(lobbyWithLessPlayers.getUserBottom(), null);
+        assertEquals(lobbyWithLessPlayers.getUserTop(), susi);
+    }
+
+    @Test
+    public void  unsitUserinLobby_Right_success()  {
+        //given
+        UUID timonUUID = userRepository.findByUsername("Timon").getId();
+        LobbyPutUserWithIdDTO userInLobby = new LobbyPutUserWithIdDTO();
+        userInLobby.setAdd(Boolean.FALSE);
+        userInLobby.setUserId(timonUUID);
+        userInLobby.setRemove(Boolean.TRUE);
+
+        //setup check
+        Lobby returnedLobby = lobbyService.addUserToLobby(userInLobby, lobby.getId());
+        returnedLobby.setUserRight(timon);
+        lobbyRepository.saveAndFlush(returnedLobby);
+        assertEquals(2, returnedLobby.getUsersInLobby().size());
+
+
+        //when
+        Lobby lobbyWithLessPlayers =  lobbyService.unsitUserInLobby(returnedLobby.getId(), timonUUID );
+        assertEquals(lobbyWithLessPlayers.getUserRight(), null);
+        assertEquals(lobbyWithLessPlayers.getUserTop(), susi);
+        assertEquals(2, lobbyWithLessPlayers.getUsersInLobby().size());
+    }
+
+    @Test
+    public void  unsitUserinLobby_Left_success()  {
+        //given
+        UUID timonUUID = userRepository.findByUsername("Timon").getId();
+        LobbyPutUserWithIdDTO userInLobby = new LobbyPutUserWithIdDTO();
+        userInLobby.setAdd(Boolean.FALSE);
+        userInLobby.setUserId(timonUUID);
+        userInLobby.setRemove(Boolean.TRUE);
+
+        //setup check
+        Lobby returnedLobby = lobbyService.addUserToLobby(userInLobby, lobby.getId());
+        returnedLobby.setUserLeft(timon);
+        lobbyRepository.saveAndFlush(returnedLobby);
+        assertEquals(2, returnedLobby.getUsersInLobby().size());
+
+
+        //when
+        Lobby lobbyWithLessPlayers =  lobbyService.unsitUserInLobby(returnedLobby.getId(), timonUUID );
+        assertEquals(lobbyWithLessPlayers.getUserLeft(), null);
+        assertEquals(lobbyWithLessPlayers.getUserTop(), susi);
+        assertEquals(2, lobbyWithLessPlayers.getUsersInLobby().size());
+    }
+
+    @Test
+    public void  unsitUserinLobby_Top_success()  {
+        //given
+        UUID timonUUID = userRepository.findByUsername("Timon").getId();
+        LobbyPutUserWithIdDTO userInLobby = new LobbyPutUserWithIdDTO();
+        userInLobby.setAdd(Boolean.FALSE);
+        userInLobby.setUserId(timonUUID);
+        userInLobby.setRemove(Boolean.TRUE);
+
+        //setup check
+        Lobby returnedLobby = lobbyService.addUserToLobby(userInLobby, lobby.getId());
+        returnedLobby.setUserRight(susi);
+        returnedLobby.setUserTop(timon);
+        lobbyRepository.saveAndFlush(returnedLobby);
+        assertEquals(2, returnedLobby.getUsersInLobby().size());
+
+
+        //when
+        Lobby lobbyWithLessPlayers =  lobbyService.unsitUserInLobby(returnedLobby.getId(), timonUUID );
+        assertEquals(lobbyWithLessPlayers.getUserTop(), null);
+        assertEquals(lobbyWithLessPlayers.getUserRight(), susi);
+        assertEquals(2, lobbyWithLessPlayers.getUsersInLobby().size());
+    }
+    @Test
+    public void  deleteNoCascadeChatGroupLobby_Test()  {
+        //given
+        UUID timonUUID = userRepository.findByUsername("Timon").getId();
+        LobbyPutUserWithIdDTO userInLobby = new LobbyPutUserWithIdDTO();
+        userInLobby.setAdd(Boolean.FALSE);
+        userInLobby.setUserId(timonUUID);
+        userInLobby.setRemove(Boolean.TRUE);
+
+        //setup check
+        Lobby returnedLobby = lobbyService.addUserToLobby(userInLobby, lobby.getId());
+        returnedLobby.setUserRight(susi);
+        returnedLobby.setUserTop(timon);
+        lobbyRepository.saveAndFlush(returnedLobby);
+        assertEquals(2, returnedLobby.getUsersInLobby().size());
+
+
+        //when
+        lobbyService.deleteNoCascadeChatGroupLobby(returnedLobby);
+        assertEquals(lobbyRepository.findById(returnedLobby.getId()), Optional.empty());
+    }
+
+
+
 
     @Test
     public void clearLobby_success()  {
